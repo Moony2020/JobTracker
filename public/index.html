@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JobTracker - Track Your Job Applications</title>
     <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body>
     <!-- Notification System -->
@@ -52,7 +56,9 @@
               <button class="theme-toggle" id="themeToggle">🌙</button>
               <div id="userMenu" class="user-menu hidden">
                 <span id="userName"></span>
-                <button id="logoutBtn" class="btn btn-outline">Logout</button>
+                <button id="logoutBtn" class="btn btn-outline logout-btn">
+                  <i class="fas fa-sign-out-alt"></i>
+                </button>
               </div>
             </div>
           </div>
@@ -95,7 +101,11 @@
         <div class="mobile-user-info">
           Welcome, <span id="mobileUserName"></span>
         </div>
-        <button class="btn btn-outline full-width" id="mobileLogoutBtn">
+        <button
+          class="btn btn-outline full-width logout-btn"
+          id="mobileLogoutBtn"
+        >
+          <i class="fas fa-sign-out-alt"></i>
           Logout
         </button>
       </div>
