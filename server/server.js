@@ -7,9 +7,13 @@ require("dotenv").config();
 const app = express();
 
 // Middleware
+// في server.js - عدل الـ CORS middleware
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: [
+      "https://jobtracker-pbjx.onrender.com",
+      "http://localhost:3000", // علشان التطوير المحلي
+    ],
     credentials: true,
   })
 );
@@ -37,7 +41,6 @@ app.get("*", (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(
-    `Applications API available at http://localhost:${PORT}/api/applications`
-  );
+  console.log(`Frontend: https://jobtracker-pbjx.onrender.com`);
+  console.log(`API: https://jobtracker-pbjx.onrender.com/api`);
 });
