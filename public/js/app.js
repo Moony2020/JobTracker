@@ -271,7 +271,7 @@ class ApplicationManager {
   updateUI() {
     this.updateDashboard();
     this.updateApplicationsTable();
-    this.updateStatistics();
+    this.updateStatistics();        
   }
 
   updateDashboard() {

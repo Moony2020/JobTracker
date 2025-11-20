@@ -46,6 +46,7 @@ body {
     line-height: 1.6;
     transition: all 0.3s ease;
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
 /* Background gradient animation */
@@ -115,7 +116,7 @@ body::before {
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 12px;
 }
 
 /* Modern Header with Glass Effect */
@@ -494,7 +495,7 @@ main {
 /* Stats Cards */
 .stats-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
     gap: 1.5rem;
     margin: 1.2rem 0;
 }
@@ -555,7 +556,7 @@ main {
 
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
     gap: 1.5rem;
 }
 
@@ -881,94 +882,6 @@ footer {
     margin-top: 4rem;
 }
 
-/* Responsive Design */
-/* Responsive Design - FIXED */
-@media (max-width: 768px) {
-    .container {
-        padding: 0 1rem;
-    }
-
-    .hamburger {
-        display: flex;
-    }
-
-    .desktop-nav {
-        display: none;
-    }
-
-    /* hide auth buttons but show theme toggle button/icon*/
-    .auth-buttons .btn:not(.theme-toggle) {
-        display: none;
-    }
-
-    .user-menu {
-        display: none;
-    }
-
-    /* show theme toggle button/dark mode icon*/
-    .theme-toggle {
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-
-    .header-content {
-        gap: 1rem;
-    }
-
-    .mobile-nav {
-        display: block;
-    }
-
-    .stats-cards {
-        grid-template-columns: 1fr, 1fr;
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr, 1fr;
-    }
-
-    .applications-table {
-        display: block;
-        overflow-x: auto;
-    }
-
-    .modal-content {
-        padding: 1.5rem;
-        margin: 1rem;
-    }
-
-    .form-actions {
-        flex-direction: column;
-    }
-
-    .btn {
-        width: 100%;
-        justify-content: center;
-    }
-}
-
-@media (max-width: 480px) {
-    .logo {
-        font-size: 1.25rem;
-    }
-
-    .stat-card h3 {
-        font-size: 2rem;
-    }
-
-    .applications-table th,
-    .applications-table td {
-        padding: 1rem;
-    }
-
-    .notification {
-        right: 1rem;
-        left: 1rem;
-        max-width: none;
-    }
-}
-
 /* Utility Classes */
 .hidden {
     display: none !important;
@@ -1027,4 +940,110 @@ footer {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--primary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
+    .desktop-nav {
+        display: none;
+    }
+
+    /* hide auth buttons but show theme toggle button/icon*/
+    .auth-buttons .btn:not(.theme-toggle) {
+        display: none;
+    }
+
+    .user-menu {
+        display: none;
+    }
+
+    /* show theme toggle button/dark mode icon*/
+    .theme-toggle {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    .header-content {
+        gap: 1rem;
+    }
+
+    .mobile-nav {
+        display: block;
+    }
+
+    .applications-table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    .modal-content {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo {
+        font-size: 1.25rem;
+    }
+
+    .stat-card h3 {
+        font-size: 2rem;
+    }
+
+    .applications-table th,
+    .applications-table td {
+        padding: 1rem;
+    }
+
+    .notification {
+        right: 1rem;
+        left: 1rem;
+        max-width: none;
+    }
+
+    /*  resize dark mode */
+    .theme-toggle {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 1.2rem !important;
+        border-radius: 8px !important;
+    }
+
+    /*  resize hamburger menu */
+    .hamburger {
+        width: 24px !important;
+        height: 18px !important;
+    }
+
+    .hamburger span {
+        height: 2px !important;
+        border-radius: 1px !important;
+    }
+
+    .header-content {
+        gap: 0.5rem;
+    }
+
+    .header-right {
+        gap: 0.4rem;
+    }
 }
