@@ -70,6 +70,48 @@ body::before {
         radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
 }
 
+/* Chrome / Edge / Safari  make the date picker text white */
+.dark-mode input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.9;
+}
+
+/* Wrapper for custom select with icon */
+.select-wrapper {
+    position: relative;
+}
+
+/* Remove default arrow + add padding for icon */
+.select-wrapper .form-control {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: none;
+    padding-right: 2.5rem;
+    /* مساحة للأيقونة */
+}
+
+/* Custom chevron icon */
+.select-wrapper .chevron {
+    position: absolute;
+    right: 10px;
+    /* sits over the select’s right padding */
+    top: 50%;
+    transform: translateY(-50%);
+    /* vertical centering */
+    font-size: 18px;
+    line-height: 1;
+    /* prevents vertical drift */
+    pointer-events: none;
+    /* don’t block clicks */
+    z-index: 2;
+}
+
+/* في الدارك مود نخليها أفتح شوية */
+.dark-mode .select-wrapper .chevron {
+    color: var(--text-color);
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -117,20 +159,20 @@ header {
     gap: 0.6rem;
 }
 
-.auth-buttons .btn {
+.auth-buttons .btn:not(.logout-btn) {
     padding: 0.5rem 1.2rem;
-    min-width: 80px;
-    /* نفس العرض لكل الأزرار */
+    width: 85px;
     height: 38px;
-    /* نفس الإرتفاع */
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.85rem;
+    border-radius: 10px;
     white-space: nowrap;
     box-sizing: border-box;
-    /* مهم علشان الـ padding ما يزيد الحجم */
+    flex-shrink: 0;
 }
+
 
 /* Modern Logo */
 .logo {
@@ -168,7 +210,7 @@ header {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.6rem 0.75rem;
+    padding: 0.3rem 0.6rem;
     border-radius: 999px;
     font-weight: 500;
     text-decoration: none;
@@ -198,9 +240,10 @@ header {
 }
 
 /* Modern Buttons */
+/* 
 .btn {
-    padding: 0.5rem 1rem;
     border: none;
+    padding: 0.5rem 1rem;
     border-radius: 10px;
     font-weight: 600;
     cursor: pointer;
@@ -210,13 +253,14 @@ header {
     align-items: center;
     gap: 0.3rem;
     font-size: 0.8rem;
-    white-space: nowrap;
+    white-space: nowrap; 
 }
-
+*/
 .btn-primary {
     background: var(--primary-gradient);
     color: white;
     box-shadow: 0 3px 11px rgba(99, 102, 241, 0.3);
+    border: none;
 }
 
 .btn-primary:hover {
@@ -275,7 +319,7 @@ header {
 /* Logout Button with Icon */
 .logout-btn {
     padding: 0.5rem;
-    width: 36px;
+    width: 40px;
     height: 30px;
     display: flex;
     align-items: center;
@@ -294,7 +338,7 @@ header {
 /*  Logout Button with Text for Mobile */
 .mobile-user-menu .logout-btn {
     width: auto;
-    padding: 0.6rem 1rem;
+    padding: 0.7rem 1rem;
     gap: 0.5rem;
     font-size: 0.85rem;
 }
@@ -396,7 +440,6 @@ header {
     padding-top: 2rem;
     border-top: 1px solid var(--glass-border);
     align-items: center;
-    /* إضافة هذا علشان الأزرار تتمركز */
 }
 
 .mobile-auth-buttons .btn {
@@ -407,6 +450,7 @@ header {
     font-size: 0.9rem;
     width: auto;
     /*  stopping the width of the buttons from expanding  */
+    border-radius: 10px;
 }
 
 .mobile-user-menu {
@@ -452,7 +496,7 @@ main {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1.5rem;
-    margin-bottom: 2rem;
+    margin: 1.2rem 0;
 }
 
 .stat-card {
@@ -702,9 +746,9 @@ main {
     backdrop-filter: blur(30px);
     border: 1px solid var(--card-border);
     border-radius: 24px;
-    padding: 2.5rem;
+    padding: 1.5rem;
     width: 100%;
-    max-width: 500px;
+    max-width: 450px;
     box-shadow: var(--shadow-lg);
     animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -725,8 +769,8 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: .8rem;
     border-bottom: 1px solid var(--glass-border);
 }
 
@@ -737,8 +781,8 @@ main {
 }
 
 .close-modal {
-    background: none;
-    border: none;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
     font-size: 1.5rem;
     cursor: pointer;
     color: var(--text-muted);
@@ -838,6 +882,7 @@ footer {
 }
 
 /* Responsive Design */
+/* Responsive Design - FIXED */
 @media (max-width: 768px) {
     .container {
         padding: 0 1rem;
@@ -851,8 +896,20 @@ footer {
         display: none;
     }
 
-    .auth-buttons {
+    /* hide auth buttons but show theme toggle button/icon*/
+    .auth-buttons .btn:not(.theme-toggle) {
         display: none;
+    }
+
+    .user-menu {
+        display: none;
+    }
+
+    /* show theme toggle button/dark mode icon*/
+    .theme-toggle {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
 
     .header-content {
@@ -864,11 +921,11 @@ footer {
     }
 
     .stats-cards {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr, 1fr;
     }
 
     .form-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr, 1fr;
     }
 
     .applications-table {

@@ -9,6 +9,10 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <!-- Notification System -->
@@ -17,13 +21,8 @@
     <header>
       <div class="container">
         <div class="header-content">
-          <!-- Left Side: Hamburger and Logo -->
+          <!-- Left Side: Logo Only -->
           <div class="header-left">
-            <button class="hamburger" id="hamburgerBtn">
-              <span></span>
-              <span></span>
-              <span></span>
-            </button>
             <div class="logo">JobTracker</div>
           </div>
 
@@ -48,7 +47,7 @@
             </ul>
           </nav>
 
-          <!-- Right Side: User/Auth -->
+          <!-- Right Side: User/Auth + Hamburger -->
           <div class="header-right">
             <div class="auth-buttons">
               <button class="btn btn-outline" id="loginBtn">Login</button>
@@ -61,6 +60,13 @@
                 </button>
               </div>
             </div>
+
+            <!-- Hamburger moved to right side -->
+            <button class="hamburger" id="hamburgerBtn">
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
           </div>
         </div>
       </div>
@@ -171,16 +177,23 @@
                     required
                   />
                 </div>
-                <div class="form-group">
+                <div class="form-group select-group">
                   <label for="status">Status *</label>
-                  <select id="status" class="form-control" required>
-                    <option value="applied">Applied</option>
-                    <option value="interview">Interview</option>
-                    <option value="test">Test</option>
-                    <option value="offer">Offer</option>
-                    <option value="rejected">Rejected</option>
-                  </select>
+                  <div class="select-wrapper">
+                    <select id="status" class="form-control" required>
+                      <option value="applied">Applied</option>
+                      <option value="interview">Interview</option>
+                      <option value="test">Test</option>
+                      <option value="offer">Offer</option>
+                      <option value="rejected">Rejected</option>
+                    </select>
+                    <i
+                      class="ri-arrow-down-s-fill chevron"
+                      aria-hidden="true"
+                    ></i>
+                  </div>
                 </div>
+
                 <div class="form-group full-width">
                   <label for="notes">Notes</label>
                   <textarea id="notes" class="form-control" rows="3"></textarea>
@@ -213,16 +226,18 @@
         <div id="applications-page" class="page hidden">
           <h1>All Applications</h1>
           <div class="filters">
-            <div class="form-group">
-              <label for="status-filter">Filter by Status</label>
-              <select id="status-filter" class="form-control">
-                <option value="all">All</option>
-                <option value="applied">Applied</option>
-                <option value="interview">Interview</option>
-                <option value="test">Test</option>
-                <option value="offer">Offer</option>
-                <option value="rejected">Rejected</option>
-              </select>
+            <div class="form-group select-group">
+              <label for="edit-status">Status *</label>
+              <div class="select-wrapper">
+                <select id="edit-status" class="form-control" required>
+                  <option value="applied">Applied</option>
+                  <option value="interview">Interview</option>
+                  <option value="test">Test</option>
+                  <option value="offer">Offer</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+                <i class="ri-arrow-down-s-fill chevron" aria-hidden="true"></i>
+              </div>
             </div>
           </div>
           <table class="applications-table">
@@ -416,6 +431,7 @@
                 <option value="offer">Offer</option>
                 <option value="rejected">Rejected</option>
               </select>
+              <i class="ri-arrow-down-s-fill chevron" aria-hidden="true"></i>
             </div>
             <div class="form-group full-width">
               <label for="edit-notes">Notes</label>
