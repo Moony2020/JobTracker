@@ -835,6 +835,16 @@ main {
 }
 
 /* Table */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    /* Enable Table Container for Horizontal Scrolling */
+    border-radius: 20px;
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    margin-top: 1.5rem;
+}
+
 .applications-table td {
     vertical-align: middle;
 }
@@ -941,13 +951,69 @@ main {
     border-radius: 20px;
     overflow: hidden;
     box-shadow: var(--shadow);
+    min-width: 800px;
+    /* Ensure table has minimum width before scrolling */
+}
+
+.recent-applications,
+#applications-page {
+    overflow-x: auto;
 }
 
 .applications-table th,
 .applications-table td {
     padding: 1.25rem 1.5rem;
     text-align: left;
+    vertical-align: middle;
+    /* Ensure all content is vertically centered */
+    white-space: nowrap;
+    /* Prevent text wrapping in table cells */
+}
+
+/* Single row divider instead of per-cell borders /make one border bottom below each row like JobTitle ,,,Eidit,Delete*/
+.applications-table tbody tr {
     border-bottom: 1px solid var(--light-border);
+}
+
+.applications-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.table-container::-webkit-scrollbar {
+    height: 8px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: var(--glass-bg);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: var(--primary-gradient);
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+/* Fix modal scrollbar issues */
+.modal-content::-webkit-scrollbar {
+    width: 6px;
+    border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: var(--glass-bg);
+    border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: var(--primary-gradient);
+    border-radius: 3px;
 }
 
 .applications-table th {
@@ -977,15 +1043,13 @@ main {
     letter-spacing: 0.5px;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    /* Center text horizontally */
     gap: 0.5rem;
-}
-
-.status-badge::before {
-    content: '';
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    display: inline-block;
+    white-space: nowrap;
+    text-align: center;
+    min-width: 80px;
+    /* Ensure consistent width */
 }
 
 .status-applied {
@@ -1017,16 +1081,30 @@ main {
 .action-buttons {
     display: flex;
     gap: 0.5rem;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    /* Prevent buttons from wrapping */
+    min-width: 120px;
+    /* Ensure minimum width for action column */
 }
 
 .btn-action {
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1.2rem;
     border: none;
     border-radius: 8px;
     font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    white-space: nowrap;
+    /* Prevent button text from wrapping */
+    min-width: 60px;
+    /* Ensure consistent button width */
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-edit {
@@ -1134,21 +1212,24 @@ main {
 
 #deleteModal .form-actions {
     display: flex;
-    gap: 0.5rem;
-    justify-content: flex-start;
-    margin-top: .6rem;
-    padding-top: .9rem;
+    gap: .6rem;
+    justify-content: flex-end;
+    margin-top: 1.3rem;
+    padding-top: 1rem;
     border-top: 1px solid var(--light-border);
+    flex-direction: row;
+    /* Ensure buttons are side by side */
+    align-items: center;
 }
 
 #deleteModal .btn {
-    padding: 0.5rem 1rem;
+    padding: 0.6rem .9rem;
     border-radius: 10px;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     min-width: 100px;
     transition: all 0.3s ease;
-    border: 2px solid transparent;
+    border: 1px solid transparent;
 }
 
 #deleteModal .btn-outline {
@@ -1179,9 +1260,9 @@ main {
 /* cancel button */
 #editModal .form-actions {
     display: flex;
-    gap: 0.75rem;
+    gap: 0.6rem;
     justify-content: flex-start;
-    margin-top: .4rem;
+    margin-top: 0;
     border-top: 1px solid var(--glass-border);
 }
 
@@ -1189,7 +1270,7 @@ main {
     background: transparent;
     border: 2px solid var(--primary-color);
     color: var(--primary-color);
-    padding: 0.7rem 1rem;
+    padding: 0.6rem 1rem;
     border-radius: 10px;
     font-weight: 600;
     font-size: 0.9rem;
@@ -1384,11 +1465,6 @@ footer {
         display: block;
     }
 
-    .applications-table {
-        display: block;
-        overflow-x: auto;
-    }
-
     /* .modal-content {
         padding: 1.5rem;
         margin: 1rem;
@@ -1410,22 +1486,22 @@ footer {
     }
 
     .modal .form-actions .btn {
-        width: 100%;
+        width: auto;
         justify-content: center;
     }
 
-    #deleteModal .form-actions {
+    /* #deleteModal .form-actions {
         flex-direction: column;
-    }
+    } */
 
     /* .form-actions {
         flex-direction: column;
     } */
 
-    .btn {
+    /* .btn {
         width: 100%;
         justify-content: center;
-    }
+    } */
 
     .statistics-sections {
         grid-template-columns: 1fr;
@@ -1455,6 +1531,49 @@ footer {
 
     .stat-card h3 {
         font-size: 2rem;
+    }
+
+    .applications-table {
+        min-width: 950px;
+        /* Ensure all content is visible with horizontal scroll */
+    }
+
+    .applications-table th,
+    .applications-table td {
+        padding: 0.8rem 1rem;
+    }
+
+    .action-buttons {
+        gap: 0.3rem;
+    }
+
+    .btn-action {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.7rem;
+        min-width: 50px;
+    }
+
+    /* Fix specific status badge centering */
+    .status-applied,
+    .status-interview,
+    .status-test,
+    .status-offer,
+    .status-rejected {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+    }
+
+    /* Ensure all table cells have consistent vertical alignment */
+    .applications-table td {
+        vertical-align: middle !important;
+    }
+
+    /* Fix for the action buttons being on separate lines */
+    .action-buttons .btn-action {
+        flex-shrink: 0;
+        /* Prevent buttons from shrinking */
     }
 
     .applications-table th,
@@ -1512,4 +1631,3 @@ footer {
     .modal-header h2 {
         font-size: 1.3rem;
     }
-}
