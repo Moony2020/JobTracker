@@ -694,7 +694,6 @@ class ApplicationManager {
 
     // More reliable theme detection
     const isDarkMode = document.body.classList.contains("dark-mode");
-    console.log("Status Chart - Dark mode detected:", isDarkMode);
 
     // Use direct color values for better reliability
     const textColor = isDarkMode ? "#f1f5f9" : "#1e293b";
@@ -702,8 +701,6 @@ class ApplicationManager {
     const lightBorder = isDarkMode
       ? "rgba(255, 255, 255, 0.2)"
       : "rgba(0, 0, 0, 0.1)";
-
-    console.log("Status Chart - Text color:", textColor, "Background:", cardBg);
 
     // Destroy existing chart if it exists
     if (this.statusChartInstance) {
@@ -811,7 +808,6 @@ class ApplicationManager {
 
     // More reliable theme detection
     const isDarkMode = document.body.classList.contains("dark-mode");
-    console.log("Timeline Chart - Dark mode detected:", isDarkMode);
 
     // Use direct color values for better reliability
     const textColor = isDarkMode ? "#f1f5f9" : "#1e293b";
@@ -822,13 +818,6 @@ class ApplicationManager {
     const gridColor = isDarkMode
       ? "rgba(255, 255, 255, 0.1)"
       : "rgba(0, 0, 0, 0.1)";
-
-    console.log(
-      "Timeline Chart - Text color:",
-      textColor,
-      "Background:",
-      cardBg
-    );
 
     // Destroy existing chart if it exists
     if (this.timelineChartInstance) {

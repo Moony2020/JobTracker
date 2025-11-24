@@ -768,6 +768,74 @@ main {
     max-width: 200px;
 }
 
+/* Fix Applications Page Table - Make it like Dashboard */
+#applications-page .table-container {
+    overflow-x: auto;
+    /* Keep scrolling for very small screens */
+    min-width: 0;
+    /* Remove minimum width constraint */
+}
+
+#applications-page .applications-table {
+    min-width: auto !important;
+    /* Remove forced minimum width */
+    width: 100%;
+    /* Fit to container */
+    table-layout: auto;
+    /* Allow natural column sizing */
+}
+
+/* Make both pages use the same table behavior */
+.recent-applications .applications-table,
+#applications-page .applications-table {
+    min-width: auto;
+    width: 100%;
+}
+
+/* Ensure table cells can wrap text if needed */
+#applications-page .applications-table th,
+#applications-page .applications-table td {
+    white-space: normal;
+    /* Allow text wrapping */
+    padding: 1rem 1.25rem;
+}
+
+/* Optional: Set reasonable column widths */
+#applications-page .applications-table th:nth-child(1),
+#applications-page .applications-table td:nth-child(1) {
+    width: 25%;
+    /* Job Title */
+}
+
+#applications-page .applications-table th:nth-child(2),
+#applications-page .applications-table td:nth-child(2) {
+    width: 20%;
+    /* Company */
+}
+
+#applications-page .applications-table th:nth-child(3),
+#applications-page .applications-table td:nth-child(3) {
+    width: 15%;
+    /* Location */
+}
+
+#applications-page .applications-table th:nth-child(4),
+#applications-page .applications-table td:nth-child(4) {
+    width: 15%;
+    /* Date */
+}
+
+#applications-page .applications-table th:nth-child(5),
+#applications-page .applications-table td:nth-child(5) {
+    width: 15%;
+    /* Status */
+}
+
+#applications-page .applications-table th:nth-child(6),
+#applications-page .applications-table td:nth-child(6) {
+    width: 10%;
+    /* Actions */
+}
 
 /* Filter Controls */
 .filter-controls {
