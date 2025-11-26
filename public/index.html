@@ -14,6 +14,7 @@
       rel="stylesheet"
     />
   </head>
+
   <body>
     <!-- Notification System -->
     <div id="notification" class="notification hidden"></div>
@@ -236,10 +237,23 @@
         <div id="applications-page" class="page hidden">
           <h1>All Applications</h1>
           <div class="filters">
+            <!-- Search Box -->
+            <div class="form-group">
+              <label for="search-applications">Search Applications</label>
+              <input
+                type="text"
+                id="search-applications"
+                class="form-control"
+                placeholder="Search by job title, company, location, or status..."
+              />
+            </div>
+
+            <!-- Status Filter -->
             <div class="form-group select-group">
-              <label for="edit-status">Status *</label>
+              <label for="status-filter">Filter by Status</label>
               <div class="select-wrapper">
-                <select id="edit-status" class="form-control" required>
+                <select id="status-filter" class="form-control">
+                  <option value="all">All Statuses</option>
                   <option value="applied">Applied</option>
                   <option value="interview">Interview</option>
                   <option value="test">Test</option>
@@ -250,21 +264,24 @@
               </div>
             </div>
           </div>
-          <table class="applications-table">
-            <thead>
-              <tr>
-                <th>Job Title</th>
-                <th>Company</th>
-                <th>Location</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="all-applications-body">
-              <!-- All applications will be populated here -->
-            </tbody>
-          </table>
+
+          <div class="table-container">
+            <table class="applications-table">
+              <thead>
+                <tr>
+                  <th>Job Title</th>
+                  <th>Company</th>
+                  <th>Location</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="all-applications-body">
+                <!-- All applications will be populated here -->
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <!-- Statistics Page -->

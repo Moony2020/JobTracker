@@ -5,6 +5,7 @@ class ApplicationManager {
     this.applicationForm = document.getElementById("application-form");
     this.editApplicationForm = document.getElementById("edit-application-form");
     this.statusFilter = document.getElementById("status-filter");
+    this.searchInput = document.getElementById("search-applications");
 
     // Add chart instances
     this.statusChartInstance = null;
@@ -32,11 +33,18 @@ class ApplicationManager {
       );
     }
 
-    // Status filter
+    // Search input event listener
+    if (this.searchInput) {
+      this.searchInput.addEventListener("input", () => {
+        this.filterApplications();
+      });
+    }
+
+    // Status filter event listener
     if (this.statusFilter) {
-      this.statusFilter.addEventListener("change", () =>
-        this.loadApplications()
-      );
+      this.statusFilter.addEventListener("change", () => {
+        this.filterApplications();
+      });
     }
 
     // Set default date to today
@@ -85,6 +93,84 @@ class ApplicationManager {
       console.error("Error loading applications:", error);
       uiManager.showNotification("Network error loading applications", "error");
     }
+  }
+
+  // New method to handle filtering
+  filterApplications() {
+    const searchTerm = this.searchInput
+      ? this.searchInput.value.toLowerCase().trim()
+      : "";
+    const statusFilter = this.statusFilter ? this.statusFilter.value : "all";
+
+    let filteredApplications = this.applications;
+
+    // Apply status filter first
+    if (statusFilter !== "all") {
+      filteredApplications = filteredApplications.filter(
+        (app) => app.status === statusFilter
+      );
+    }
+
+    // Apply search filter
+    if (searchTerm) {
+      filteredApplications = filteredApplications.filter(
+        (app) =>
+          app.jobTitle.toLowerCase().includes(searchTerm) ||
+          app.company.toLowerCase().includes(searchTerm) ||
+          (app.location && app.location.toLowerCase().includes(searchTerm)) ||
+          this.getStatusText(app.status).toLowerCase().includes(searchTerm)
+      );
+    }
+
+    this.displayFilteredApplications(filteredApplications);
+  }
+
+  // Method to display filtered results
+  displayFilteredApplications(filteredApplications) {
+    const allApplicationsBody = document.getElementById(
+      "all-applications-body"
+    );
+    if (!allApplicationsBody) return;
+
+    allApplicationsBody.innerHTML = "";
+
+    if (filteredApplications.length === 0) {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td colspan="6" style="text-align: center; padding: 40px;">
+          <div class="no-data">
+            <p>No applications found</p>
+            <p style="font-size: 0.8rem; margin-top: 0.5rem; color: var(--text-muted);">
+              Try adjusting your search or filter criteria
+            </p>
+          </div>
+        </td>
+      `;
+      allApplicationsBody.appendChild(row);
+      return;
+    }
+
+    filteredApplications.forEach((app) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${app.jobTitle}</td>
+        <td>${app.company}</td>
+        <td>${app.location || "-"}</td>
+        <td>${this.formatDate(app.date)}</td>
+        <td><span class="status-badge status-${
+          app.status
+        }">${this.getStatusText(app.status)}</span></td>
+        <td class="action-buttons">
+          <button class="btn-action btn-edit" data-id="${app._id}">Edit</button>
+          <button class="btn-action btn-delete" data-id="${
+            app._id
+          }">Delete</button>
+        </td>
+      `;
+      allApplicationsBody.appendChild(row);
+    });
+
+    this.attachActionListeners();
   }
 
   async handleAddApplication(e) {
@@ -138,7 +224,9 @@ class ApplicationManager {
         this.applications.push(newApplication);
         this.applicationForm.reset();
         this.setDefaultDate(); // Reset date to today
-        this.updateUI();
+        this.filterApplications(); // Use filter instead of updateUI for Applications page
+        this.updateDashboard(); // Still update dashboard stats
+        this.updateStatisticsPage(); // Still update statistics
         uiManager.showNotification(
           "Application added successfully!",
           "success"
@@ -207,7 +295,9 @@ class ApplicationManager {
         if (index !== -1) {
           this.applications[index] = updatedApplication;
         }
-        this.updateUI();
+        this.filterApplications(); // Use filter instead of updateUI for Applications page
+        this.updateDashboard(); // Still update dashboard stats
+        this.updateStatisticsPage(); // Still update statistics
         uiManager.hideAllModals();
         uiManager.showNotification(
           "Application updated successfully!",
@@ -246,7 +336,9 @@ class ApplicationManager {
 
       if (response.ok) {
         this.applications = this.applications.filter((app) => app._id !== id);
-        this.updateUI();
+        this.filterApplications(); // Use filter instead of updateUI for Applications page
+        this.updateDashboard(); // Still update dashboard stats
+        this.updateStatisticsPage(); // Still update statistics
         uiManager.showNotification(
           "Application deleted successfully",
           "success"
@@ -281,6 +373,12 @@ class ApplicationManager {
     this.updateDashboard();
     this.updateApplicationsTable();
     this.updateStatisticsPage();
+  }
+
+  // Update the existing updateApplicationsTable method to use filtering
+  updateApplicationsTable() {
+    // Instead of displaying all applications, use the filter method
+    this.filterApplications();
   }
 
   updateDashboard() {
@@ -338,6 +436,7 @@ class ApplicationManager {
     this.displayMonthlyStats(monthlyStats);
     this.updatePerformanceStats(weeklyStats, monthlyStats);
   }
+
   // Update performance summary statistics
   updatePerformanceStats(weeklyStats, monthlyStats) {
     // Current week count
@@ -377,6 +476,7 @@ class ApplicationManager {
 
     return average.toFixed(1);
   }
+
   // Weekly statistics
   getWeeklyStatistics() {
     const weeklyStats = {};
@@ -553,7 +653,7 @@ class ApplicationManager {
 
     if (recentApps.length === 0) {
       const row = document.createElement("tr");
-      row.innerHTML = `<td colspan="5" style="text-align: center; padding: 20px;">No applications yet. Add your first application above!</td>`;
+      row.innerHTML = `<td colspan="6" style="text-align: center; padding: 20px;">No applications yet. Add your first application above!</td>`;
       recentApplicationsBody.appendChild(row);
       return;
     }
@@ -561,58 +661,21 @@ class ApplicationManager {
     recentApps.forEach((app) => {
       const row = document.createElement("tr");
       row.innerHTML = `
-    <td>${app.jobTitle}</td>
-    <td>${app.company}</td>
-    <td>${app.location || "-"}</td>
-    <td>${this.formatDate(app.date)}</td>
-    <td><span class="status-badge status-${app.status}">${this.getStatusText(
-        app.status
-      )}</span></td>
-    <td class="action-buttons">
-        <button class="btn-action btn-edit" data-id="${app._id}">Edit</button>
-        <button class="btn-action btn-delete" data-id="${
-          app._id
-        }">Delete</button>
-    </td>
-    `;
-      recentApplicationsBody.appendChild(row);
-    });
-
-    this.attachActionListeners();
-  }
-  updateApplicationsTable() {
-    const allApplicationsBody = document.getElementById(
-      "all-applications-body"
-    );
-    if (!allApplicationsBody) return;
-
-    allApplicationsBody.innerHTML = "";
-
-    if (this.applications.length === 0) {
-      const row = document.createElement("tr");
-      row.innerHTML = `<td colspan="5" style="text-align: center; padding: 20px;">No applications found. Add your first application from the Dashboard!</td>`;
-      allApplicationsBody.appendChild(row);
-      return;
-    }
-
-    this.applications.forEach((app) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-      <td>${app.jobTitle}</td>
-      <td>${app.company}</td>
-      <td>${app.location || "-"}</td>
-      <td>${this.formatDate(app.date)}</td>
-      <td><span class="status-badge status-${app.status}">${this.getStatusText(
-        app.status
-      )}</span></td>
-      <td class="action-buttons">
+        <td>${app.jobTitle}</td>
+        <td>${app.company}</td>
+        <td>${app.location || "-"}</td>
+        <td>${this.formatDate(app.date)}</td>
+        <td><span class="status-badge status-${
+          app.status
+        }">${this.getStatusText(app.status)}</span></td>
+        <td class="action-buttons">
           <button class="btn-action btn-edit" data-id="${app._id}">Edit</button>
           <button class="btn-action btn-delete" data-id="${
             app._id
           }">Delete</button>
-      </td>
-    `;
-      allApplicationsBody.appendChild(row);
+        </td>
+      `;
+      recentApplicationsBody.appendChild(row);
     });
 
     this.attachActionListeners();
@@ -687,6 +750,7 @@ class ApplicationManager {
     this.updateStatusChart();
     this.updateTimelineChart();
   }
+
   // Update status chart
   updateStatusChart() {
     const ctx = document.getElementById("statusChart");
@@ -923,6 +987,7 @@ class ApplicationManager {
         `;
     }
   }
+
   // Month Filtering System
   setupFiltering() {
     const monthFilter = document.getElementById("month-filter");

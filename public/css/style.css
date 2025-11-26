@@ -764,78 +764,61 @@ main {
 
 #applications-page .filters .form-group {
     margin-bottom: 0;
-    min-width: 200px;
-    max-width: 200px;
+    flex: 1;
+    min-width: 100px;
+    max-width: 330px;
+}
+
+.filters .form-group input,
+.filters .form-group select {
+    width: 100%;
 }
 
 /* Fix Applications Page Table - Make it like Dashboard */
 #applications-page .table-container {
-    overflow-x: auto;
+    /* overflow-x: auto; */
     /* Keep scrolling for very small screens */
-    min-width: 0;
+    /* min-width: 0; */
     /* Remove minimum width constraint */
+    overflow-x: auto;
+    border-radius: 20px;
+    width: 100%;
 }
 
+/*
 #applications-page .applications-table {
-    min-width: auto !important;
-    /* Remove forced minimum width */
+    /* min-width: auto !important; */
+/* Remove forced minimum width */
+/* width: 100%; */
+/* Fit to container */
+/* table-layout: auto; */
+/* Allow natural column sizing *
+    min-width: 800px !important;
+    /* Force same minimum width as Dashboard 
     width: 100%;
-    /* Fit to container */
     table-layout: auto;
-    /* Allow natural column sizing */
 }
 
 /* Make both pages use the same table behavior */
-.recent-applications .applications-table,
+#dashboard-page .applications-table,
 #applications-page .applications-table {
     min-width: auto;
     width: 100%;
 }
 
-/* Ensure table cells can wrap text if needed */
+/* Ensure table cells can wrap text if needed 
 #applications-page .applications-table th,
 #applications-page .applications-table td {
-    white-space: normal;
-    /* Allow text wrapping */
-    padding: 1rem 1.25rem;
-}
+    /* white-space: normal; */
+/* Allow text wrapping */
+/* padding: 1rem 1.25rem; 
 
-/* Optional: Set reasonable column widths */
-#applications-page .applications-table th:nth-child(1),
-#applications-page .applications-table td:nth-child(1) {
-    width: 25%;
-    /* Job Title */
-}
-
-#applications-page .applications-table th:nth-child(2),
-#applications-page .applications-table td:nth-child(2) {
-    width: 20%;
-    /* Company */
-}
-
-#applications-page .applications-table th:nth-child(3),
-#applications-page .applications-table td:nth-child(3) {
-    width: 15%;
-    /* Location */
-}
-
-#applications-page .applications-table th:nth-child(4),
-#applications-page .applications-table td:nth-child(4) {
-    width: 15%;
-    /* Date */
-}
-
-#applications-page .applications-table th:nth-child(5),
-#applications-page .applications-table td:nth-child(5) {
-    width: 15%;
-    /* Status */
-}
-
-#applications-page .applications-table th:nth-child(6),
-#applications-page .applications-table td:nth-child(6) {
-    width: 10%;
-    /* Actions */
-}
+    white-space: nowrap !important;
+    /* Prevent text wrapping 
+    padding: 1rem 1rem;
+    text-align: left;
+    vertical-align: middle;
+}*/
 
 /* Filter Controls */
 .filter-controls {
@@ -1058,9 +1041,8 @@ main {
     overflow-x: auto;
     /* Enable Table Container for Horizontal Scrolling */
     border-radius: 20px;
-    background: var(--card-bg);
-    backdrop-filter: blur(20px);
-    margin-top: 1.5rem;
+
+
 }
 
 .applications-table td {
@@ -1185,7 +1167,8 @@ main {
 
 .applications-table th,
 .applications-table td {
-    padding: 1.25rem 1.5rem;
+    padding: 0.75rem 1rem !important;
+    /* Reduced padding for better readability */
     text-align: left;
     vertical-align: middle;
     /* Ensure all content is vertically centered */
@@ -1202,13 +1185,13 @@ main {
     border-bottom: none;
 }
 
-.table-container::-webkit-scrollbar {
-    height: 8px;
+/*.table-container::-webkit-scrollbar {
+    height: 6px;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
 }
 
-.table-container::-webkit-scrollbar-track {
+ .table-container::-webkit-scrollbar-track {
     background: var(--glass-bg);
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
@@ -1221,10 +1204,10 @@ main {
 
 .table-container::-webkit-scrollbar-thumb:hover {
     background: var(--primary-color);
-}
+} */
 
-/* Fix modal scrollbar issues */
-.modal-content::-webkit-scrollbar {
+/* modal scrollbar issues */
+/* .modal-content::-webkit-scrollbar {
     width: 6px;
     border-radius: 3px;
 }
@@ -1237,16 +1220,16 @@ main {
 .modal-content::-webkit-scrollbar-thumb {
     background: var(--primary-gradient);
     border-radius: 3px;
-}
+} */
 
-.applications-table th {
+/* .applications-table th {
     background: var(--primary-gradient);
     color: white;
     font-weight: 600;
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-}
+} */
 
 .applications-table tr {
     transition: all 0.3s ease;
@@ -1258,7 +1241,7 @@ main {
 
 /* Modern Status Badges */
 .status-badge {
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.7rem !important;
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 600;

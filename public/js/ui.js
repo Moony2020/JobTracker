@@ -180,10 +180,19 @@ class UIManager {
     document.getElementById("edit-location").value = application.location || "";
     document.getElementById("edit-application-date").value =
       application.date.split("T")[0];
-    document.getElementById("edit-status").value = application.status;
+
+    // Set status and force a re-render
+    const statusField = document.getElementById("edit-status");
+    statusField.value = application.status;
+    statusField.dispatchEvent(new Event("change", { bubbles: true })); // Force change event
+
     document.getElementById("edit-notes").value = application.notes || "";
 
-    this.showModal("editModal");
+    // Small delay to ensure DOM updates
+    setTimeout(() => {
+      this.showModal("editModal");
+      console.log("Modal shown, status field value:", statusField.value);
+    }, 50);
   }
 
   showDeleteModal(application) {
