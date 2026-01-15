@@ -3,6 +3,8 @@ class AuthManager {
   constructor() {
     this.loginForm = document.getElementById("login-form");
     this.registerForm = document.getElementById("register-form");
+    this.forgotPasswordForm = document.getElementById("forgot-password-form");
+    this.resetPasswordForm = document.getElementById("reset-password-form");
 
     // Mobile auth buttons
     this.mobileLoginBtn = document.getElementById("mobileLoginBtn");
@@ -11,6 +13,7 @@ class AuthManager {
 
     this.initEventListeners();
     this.checkAuthentication();
+    this.checkHash();
   }
 
   initEventListeners() {
@@ -19,6 +22,16 @@ class AuthManager {
 
     // Register form
     this.registerForm.addEventListener("submit", (e) => this.handleRegister(e));
+
+    // Forgot password form
+    if (this.forgotPasswordForm) {
+        this.forgotPasswordForm.addEventListener("submit", (e) => this.handleForgotPassword(e));
+    }
+
+    // Reset password form
+    if (this.resetPasswordForm) {
+        this.resetPasswordForm.addEventListener("submit", (e) => this.handleResetPassword(e));
+    }
 
     // Mobile auth buttons
     if (this.mobileLoginBtn) {
@@ -144,6 +157,92 @@ class AuthManager {
       }
     } catch (error) {
       uiManager.showNotification("Network error. Please try again.", "error");
+    }
+  }
+
+  async handleForgotPassword(e) {
+    e.preventDefault();
+
+    const email = document.getElementById("forgot-email").value;
+
+    if (!uiManager.validateEmail(email)) {
+      uiManager.showNotification("Please enter a valid email", "error");
+      return;
+    }
+
+    try {
+      window.uiManager?.setLoading(true);
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+        credentials: "include",
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        uiManager.showNotification(data.message, "success");
+        uiManager.hideAllModals();
+        e.target.reset();
+      } else {
+        uiManager.showNotification(data.message || "Failed to send reset link", "error");
+      }
+    } catch (error) {
+      uiManager.showNotification("Network error. Please try again.", "error");
+    } finally {
+      window.uiManager?.setLoading(false);
+    }
+  }
+
+  async handleResetPassword(e) {
+    e.preventDefault();
+
+    const token = document.getElementById("reset-token").value;
+    const password = document.getElementById("reset-password").value;
+    const confirmPassword = document.getElementById("reset-confirm").value;
+
+    if (password !== confirmPassword) {
+      uiManager.showNotification("Passwords do not match", "error");
+      return;
+    }
+
+    try {
+      window.uiManager?.setLoading(true);
+      const response = await fetch(`/api/auth/reset-password/${token}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ password }),
+        credentials: "include",
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        uiManager.showNotification(data.message, "success");
+        uiManager.hideAllModals();
+        window.location.hash = ""; // Clear hash
+        uiManager.showModal("loginModal");
+      } else {
+        uiManager.showNotification(data.message || "Reset failed", "error");
+      }
+    } catch (error) {
+      uiManager.showNotification("Network error. Please try again.", "error");
+    } finally {
+      window.uiManager?.setLoading(false);
+    }
+  }
+
+  checkHash() {
+    const hash = window.location.hash;
+    if (hash.startsWith("#reset/")) {
+      const token = hash.split("/")[1];
+      document.getElementById("reset-token").value = token;
+      uiManager.showModal("resetPasswordModal");
     }
   }
 

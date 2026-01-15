@@ -109,6 +109,20 @@ class UIManager {
     if (this.logoutBtn) {
       this.logoutBtn.addEventListener("click", () => this.handleLogout());
     }
+
+    // Forgot Password
+    document.getElementById("forgot-password")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      this.hideAllModals();
+      this.showModal("forgotPasswordModal");
+    });
+
+    // Back to Login from Forgot Password
+    document.querySelector(".back-to-login")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.hideAllModals();
+        this.showModal("loginModal");
+    });
   }
 
   initTheme() {

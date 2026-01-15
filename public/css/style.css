@@ -1661,6 +1661,32 @@ main {
     border-bottom: 1px solid var(--light-border);
 }
 
+.modal-desc {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.form-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.back-to-login {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.back-to-login:hover {
+    text-decoration: underline;
+    opacity: 0.8;
+}
+
 .modal-header h2 {
     margin: 0;
     color: var(--text-color);

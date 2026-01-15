@@ -60,12 +60,24 @@
             <div class="auth-buttons">
               <button class="btn btn-outline" id="loginBtn">Login</button>
               <button class="btn btn-primary" id="registerBtn">Register</button>
-              <button class="theme-toggle" id="themeToggle">🌙</button>
               <div id="userMenu" class="user-menu hidden">
-                <span id="userName"></span>
-                <button id="logoutBtn" class="btn btn-outline logout-btn">
-                  <i class="fas fa-sign-out-alt"></i>
-                </button>
+                <div class="user-dropdown">
+                  <div class="user-badge" id="userBadge">
+                    <span id="userInitials"></span>
+                  </div>
+                  <div class="dropdown-menu">
+                    <div class="dropdown-header">
+                      <span id="userName"></span>
+                    </div>
+                    <button id="openChangePasswordInMenu" class="dropdown-item">
+                      <i class="ri-lock-password-line"></i> Change Password
+                    </button>
+                    <button id="logoutBtn" class="dropdown-item logout-item">
+                      <i class="ri-logout-box-r-line"></i> Logout
+                    </button>
+                  </div>
+                </div>
+                <button class="theme-toggle" id="themeToggleMenu">🌙</button>
               </div>
             </div>
 
@@ -493,6 +505,80 @@
             <a href="#" id="forgot-password">Forgot Password?</a>
           </div>
           <button type="submit" class="btn-submit full-width">Login</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal" id="forgotPasswordModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Reset Password</h2>
+          <button class="close-modal">&times;</button>
+        </div>
+        <p class="modal-desc">Enter your email address and we'll send you instructions to reset your password.</p>
+        <form id="forgot-password-form">
+          <div class="form-group">
+            <label for="forgot-email">Email Address</label>
+            <div class="input-with-icon">
+              <i class="ri-mail-line field-icon"></i>
+              <input
+                type="email"
+                id="forgot-email"
+                class="form-control"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+          </div>
+          <button type="submit" class="btn-submit full-width">Send Reset Link</button>
+          <div class="form-footer">
+            <a href="#" class="back-to-login">Back to Login</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Reset Password Modal -->
+    <div class="modal" id="resetPasswordModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>New Password</h2>
+          <button class="close-modal">&times;</button>
+        </div>
+        <p class="modal-desc">Please enter your new password below.</p>
+        <form id="reset-password-form">
+          <input type="hidden" id="reset-token" />
+          <div class="form-group">
+            <label for="reset-password">New Password</label>
+            <div class="input-with-icon">
+              <i class="ri-lock-line field-icon"></i>
+              <input
+                type="password"
+                id="reset-password"
+                class="form-control"
+                placeholder="Enter new password"
+                required
+                minlength="6"
+              />
+              <i class="ri-eye-off-line toggle-password" data-target="reset-password"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="reset-confirm">Confirm New Password</label>
+            <div class="input-with-icon">
+              <i class="ri-lock-line field-icon"></i>
+              <input
+                type="password"
+                id="reset-confirm"
+                class="form-control"
+                placeholder="Confirm new password"
+                required
+              />
+              <i class="ri-eye-off-line toggle-password" data-target="reset-confirm"></i>
+            </div>
+          </div>
+          <button type="submit" class="btn-submit full-width">Update Password</button>
         </form>
       </div>
     </div>
