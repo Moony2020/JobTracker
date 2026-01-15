@@ -419,13 +419,14 @@ header {
     content: '';
     position: absolute;
     top: 100%;
-    left: 0;
+    right: 0;
     width: 100%;
-    height: 20px;
+    height: 30px; /* Increased bridge height */
+    z-index: 1;
 }
 
 .dropdown-header {
-    padding: 0.8rem 1rem;
+    padding: 0.6rem 1rem;
     border-bottom: 1px solid var(--glass-border);
     margin-bottom: 5px;
 }
@@ -485,8 +486,8 @@ header {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    width: 40px;
-    height: 40px;
+    width: 35px; /* Smaller button */
+    height: 35px;
     border: none;
     border-radius: 50%;
     cursor: pointer;
@@ -495,22 +496,23 @@ header {
     transition-duration: .3s;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
     background-color: var(--danger-color);
-    margin: 10px auto 5px; /* Centered in dropdown */
+    margin: 8px 1rem 8px; /* Aligned to match padding of other items */
+    padding: 0;
 }
 
-/* plus sign -> logout sign */
+/* logout icon */
 .logout-btn-animated .sign {
-    width: 100%;
+    width: 100%; /* Default width for circular state */
     transition-duration: .3s;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .logout-btn-animated .sign i {
-    width: 17px;
     color: white;
-    font-size: 1.2rem;
+    font-size: 1.1rem; /* Slightly smaller icon */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -519,11 +521,11 @@ header {
 /* text */
 .logout-btn-animated .text {
     position: absolute;
-    right: 0%;
+    left: 35px; /* Positioned to the right of the icon */
     width: 0%;
     opacity: 0;
     color: white;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
     transition-duration: .3s;
     white-space: nowrap;
@@ -531,23 +533,22 @@ header {
 
 /* hover effect on button width */
 .logout-btn-animated:hover {
-    width: 110px;
+    width: 105px;
     border-radius: 40px;
     transition-duration: .3s;
 }
 
 .logout-btn-animated:hover .sign {
-    width: 30%;
+    width: 35px; /* Keep icon container same size as circle */
     transition-duration: .3s;
-    padding-left: 10px;
 }
 
 /* hover effect button's text */
 .logout-btn-animated:hover .text {
     opacity: 1;
-    width: 70%;
+    width: auto;
     transition-duration: .3s;
-    padding-right: 15px;
+    left: 40px; /* Offset from left */
 }
 
 /* button click effect*/
