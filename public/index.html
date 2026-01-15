@@ -57,11 +57,26 @@
 
           <!-- Right Side: User/Auth + Hamburger -->
           <div class="header-right">
-            <div class="auth-buttons">
-              <button class="btn btn-outline" id="loginBtn">Login</button>
-              <button class="btn btn-primary" id="registerBtn">Register</button>
+            <div class="auth-buttons" id="guestMenu">
+              <div class="user-dropdown">
+                <div class="guest-badge" id="guestBadge">
+                  <i class="ri-user-line"></i>
+                </div>
+                <div class="dropdown-menu">
+                  <div class="dropdown-header">
+                    <span>Welcome</span>
+                  </div>
+                  <button id="loginBtn" class="dropdown-item">
+                    <i class="ri-login-box-line"></i> Login
+                  </button>
+                  <button id="registerBtn" class="dropdown-item">
+                    <i class="ri-user-add-line"></i> Register
+                  </button>
+                </div>
+              </div>
               <button class="theme-toggle" id="themeToggle">🌙</button>
-              <div id="userMenu" class="user-menu hidden">
+            </div>
+            <div id="userMenu" class="user-menu hidden">
                 <div class="user-dropdown">
                   <div class="user-badge" id="userBadge">
                     <span id="userInitials"></span>

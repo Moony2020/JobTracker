@@ -6,6 +6,7 @@ class UIManager {
     this.registerBtn = document.getElementById("registerBtn");
     this.logoutBtn = document.getElementById("logoutBtn");
     this.userMenu = document.getElementById("userMenu");
+    this.guestMenu = document.getElementById("guestMenu");
     this.userName = document.getElementById("userName");
     this.loginModal = document.getElementById("loginModal");
     this.registerModal = document.getElementById("registerModal");
@@ -342,8 +343,7 @@ class UIManager {
   updateUserInterface(user) {
     if (user) {
       // Desktop elements
-      this.loginBtn.classList.add("hidden");
-      this.registerBtn.classList.add("hidden");
+      if (this.guestMenu) this.guestMenu.classList.add("hidden");
       this.userMenu.classList.remove("hidden");
       
       // Update Name and Initials
@@ -368,8 +368,7 @@ class UIManager {
       }
     } else {
       // Desktop elements
-      this.loginBtn.classList.remove("hidden");
-      this.registerBtn.classList.remove("hidden");
+      if (this.guestMenu) this.guestMenu.classList.remove("hidden");
       this.userMenu.classList.add("hidden");
 
       // Mobile elements
