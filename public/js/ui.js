@@ -25,6 +25,7 @@ class UIManager {
     this.initEventListeners();
     this.initTheme();
     this.initPasswordToggles();
+    this.initDropdownEvents();
   }
 
   // Loader
@@ -39,11 +40,11 @@ class UIManager {
 
   initEventListeners() {
     // Theme toggle
-    this.themeToggle.addEventListener("click", () => this.toggleTheme());
+    this.themeToggle?.addEventListener("click", () => this.toggleTheme());
 
     // Modal controls
-    this.loginBtn.addEventListener("click", () => this.showModal("loginModal"));
-    this.registerBtn.addEventListener("click", () =>
+    this.loginBtn?.addEventListener("click", () => this.showModal("loginModal"));
+    this.registerBtn?.addEventListener("click", () =>
       this.showModal("registerModal")
     );
 
@@ -115,6 +116,24 @@ class UIManager {
       e.preventDefault();
       this.hideAllModals();
       this.showModal("forgotPasswordModal");
+    });
+
+    // Logout button (from menu)
+    document.querySelectorAll("#logoutBtn").forEach(btn => {
+      btn.addEventListener("click", () => this.handleLogout());
+    });
+
+    // Theme toggle (from menu)
+    document.getElementById("themeToggleMenu")?.addEventListener("click", () => this.toggleTheme());
+    
+    // Change password from dropdown
+    document.getElementById("openChangePasswordInMenu")?.addEventListener("click", () => {
+      this.showModal("changePasswordModal");
+    });
+
+    // Settings from dropdown
+    document.getElementById("openSettings")?.addEventListener("click", () => {
+      this.showNotification("Settings coming soon!", "info");
     });
 
     // Back to Login from Forgot Password
@@ -210,6 +229,20 @@ class UIManager {
           // Toggle icon class
           toggle.classList.toggle("ri-eye-off-line", !isPassword);
           toggle.classList.toggle("ri-eye-line", isPassword);
+        }
+      });
+    });
+  }
+
+  initDropdownEvents() {
+    const dropdowns = document.querySelectorAll(".user-dropdown");
+
+    // Close dropdowns if clicked outside (for mobile or click triggers)
+    document.addEventListener("click", (event) => {
+      dropdowns.forEach(dropdown => {
+        const dropdownMenu = dropdown.querySelector(".dropdown-menu");
+        if (dropdownMenu && !dropdown.contains(event.target)) {
+          // If we were using .show class, we'd remove it here
         }
       });
     });
@@ -312,7 +345,15 @@ class UIManager {
       this.loginBtn.classList.add("hidden");
       this.registerBtn.classList.add("hidden");
       this.userMenu.classList.remove("hidden");
-      this.userName.textContent = user.name;
+      
+      // Update Name and Initials
+      const nameElement = document.getElementById("userName");
+      const initialsElement = document.getElementById("userInitials");
+      
+      if (nameElement) nameElement.textContent = user.name;
+      if (initialsElement) {
+        initialsElement.textContent = this.getInitials(user.name);
+      }
 
       // Mobile elements
       const mobileAuth = document.getElementById("mobileAuth");
@@ -322,7 +363,8 @@ class UIManager {
       const mobileUserMenu = document.getElementById("mobileUserMenu");
       if (mobileUserMenu) {
         mobileUserMenu.classList.remove("hidden");
-        document.getElementById("mobileUserName").textContent = user.name;
+        const mobileName = document.getElementById("mobileUserName");
+        if (mobileName) mobileName.textContent = user.name;
       }
     } else {
       // Desktop elements
@@ -422,6 +464,16 @@ class UIManager {
       canceled: "Canceled",
     };
     return statusMap[status] || status;
+  }
+
+  // Initials Helper
+  getInitials(name) {
+    if (!name) return "??";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
   }
 }
 
