@@ -480,6 +480,81 @@ header {
     color: #ef4444;
 }
 
+/* Animated Logout Button */
+.logout-btn-animated {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition-duration: .3s;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: var(--danger-color);
+    margin: 10px auto 5px; /* Centered in dropdown */
+}
+
+/* plus sign -> logout sign */
+.logout-btn-animated .sign {
+    width: 100%;
+    transition-duration: .3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logout-btn-animated .sign i {
+    width: 17px;
+    color: white;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* text */
+.logout-btn-animated .text {
+    position: absolute;
+    right: 0%;
+    width: 0%;
+    opacity: 0;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition-duration: .3s;
+    white-space: nowrap;
+}
+
+/* hover effect on button width */
+.logout-btn-animated:hover {
+    width: 110px;
+    border-radius: 40px;
+    transition-duration: .3s;
+}
+
+.logout-btn-animated:hover .sign {
+    width: 30%;
+    transition-duration: .3s;
+    padding-left: 10px;
+}
+
+/* hover effect button's text */
+.logout-btn-animated:hover .text {
+    opacity: 1;
+    width: 70%;
+    transition-duration: .3s;
+    padding-right: 15px;
+}
+
+/* button click effect*/
+.logout-btn-animated:active {
+    transform: translate(2px, 2px);
+}
+
 /* Theme Toggle */
 .theme-toggle {
     background: transparent !important;
