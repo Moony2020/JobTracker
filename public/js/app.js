@@ -390,19 +390,34 @@ class ApplicationManager {
       return;
     }
 
+    const sanitizeField = (text) => {
+      if (text === undefined || text === null) return '""';
+      let clean = text.toString()
+        .replace(/[\n\r]+/g, " ") // Replace newlines with a single space
+        .replace(/"/g, '""'); // Escape existing quotes for CSV format
+
+      // Prevent formula injection/errors in Excel (#NAME? error)
+      // If content starts with =, +, -, or @, prepend a single quote
+      if (/^[=\+\-\@]/.test(clean)) {
+        clean = "'" + clean;
+      }
+
+      return `"${clean}"`;
+    };
+
     const headers = ["Job Title", "Company", "Location", "Date", "Status", "Notes"];
-    const rows = this.applications.map(app => [
-      `"${app.jobTitle.replace(/"/g, '""')}"`,
-      `"${app.company.replace(/"/g, '""')}"`,
-      `"${(app.location || "").replace(/"/g, '""')}"`,
-      `"${this.formatDate(app.date)}"`,
-      `"${this.getStatusText(app.status)}"`,
-      `"${(app.notes || "").replace(/"/g, '""')}"`
+    const rows = this.applications.map((app) => [
+      sanitizeField(app.jobTitle),
+      sanitizeField(app.company),
+      sanitizeField(app.location),
+      sanitizeField(this.formatDate(app.date)),
+      sanitizeField(this.getStatusText(app.status)),
+      sanitizeField(app.notes),
     ]);
 
     const csvContent = [
       headers.join(","),
-      ...rows.map(row => row.join(","))
+      ...rows.map((row) => row.join(",")),
     ].join("\n");
 
     const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
