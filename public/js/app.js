@@ -295,16 +295,48 @@ class ApplicationManager {
     if (pageNumbersContainer) {
       pageNumbersContainer.innerHTML = "";
 
-      // Simple page number display (can be enhanced with ellipsis for many pages)
+      // Windowed page number display logic
+      const delta = 1; // Number of pages either side of current page
+      const left = this.currentPage - delta;
+      const right = this.currentPage + delta + 1;
+      const range = [];
+      const rangeWithDots = [];
+      let l;
+
       for (let i = 1; i <= totalPages; i++) {
-        const pageNum = document.createElement("div");
-        pageNum.className = `page-num ${i === this.currentPage ? "active" : ""}`;
-        pageNum.textContent = i;
-        pageNum.onclick = () => {
-          this.currentPage = i;
-          this.filterApplications();
-        };
-        pageNumbersContainer.appendChild(pageNum);
+        if (i === 1 || i === totalPages || (i >= left && i < right)) {
+          range.push(i);
+        }
+      }
+
+      for (const i of range) {
+        if (l) {
+          if (i - l === 2) {
+            rangeWithDots.push(l + 1);
+          } else if (i - l !== 1) {
+            rangeWithDots.push("...");
+          }
+        }
+        rangeWithDots.push(i);
+        l = i;
+      }
+
+      for (const i of rangeWithDots) {
+        const pageItem = document.createElement("div");
+        if (i === "...") {
+          pageItem.className = "page-num dots";
+          pageItem.style.cursor = "default";
+          pageItem.style.border = "none";
+          pageItem.style.background = "transparent";
+        } else {
+          pageItem.className = `page-num ${i === this.currentPage ? "active" : ""}`;
+          pageItem.onclick = () => {
+            this.currentPage = i;
+            this.filterApplications();
+          };
+        }
+        pageItem.textContent = i;
+        pageNumbersContainer.appendChild(pageItem);
       }
     }
   }

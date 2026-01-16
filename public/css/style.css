@@ -1121,16 +1121,13 @@ main {
 #applications-page .filters .form-group:first-child {
     /* Search bar - make it wider */
     flex: 2;
-    /* Takes more space */
     min-width: 200px;
-    max-width: 370px;
-    /* Much wider */
+    /* Removed restrictive max-width to allow filling the space */
 }
 
 #applications-page .filters .status-filter-group {
     flex: 1;
-    min-width: 150px; /* Narrower min-width */
-    max-width: 180px; /* Narrower max-width */
+    min-width: 150px;
 }
 
 .apps-toolbar {
@@ -1250,7 +1247,7 @@ main {
 
 .applications-table {
     width: 100%;
-    min-width: 900px; /* Reduced to avoid large gaps on small screens */
+    min-width: 800px; /* Reduced for better responsiveness */
     border-collapse: separate;
     border-spacing: 0;
     background: var(--card-bg);
@@ -1296,8 +1293,8 @@ main {
 .applications-table th:nth-child(1),
 .applications-table td:nth-child(2), /* Company */
 .applications-table th:nth-child(2) {
-    width: auto; /* Take up remaining space */
-    max-width: 400px;
+    width: auto;
+    max-width: 600px; /* Increased to allow better stretching to 100% */
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -1730,6 +1727,7 @@ main {
     justify-content: center;
     align-items: center;
     gap: 1rem;
+    flex-wrap: wrap; /* Prevent overflow on many pages */
     margin-top: 2rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--light-border);
@@ -1763,6 +1761,8 @@ main {
 .page-numbers {
     display: flex;
     gap: 0.5rem;
+    flex-wrap: wrap; /* Prevent overflow on many pages */
+    justify-content: center;
 }
 
 .page-num {
@@ -2644,11 +2644,7 @@ footer {
     }
 }
 
-@media (max-width: 1100px) {
-    .applications-table {
-        min-width: 1100px !important;
-    }
-}
+
 
 @media (max-width: 480px) {
     .logo {
