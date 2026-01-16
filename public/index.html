@@ -411,21 +411,23 @@
 
           <div class="recent-applications">
             <h2>Recent Applications</h2>
-            <table class="applications-table">
-              <thead>
-                <tr>
-                  <th>Job Title</th>
-                  <th>Company</th>
-                  <th>Location</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="recent-applications-body">
-                <!-- Applications will be populated here -->
-              </tbody>
-            </table>
+            <div class="table-container">
+              <table class="applications-table">
+                <thead>
+                  <tr>
+                    <th class="sortable" data-sort="jobTitle">Job Title</th>
+                    <th class="sortable" data-sort="company">Company</th>
+                    <th class="sortable" data-sort="location">Location</th>
+                    <th class="sortable" data-sort="date">Date</th>
+                    <th class="sortable" data-sort="status">Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-applications-body">
+                  <!-- Applications will be populated here -->
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -448,7 +450,7 @@
             </div>
 
             <!-- Status Filter -->
-            <div class="form-group select-group">
+            <div class="form-group status-filter-group">
               <label for="status-filter">Filter by Status</label>
               <div class="select-wrapper">
                 <select id="status-filter" class="form-control">
@@ -465,15 +467,37 @@
             </div>
           </div>
 
-          <div class="table-container">
+          <!-- View Toggle and Pagination Info -->
+          <div class="apps-toolbar">
+            <div class="toolbar-left">
+              <div class="view-toggle">
+                <button id="tableViewBtn" class="btn-toggle active" title="Table View">
+                  <i class="ri-table-line"></i> Table
+                </button>
+                <button id="kanbanViewBtn" class="btn-toggle" title="Kanban View">
+                  <i class="ri-layout-masonry-line"></i> Kanban
+                </button>
+              </div>
+              <!-- Export Button -->
+              <button id="export-csv" class="btn btn-outline btn-export" title="Export applications to CSV">
+                <i class="ri-download-2-line"></i> Export CSV
+              </button>
+            </div>
+            <div class="apps-count-info">
+              <span id="apps-pagination-info">Showing 1-10 of 0 applications</span>
+            </div>
+          </div>
+
+          <!-- Applications Table View -->
+          <div id="table-view-container" class="table-container">
             <table class="applications-table">
               <thead>
                 <tr>
-                  <th>Job Title</th>
-                  <th>Company</th>
-                  <th>Location</th>
-                  <th>Date</th>
-                  <th>Status</th>
+                  <th class="sortable" data-sort="jobTitle">Job Title</th>
+                  <th class="sortable" data-sort="company">Company</th>
+                  <th class="sortable" data-sort="location">Location</th>
+                  <th class="sortable" data-sort="date">Date</th>
+                  <th class="sortable" data-sort="status">Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -481,6 +505,49 @@
                 <!-- All applications will be populated here -->
               </tbody>
             </table>
+          </div>
+
+          <!-- Kanban View (Hidden by default) -->
+          <div id="kanban-view-container" class="kanban-container hidden">
+            <div class="kanban-board">
+              <div class="kanban-column" data-status="applied">
+                <div class="kanban-column-header">Applied <span class="count">0</span></div>
+                <div class="kanban-cards"></div>
+              </div>
+              <div class="kanban-column" data-status="interview">
+                <div class="kanban-column-header">Interview <span class="count">0</span></div>
+                <div class="kanban-cards"></div>
+              </div>
+              <div class="kanban-column" data-status="test">
+                <div class="kanban-column-header">Test <span class="count">0</span></div>
+                <div class="kanban-cards"></div>
+              </div>
+              <div class="kanban-column" data-status="offer">
+                <div class="kanban-column-header">Offer <span class="count">0</span></div>
+                <div class="kanban-cards"></div>
+              </div>
+              <div class="kanban-column" data-status="rejected">
+                <div class="kanban-column-header">Rejected <span class="count">0</span></div>
+                <div class="kanban-cards"></div>
+              </div>
+              <div class="kanban-column" data-status="canceled">
+                <div class="kanban-column-header">Canceled <span class="count">0</span></div>
+                <div class="kanban-cards"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination Controls -->
+          <div id="pagination-controls" class="pagination">
+            <button id="prevPage" class="btn-pagination" disabled>
+              <i class="ri-arrow-left-s-line"></i> Previous
+            </button>
+            <div id="pageNumbers" class="page-numbers">
+              <!-- Page numbers injected here -->
+            </div>
+            <button id="nextPage" class="btn-pagination" disabled>
+              Next <i class="ri-arrow-right-s-line"></i>
+            </button>
           </div>
         </div>
 

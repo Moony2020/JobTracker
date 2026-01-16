@@ -11,6 +11,12 @@ class ApplicationManager {
     this.statusChartInstance = null;
     this.timelineChartInstance = null;
 
+    // Advanced features state
+    this.currentPage = 1;
+    this.itemsPerPage = 10;
+    this.currentSort = { key: "date", direction: "desc" };
+    this.currentView = "table"; // 'table' or 'kanban'
+
     this.initEventListeners();
     this.loadApplications();
 
@@ -43,8 +49,55 @@ class ApplicationManager {
     // Status filter event listener
     if (this.statusFilter) {
       this.statusFilter.addEventListener("change", () => {
+        this.currentPage = 1; // Reset to first page on filter change
         this.filterApplications();
       });
+    }
+
+    // View toggle listeners
+    const tableViewBtn = document.getElementById("tableViewBtn");
+    const kanbanViewBtn = document.getElementById("kanbanViewBtn");
+
+    if (tableViewBtn && kanbanViewBtn) {
+      tableViewBtn.addEventListener("click", () => this.switchView("table"));
+      kanbanViewBtn.addEventListener("click", () => this.switchView("kanban"));
+    }
+
+    // Pagination listeners
+    const prevBtn = document.getElementById("prevPage");
+    const nextBtn = document.getElementById("nextPage");
+
+    if (prevBtn) {
+      prevBtn.addEventListener("click", () => {
+        if (this.currentPage > 1) {
+          this.currentPage--;
+          this.filterApplications();
+        }
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener("click", () => {
+        const totalPages = Math.ceil(this.getFilteredCount() / this.itemsPerPage);
+        if (this.currentPage < totalPages) {
+          this.currentPage++;
+          this.filterApplications();
+        }
+      });
+    }
+
+    // Sortable header listeners
+    document.querySelectorAll("th.sortable").forEach((th) => {
+      th.addEventListener("click", () => {
+        const key = th.getAttribute("data-sort");
+        this.handleSort(key);
+      });
+    });
+
+    // Export listener
+    const exportBtn = document.getElementById("export-csv");
+    if (exportBtn) {
+      exportBtn.addEventListener("click", () => this.exportToCSV());
     }
 
     // Set default date to today
@@ -122,7 +175,248 @@ class ApplicationManager {
       );
     }
 
-    this.displayFilteredApplications(filteredApplications);
+    // Apply sorting
+    filteredApplications = this.sortApplications(filteredApplications);
+
+    // If Kanban view, render it and stop (no pagination for kanban)
+    if (this.currentView === "kanban") {
+      this.renderKanban(filteredApplications);
+      return;
+    }
+
+    // Apply pagination for table view
+    const totalItems = filteredApplications.length;
+    const totalPages = Math.ceil(totalItems / this.itemsPerPage);
+
+    // Ensure current page is valid
+    if (this.currentPage > totalPages && totalPages > 0) {
+      this.currentPage = totalPages;
+    }
+
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const paginatedApps = filteredApplications.slice(
+      startIndex,
+      startIndex + this.itemsPerPage
+    );
+
+    this.updatePaginationUI(totalItems);
+    this.displayFilteredApplications(paginatedApps);
+  }
+
+  // Method to get filtered count (used for pagination button state)
+  getFilteredCount() {
+    const searchTerm = this.searchInput
+      ? this.searchInput.value.toLowerCase().trim()
+      : "";
+    const statusFilter = this.statusFilter ? this.statusFilter.value : "all";
+
+    return this.applications.filter((app) => {
+      const matchStatus = statusFilter === "all" || app.status === statusFilter;
+      const matchSearch =
+        !searchTerm ||
+        app.jobTitle.toLowerCase().includes(searchTerm) ||
+        app.company.toLowerCase().includes(searchTerm) ||
+        (app.location && app.location.toLowerCase().includes(searchTerm)) ||
+        this.getStatusText(app.status).toLowerCase().includes(searchTerm);
+      return matchStatus && matchSearch;
+    }).length;
+  }
+
+  // Sorting logic
+  sortApplications(apps) {
+    const { key, direction } = this.currentSort;
+    return [...apps].sort((a, b) => {
+      let valA = a[key] || "";
+      let valB = b[key] || "";
+
+      if (key === "date") {
+        valA = new Date(valA).getTime();
+        valB = new Date(valB).getTime();
+      } else {
+        valA = valA.toString().toLowerCase();
+        valB = valB.toString().toLowerCase();
+      }
+
+      if (valA < valB) return direction === "asc" ? -1 : 1;
+      if (valA > valB) return direction === "asc" ? 1 : -1;
+      return 0;
+    });
+  }
+
+  handleSort(key) {
+    if (this.currentSort.key === key) {
+      this.currentSort.direction =
+        this.currentSort.direction === "asc" ? "desc" : "asc";
+    } else {
+      this.currentSort.key = key;
+      this.currentSort.direction = "asc";
+    }
+
+    // Update UI headers
+    document.querySelectorAll("th.sortable").forEach((th) => {
+      th.classList.remove("active-sort", "sort-asc", "sort-desc");
+      const icon = th.querySelector("i");
+      if (icon) icon.className = "ri-expand-up-down-line"; // Reset icon
+
+      if (th.getAttribute("data-sort") === key) {
+        th.classList.add("active-sort");
+        th.classList.add(`sort-${this.currentSort.direction}`);
+        if (icon) {
+          icon.className = this.currentSort.direction === "asc" 
+            ? "ri-arrow-up-s-line" 
+            : "ri-arrow-down-s-line";
+        }
+      }
+    });
+
+    this.filterApplications();
+  }
+
+  // Pagination UI
+  updatePaginationUI(totalItems) {
+    const totalPages = Math.ceil(totalItems / this.itemsPerPage);
+    const pageNumbersContainer = document.getElementById("pageNumbers");
+    const prevBtn = document.getElementById("prevPage");
+    const nextBtn = document.getElementById("nextPage");
+    const rangeEl = document.getElementById("apps-range");
+    const totalEl = document.getElementById("apps-total");
+
+    if (totalEl) totalEl.textContent = totalItems;
+
+    if (rangeEl) {
+      const start = totalItems === 0 ? 0 : (this.currentPage - 1) * this.itemsPerPage + 1;
+      const end = Math.min(this.currentPage * this.itemsPerPage, totalItems);
+      rangeEl.textContent = `${start}-${end}`;
+    }
+
+    if (prevBtn) prevBtn.disabled = this.currentPage === 1;
+    if (nextBtn) nextBtn.disabled = this.currentPage === totalPages || totalPages === 0;
+
+    if (pageNumbersContainer) {
+      pageNumbersContainer.innerHTML = "";
+
+      // Simple page number display (can be enhanced with ellipsis for many pages)
+      for (let i = 1; i <= totalPages; i++) {
+        const pageNum = document.createElement("div");
+        pageNum.className = `page-num ${i === this.currentPage ? "active" : ""}`;
+        pageNum.textContent = i;
+        pageNum.onclick = () => {
+          this.currentPage = i;
+          this.filterApplications();
+        };
+        pageNumbersContainer.appendChild(pageNum);
+      }
+    }
+  }
+
+  // Switch between Table and Kanban views
+  switchView(view) {
+    this.currentView = view;
+
+    const tableViewBtn = document.getElementById("tableViewBtn");
+    const kanbanViewBtn = document.getElementById("kanbanViewBtn");
+    const tableView = document.getElementById("table-view-container");
+    const kanbanView = document.getElementById("kanban-view-container");
+    const pagination = document.getElementById("pagination-controls");
+
+    if (view === "table") {
+      tableViewBtn.classList.add("active");
+      kanbanViewBtn.classList.remove("active");
+      tableView.classList.remove("hidden");
+      kanbanView.classList.add("hidden");
+      pagination.classList.remove("hidden");
+    } else {
+      tableViewBtn.classList.remove("active");
+      kanbanViewBtn.classList.add("active");
+      tableView.classList.add("hidden");
+      kanbanView.classList.remove("hidden");
+      pagination.classList.add("hidden");
+    }
+
+    this.filterApplications();
+  }
+
+  // Render Kanban Board
+  renderKanban(apps) {
+    const columns = ["applied", "interview", "test", "offer", "rejected", "canceled"];
+    
+    columns.forEach(status => {
+      const column = document.querySelector(`.kanban-column[data-status="${status}"]`);
+      if (!column) return;
+
+      const cardsContainer = column.querySelector(".kanban-cards");
+      const countLabel = column.querySelector(".count");
+      
+      const statusApps = apps.filter(app => app.status === status);
+      countLabel.textContent = statusApps.length;
+      
+      cardsContainer.innerHTML = "";
+      
+      if (statusApps.length === 0) {
+        cardsContainer.innerHTML = '<div class="no-data" style="border:none; padding:1rem; font-size:0.8rem;">No apps</div>';
+        return;
+      }
+
+      statusApps.forEach(app => {
+        const card = document.createElement("div");
+        card.className = "kanban-card";
+        card.onclick = () => this.editApplication(app._id);
+        
+        card.innerHTML = `
+          <h4>${app.jobTitle}</h4>
+          <span class="company">${app.company}</span>
+          <div class="meta">
+            <span><i class="ri-map-pin-line"></i> ${app.location || "No location"}</span>
+            <span><i class="ri-calendar-line"></i> ${this.formatDate(app.date)}</span>
+          </div>
+          <div class="actions">
+            <button class="btn-action icon-button btn-edit" data-id="${app._id}" title="Edit" onclick="event.stopPropagation(); applicationManager.editApplication('${app._id}')">
+              <i class="ri-edit-2-line"></i>
+            </button>
+            <button class="btn-action icon-button btn-delete" data-id="${app._id}" title="Delete" onclick="event.stopPropagation(); applicationManager.showDeleteConfirmation('${app._id}')">
+              <i class="ri-delete-bin-6-line"></i>
+            </button>
+          </div>
+        `;
+        cardsContainer.appendChild(card);
+      });
+    });
+  }
+
+  // CSV Export logic
+  exportToCSV() {
+    if (this.applications.length === 0) {
+      uiManager.showNotification("No data to export", "warning");
+      return;
+    }
+
+    const headers = ["Job Title", "Company", "Location", "Date", "Status", "Notes"];
+    const rows = this.applications.map(app => [
+      `"${app.jobTitle.replace(/"/g, '""')}"`,
+      `"${app.company.replace(/"/g, '""')}"`,
+      `"${(app.location || "").replace(/"/g, '""')}"`,
+      `"${this.formatDate(app.date)}"`,
+      `"${this.getStatusText(app.status)}"`,
+      `"${(app.notes || "").replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", `job_applications_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    uiManager.showNotification("Exporting applications...", "success");
   }
 
   // Method to display filtered results
