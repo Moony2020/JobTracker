@@ -22,14 +22,9 @@ mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 5000,
-    connectTimeoutMS: 10000,
   })
   .then(() => console.log("MongoDB connected successfully"))
-  .catch((err) => {
-    console.error("MongoDB connection error:", err);
-    console.error("TIP: Check if your MONGO_URI includes the database name (e.g., ...mongodb.net/jobtracker?...) and if your IP is whitelisted in MongoDB Atlas.");
-  });
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 // Routes - Make sure these are properly mounted
 app.use("/api/auth", require("./routes/auth"));
