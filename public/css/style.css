@@ -48,7 +48,7 @@ body {
     transition: all 0.3s ease;
     min-height: 100vh;
     overflow-x: hidden;
-    min-width: 300px;
+    min-width: 340px;
 }
 
 /* Background gradient animation */
@@ -1128,13 +1128,14 @@ main {
 #applications-page .filters .status-filter-group {
     flex: 1;
     min-width: 150px;
+    max-width: 250px; /* Prevent it from taking full width on wrap */
 }
 
 .apps-toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem; /* Reduced vertical space below toolbar */
+    margin-bottom: 1rem;
     gap: 1rem;
     flex-wrap: wrap;
 }
@@ -1142,12 +1143,41 @@ main {
 .toolbar-left {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.5rem; /* Reduced gap from 1rem to 0.5rem */
+    flex-wrap: wrap; /* CRITICAL: Allows Export button to drop below Toggles */
+}
+
+/* Ensure toolbar items stack nicely on smaller screens */
+@media (max-width: 480px) {
+    .apps-toolbar {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        gap: 0.75rem;
+    }
+    
+    .toolbar-left {
+        width: 100%;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    /* Buttons keep their natural size but center */
+    .view-toggle {
+        display: flex;
+        justify-content: center;
+    }
+
+    .btn-export {
+        justify-content: center;
+        margin-top: 0.25rem;
+        width: auto !important; /* Keep natural width */
+    }
 }
 
 .btn-export {
     white-space: nowrap;
-    padding: 0.6rem 1.25rem !important;
+    padding: 0.6rem 0.8rem !important; /* Narrower horizontal padding */
     display: flex;
     align-items: center;
     gap: 0.5rem;
