@@ -1119,16 +1119,15 @@ main {
 }
 
 #applications-page .filters .form-group:first-child {
-    /* Search bar - make it wider */
-    flex: 2;
+    /* Search bar - reasonable width */
+    flex: 0 1 500px;
+    max-width: 400px;
     min-width: 200px;
-    /* Removed restrictive max-width to allow filling the space */
 }
 
 #applications-page .filters .status-filter-group {
-    flex: 1;
-    min-width: 150px;
-    max-width: 250px; /* Prevent it from taking full width on wrap */
+    flex: 0 0 200px;
+    max-width: 200px;
 }
 
 .apps-toolbar {
