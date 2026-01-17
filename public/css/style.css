@@ -585,13 +585,31 @@ header {
 /*  Logout Button with Text for Mobile */
 .mobile-user-menu .logout-btn {
     width: auto;
-    padding: 1.1rem .8rem;
-    gap: 0.5rem;
-    font-size: 0.85rem;
+    background: var(--danger-color);
+    color: white;
+    padding: 0.8rem 1.8rem;
+    gap: 0.7rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 40px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    margin: 1rem auto; /* Centering */
+}
+
+.mobile-user-menu .logout-btn:hover {
+    background-color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(239, 68, 68, 0.35);
 }
 
 .mobile-user-menu .logout-btn i {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
+    color: white;
 }
 
 #login-form .btn-submit,
@@ -697,7 +715,7 @@ i, .field-icon, .toggle-password {
 }
 
 .hamburger.active span:nth-child(1) {
-    transform: rotate(45deg) translate(6px, 6px);
+    transform: translateY(8.5px) rotate(45deg);
 }
 
 .hamburger.active span:nth-child(2) {
@@ -706,7 +724,7 @@ i, .field-icon, .toggle-password {
 }
 
 .hamburger.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(6px, -6px);
+    transform: translateY(-8.5px) rotate(-45deg);
 }
 
 /* Mobile Navigation */
@@ -2855,6 +2873,13 @@ footer {
         width: 100%;
         white-space: normal;
     }
+
+    .mobile-nav .mobile-user-menu .logout-btn {
+        width: 160px; /* Reduced for more compact pill look */
+        margin: 1rem auto;
+        display: flex;
+    }
+
 }
 
 /* Extra small screens refinements */
@@ -2874,11 +2899,12 @@ footer {
 
 
     .hamburger {
-        width: 22px !important;
-        height: 17px !important;
+        transform: scale(0.8);
+        transform-origin: right center;
     }
 
     .logo {
         font-size: 1.2rem !important;
     }
 }
+
