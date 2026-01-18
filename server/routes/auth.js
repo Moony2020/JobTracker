@@ -45,9 +45,16 @@ router.post('/register', [
         // Generate token
         const token = generateToken(user._id);
 
+        // Set cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        });
+
         res.status(201).json({
             message: 'User created successfully',
-            token,
             user: {
                 id: user._id,
                 name: user.name,
@@ -97,9 +104,16 @@ router.post('/login', [
         // Generate token
         const token = generateToken(user._id);
 
+        // Set cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        });
+
         res.json({
             message: 'Login successful',
-            token,
             user: {
                 id: user._id,
                 name: user.name,
@@ -114,21 +128,32 @@ router.post('/login', [
     }
 });
 
-// Get current user
-router.get('/me', auth, async (req, res) => {
+// Get current user (Guest-friendly check)
+router.get('/me', async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select('-password');
+        const token = req.cookies.token || req.header("Authorization")?.replace("Bearer ", "");
+        
+        if (!token) {
+            return res.json(null); // Return null for guests, avoids 401 noise
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.userId).select('-password');
+        
+        if (!user) {
+            return res.json(null);
+        }
+        
         res.json(user);
     } catch (error) {
-        console.error('Get user error:', error);
-        res.status(500).json({ 
-            message: 'Server error' 
-        });
+        // If token is invalid or expired, still return null
+        res.json(null);
     }
 });
 
-// Logout (client-side token removal)
+// Logout (clear cookie)
 router.post('/logout', (req, res) => {
+    res.clearCookie('token');
     res.json({ message: 'Logged out successfully' });
 });
 
@@ -170,10 +195,15 @@ router.post('/forgot-password', [
         // Send real email using Nodemailer
         try {
             const transporter = nodemailer.createTransport({
-                service: 'gmail',
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true,
                 auth: {
                     user: process.env.EMAIL_USER,
                     pass: process.env.EMAIL_PASS
+                },
+                tls: {
+                    rejectUnauthorized: false
                 }
             });
 
@@ -187,12 +217,14 @@ router.post('/forgot-password', [
                         <p style="color: #475569; font-size: 16px; line-height: 1.6;">You are receiving this email because you requested to reset your password for your JobTracker account.</p>
                         <p style="color: #475569; font-size: 16px; line-height: 1.6;">Please click the button below to set a new password. This link is valid for 1 hour.</p>
                         <div style="text-align: center; margin: 30px 0;">
-                            <a href="${resetUrl}" style="display: inline-block; padding: 12px 24px; background-color: #6366f1; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; transition: background-color 0.3s ease;">Reset My Password</a>
+                            <a href="${process.env.CLIENT_URL}/#reset/${token}" style="display: inline-block; padding: 12px 24px; background-color: #6366f1; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; transition: background-color 0.3s ease;">Reset My Password</a>
                         </div>
                         <p style="color: #64748b; font-size: 14px; line-height: 1.6;">If you did not request this, please ignore this email and your password will remain unchanged.</p>
                         <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
-                        <p style="color: #94a3b8; font-size: 12px;">If the button doesn't work, copy and paste this link into your browser:</p>
-                        <p style="color: #6366f1; font-size: 12px; word-break: break-all;">${resetUrl}</p>
+                        <div style="text-align: center; color: #94a3b8; font-size: 12px; font-family: sans-serif;">
+                            <p style="margin-bottom: 5px;">Best regards,</p>
+                            <p style="font-weight: 600; color: #64748b; margin-top: 0;">JobTracker Team</p>
+                        </div>
                     </div>
                 `
             };
@@ -213,6 +245,44 @@ router.post('/forgot-password', [
     }
 });
 
+// Change Password (while logged in)
+router.post('/change-password', auth, [
+    body('currentPassword').exists().withMessage('Current password is required'),
+    body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters')
+], async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ 
+                message: 'Validation failed', 
+                errors: errors.array() 
+            });
+        }
+
+        const { currentPassword, newPassword } = req.body;
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Check current password
+        const isMatch = await user.comparePassword(currentPassword);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Current password is incorrect' });
+        }
+
+        // Set new password
+        user.password = newPassword;
+        await user.save();
+
+        res.json({ message: 'Password updated successfully' });
+    } catch (error) {
+        console.error('Change password error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // Reset Password (Final Step)
 router.post('/reset-password/:token', [
     body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
@@ -226,26 +296,26 @@ router.post('/reset-password/:token', [
             });
         }
 
+        const { password } = req.body;
         const user = await User.findOne({
             resetPasswordToken: req.params.token,
             resetPasswordExpires: { $gt: Date.now() }
         });
 
         if (!user) {
-            return res.status(400).json({ message: 'Password reset token is invalid or has expired.' });
+            return res.status(400).json({ message: 'Password reset token is invalid or has expired' });
         }
 
         // Set new password
-        user.password = req.body.password;
+        user.password = password;
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
-
         await user.save();
 
-        res.json({ message: 'Password has been updated successfully.' });
+        res.json({ message: 'Success! Your password has been changed.' });
     } catch (error) {
         console.error('Reset password error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error during password reset' });
     }
 });
 
