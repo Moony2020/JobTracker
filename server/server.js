@@ -17,7 +17,7 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(express.static(path.join(__dirname, "../client/dist")));
 
 // Database connection
 mongoose
@@ -32,9 +32,9 @@ mongoose
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/applications", require("./routes/applications"));
 
-// Serve React app (if you add React later)
+// Serve React app
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/index.html"));
+  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
 
 const PORT = process.env.PORT || 3000;
