@@ -17,7 +17,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, applicationName }
           {applicationName && <p className="delete-target-name" style={{ fontWeight: 600, marginTop: '0.4rem', color: 'var(--text-color)', fontSize: '1.05rem', margin: '0.2rem 0 0' }}>{applicationName}</p>}
         </div>
 
-        <div className="form-actions" style={{ borderTop: '1px solid var(--light-border)', paddingTop: '1rem', marginTop: '0', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+        <div className="form-actions">
           <button className="btn btn-outline" onClick={onClose}>Cancel</button>
           <button className="btn btn-danger" onClick={onConfirm}>Delete</button>
         </div>

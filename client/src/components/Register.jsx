@@ -152,18 +152,6 @@ const Register = ({ onClose }) => {
             type="submit" 
             className="btn-submit" 
             disabled={loading}
-            style={{
-              marginTop: '0.5rem',
-              width: '50%',
-              marginLeft: 'auto',
-              marginRight: 'auto',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '0.6rem',
-              borderRadius: '50px',
-              height: 'auto'
-            }}
           >
             {loading ? 'Registering...' : <><UserPlus size={18} style={{ marginRight: '8px' }} /> Register</>}
           </button>

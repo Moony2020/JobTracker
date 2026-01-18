@@ -138,9 +138,9 @@ const EditApplicationModal = ({ application, onClose, onUpdate }) => {
             </div>
           </div>
           
-          <div className="form-actions" style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
-            <button type="button" className="btn btn-outline" onClick={onClose} style={{ borderRadius: '12px', padding: '0.6rem 1.5rem', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '100px' }}>Cancel</button>
-            <button type="submit" className="btn-submit" disabled={loading} style={{ margin: 0, borderRadius: '12px', padding: '0.6rem 1.5rem', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '100px' }}>
+          <div className="form-actions">
+            <button type="button" className="btn btn-outline" onClick={onClose}>Cancel</button>
+            <button type="submit" className="btn-submit" disabled={loading}>
               {loading ? 'Updating...' : 'Update'}
             </button>
           </div>
