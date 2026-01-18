@@ -10,6 +10,8 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import './index.css';
 import ChangePassword from './components/ChangePassword';
 import ResetPassword from './components/ResetPassword';
+import EditApplicationModal from './components/EditApplicationModal';
+import DeleteConfirmationModal from './components/DeleteConfirmationModal';
 
 const AppContent = () => {
   const { user, loading: authLoading } = useAuth();
@@ -27,6 +29,11 @@ const AppContent = () => {
     }
     return null;
   });
+  /* State for Modals */
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedApplication, setSelectedApplication] = useState(null);
+
   const [notification, setNotification] = useState(null);
 
   const showNotify = (message, type = 'success') => {
@@ -106,11 +113,33 @@ const AppContent = () => {
     }
   };
 
-  const handleDeleteApplication = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this application?')) return;
+  /* Edit Handlers */
+  const handleEditClick = (app) => {
+    setSelectedApplication(app);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateApplication = (updatedApp) => {
+    setApplications(prev => prev.map(app => app._id === updatedApp._id ? updatedApp : app));
+    showNotify('Application updated successfully!');
+    setIsEditModalOpen(false);
+    setSelectedApplication(null);
+  };
+
+  /* Delete Handlers */
+  const handleDeleteClick = (id) => {
+    const app = applications.find(a => a._id === id);
+    setSelectedApplication(app);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedApplication) return;
     
+    const id = selectedApplication._id;
     const previousApplications = [...applications];
     setApplications(applications.filter(app => app._id !== id));
+    setIsDeleteModalOpen(false); // Close immediately for responsiveness
 
     try {
       await api.delete(`/applications/${id}`);
@@ -119,6 +148,8 @@ const AppContent = () => {
       console.error('Failed to delete application', error);
       setApplications(previousApplications); // Rollback
       showNotify('Failed to delete application', 'error');
+    } finally {
+      setSelectedApplication(null);
     }
   };
 
@@ -174,14 +205,16 @@ const AppContent = () => {
             applications={applications} 
             stats={stats} 
             onAddApplication={handleAddApplication} 
+            onEdit={handleEditClick}
+            onDelete={handleDeleteClick}
             loading={loading}
           />
         )}
         {currentPage === 'applications' && (
           <Applications 
              applications={applications}
-             onEdit={(app) => console.log('Edit', app)}
-             onDelete={handleDeleteApplication}
+             onEdit={handleEditClick}
+             onDelete={handleDeleteClick}
              loading={loading}
           />
         )}
@@ -194,6 +227,23 @@ const AppContent = () => {
       {showRegister && <Register onClose={() => setShowRegister(false)} />}
       {showChangePassword && <ChangePassword onClose={() => setShowChangePassword(false)} />}
       {resetToken && <ResetPassword token={resetToken} onClose={() => setResetToken(null)} />}
+      
+      {/* Edit Modal */}
+      {isEditModalOpen && (
+        <EditApplicationModal 
+          application={selectedApplication}
+          onClose={() => setIsEditModalOpen(false)}
+          onUpdate={handleUpdateApplication}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        applicationName={selectedApplication ? `${selectedApplication.jobTitle} at ${selectedApplication.company}` : ''}
+      />
       
       {notification && (
         <div className={`notification ${notification.type} show`}>

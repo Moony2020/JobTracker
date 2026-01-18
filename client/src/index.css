@@ -2255,10 +2255,10 @@ main {
 }
 
 .modal-content .btn-submit {
-    width: fit-content !important;
+    width: fit-content;
     min-width: 140px; /* Reduced further */
-    margin: 1rem auto 0 !important;
-    padding: 0.5rem 1.4rem !important; /* Slightly more compact */
+    margin: 0;
+    padding: 0.5rem 1.4rem; /* Slightly more compact */
     font-size: 0.9rem;
     display: flex; /* Ensure center alignment works with margin: auto */
 }

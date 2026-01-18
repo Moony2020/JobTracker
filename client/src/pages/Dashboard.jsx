@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import StatCard from '../components/StatCard';
 import api from '../services/api';
 
-const Dashboard = ({ applications, stats, onAddApplication, loading }) => {
+const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, loading }) => {
   const [formData, setFormData] = useState({
     jobTitle: '',
     company: '',
@@ -209,8 +209,20 @@ const Dashboard = ({ applications, stats, onAddApplication, loading }) => {
                       </span>
                     </td>
                     <td className="action-buttons">
-                      <button className="btn-action icon-button btn-edit" title="Edit"><i className="ri-edit-2-line"></i></button>
-                      <button className="btn-action icon-button btn-delete" title="Delete"><i className="ri-delete-bin-6-line"></i></button>
+                      <button 
+                        className="btn-action icon-button btn-edit" 
+                        title="Edit"
+                        onClick={() => onEdit(app)}
+                      >
+                        <i className="ri-edit-2-line"></i>
+                      </button>
+                      <button 
+                        className="btn-action icon-button btn-delete" 
+                        title="Delete"
+                        onClick={() => onDelete(app._id)}
+                      >
+                        <i className="ri-delete-bin-6-line"></i>
+                      </button>
                     </td>
                   </tr>
                 ))
