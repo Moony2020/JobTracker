@@ -20,7 +20,13 @@ const AppContent = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
-  const [resetToken, setResetToken] = useState(null);
+  const [resetToken, setResetToken] = useState(() => {
+    const hash = window.location.hash;
+    if (hash.startsWith('#reset/')) {
+      return hash.replace('#reset/', '');
+    }
+    return null;
+  });
   const [notification, setNotification] = useState(null);
 
   const showNotify = (message, type = 'success') => {
@@ -149,20 +155,7 @@ const AppContent = () => {
     return { total, interviews, offers, thisWeek, thisMonth, successRate };
   }, [applications]);
 
-  // Check for reset token immediately to avoid race conditions with auth loading
-  useEffect(() => {
-    const hash = window.location.hash;
-    console.log('App Mounted. Current Hash:', hash);
-    if (hash.startsWith('#reset/')) {
-      const token = hash.replace('#reset/', '');
-      console.log('Reset Token Detected:', token);
-      setResetToken(token);
-    }
-  }, []);
-
-  console.log('Render: authLoading:', authLoading, 'resetToken:', resetToken);
-
-  if (authLoading && !resetToken) return <div className="loading-overlay"><div className="loading-spinner"></div><p>Validating Session...</p></div>;
+  if (authLoading && !resetToken) return <div className="loading-overlay"><div className="loading-spinner"></div><p>Loading...</p></div>;
 
   return (
     <div className="app-container">
