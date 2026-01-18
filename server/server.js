@@ -31,6 +31,7 @@ mongoose
 // Routes - Make sure these are properly mounted
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/applications", require("./routes/applications"));
+app.use("/api/ai", require("./routes/ai"));
 
 // Serve React app
 app.get("*", (req, res) => {
