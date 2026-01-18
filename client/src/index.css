@@ -331,7 +331,6 @@ header {
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
 }
 
@@ -346,7 +345,6 @@ header {
 .btn-outline:hover {
     background: var(--primary-color);
     color: white;
-    transform: translateY(-2px);
 }
 
 /* User Menu & Dropdown */
@@ -408,7 +406,7 @@ header {
     position: absolute;
     top: calc(100% + 10px);
     right: 0;
-    width: 200px;
+    width: 220px; /* Increased to fit text on one line */
     background: var(--bg-color); /* Use theme bg color instead of transparent glass */
     border: 1px solid var(--primary-color); /* Primary color border to make it pop */
     border-radius: 12px;
@@ -460,35 +458,61 @@ header {
 .dropdown-item {
     display: flex;
     align-items: center;
-    gap: 0.7rem;
-    padding: 0.75rem 1rem;
-    margin: 0.2rem 0;
+    justify-content: flex-start;
+    gap: 0.8rem;
+    padding: 0.6rem 1.2rem;
+    margin: 0.4rem auto;
     border: none;
-    background: transparent;
-    color: var(--text-color);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 500;
-    border-radius: 8px;
+    border-radius: 50px;
     cursor: pointer;
-    transition: background 0.2s ease;
-    width: 100%;
+    transition: all 0.3s ease;
+    width: 90%;
     text-align: left;
+    white-space: nowrap;
 }
 
-.dropdown-item i {
-    font-size: 1.1rem;
-    color: #64748b;
+/* Primary Button - Solid Purple (Login, Change Password) */
+.dropdown-btn-primary {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: 0 3px 11px rgba(99, 102, 241, 0.3);
 }
 
-.dropdown-item:hover {
-    background: rgba(99, 102, 241, 0.1);
+.dropdown-btn-primary:hover {
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
+.dropdown-btn-primary i,
+.dropdown-btn-primary svg {
+    color: white;
+}
+
+/* Secondary Button - Outlined (Register, Settings) */
+.dropdown-btn-secondary {
+    background: transparent;
+    border: 2px solid var(--primary-color);
     color: var(--primary-color);
 }
 
-.dropdown-item:hover i {
-    color: var(--primary-color);
+.dropdown-btn-secondary:hover {
+    background: var(--primary-color);
+    color: white;
 }
 
+.dropdown-btn-secondary i,
+.dropdown-btn-secondary svg {
+    color: var(--primary-color);
+    transition: color 0.3s ease;
+}
+
+.dropdown-btn-secondary:hover i,
+.dropdown-btn-secondary:hover svg {
+    color: white;
+}
+
+/* Logout button styles */
 .logout-item:hover {
     background: rgba(239, 68, 68, 0.08);
     color: #ef4444;

@@ -56,10 +56,10 @@ const Header = ({ darkMode, toggleTheme, onOpenPage, onLoginClick, onRegisterCli
                       <div className="dropdown-header">
                         <span>Welcome</span>
                       </div>
-                      <button className="dropdown-item" onClick={onLoginClick}>
+                      <button className="dropdown-item dropdown-btn-primary" onClick={onLoginClick}>
                         <LogIn size={18} /> Login
                       </button>
-                      <button className="dropdown-item" onClick={onRegisterClick}>
+                      <button className="dropdown-item dropdown-btn-secondary" onClick={onRegisterClick}>
                         <UserPlus size={18} /> Register
                       </button>
                     </div>
@@ -77,10 +77,10 @@ const Header = ({ darkMode, toggleTheme, onOpenPage, onLoginClick, onRegisterCli
                       <div className="dropdown-header">
                         <span>{user.name}</span>
                       </div>
-                      <button className="dropdown-item" onClick={() => { onChangePasswordClick(); setDropdownOpen(false); }}>
+                      <button className="dropdown-item dropdown-btn-primary" onClick={() => { onChangePasswordClick(); setDropdownOpen(false); }}>
                         <Lock size={18} /> Change Password
                       </button>
-                      <button className="dropdown-item">
+                      <button className="dropdown-item dropdown-btn-secondary">
                         <Settings size={18} /> Settings
                       </button>
                       <button className="logout-btn-animated" onClick={logout}>
