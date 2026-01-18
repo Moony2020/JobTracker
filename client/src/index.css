@@ -2729,12 +2729,9 @@ footer {
 
 
 /* Responsive Design */
-/* Ensure toolbar items stack nicely on smaller screens */
-@media (max-width: 480px) {
-    .container {
-        padding: 0 1rem;
-    }
 
+/* Tablet/Mobile Navigation Breakpoint */
+@media (max-width: 768px) {
     .hamburger {
         display: flex;
     }
@@ -2743,13 +2740,19 @@ footer {
         display: none;
     }
 
+    .mobile-nav {
+        display: block;
+    }
+}
+
+/* Ensure toolbar items stack nicely on smaller screens */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 1rem;
+    }
 
     .header-content {
         gap: 1rem;
-    }
-
-    .mobile-nav {
-        display: block;
     }
 
     .modal-content {
@@ -2933,6 +2936,21 @@ footer {
         padding: 0.8rem !important; /* Reduce padding to make inner items wider */
     }
 
+    #statistics-page .stat-item {
+        padding: 0.3rem 0.6rem !important; /* High specificity override */
+    }
+
+    #statistics-page .stat-header {
+        margin-bottom: 0.2rem !important;
+        padding-bottom: 0.2rem !important;
+        min-height: auto !important;
+    }
+
+    .stat-header h4 {
+        margin: 0 !important;
+        font-size: 0.9rem !important; /* Slightly smaller text if needed */
+    }
+
     .chart-section {
         padding: 0.5rem; /* Reduce padding significantly */
         width: 100%;
@@ -2940,18 +2958,7 @@ footer {
         overflow: hidden; /* Ensure no internal overflow */
     }
     
-    .stat-item {
-        padding: 0.8rem 1rem !important; /* Reduced padding for wider feel */
-    }
-    
-    .stat-header {
-        margin-bottom: 0.5rem !important;
-        padding-bottom: 0.5rem !important;
-    }
-    
-    .stat-header h4 {
-        font-size: 1rem !important;
-    }
+
 
     .chart-section canvas {
         max-width: 100% !important;
@@ -3357,3 +3364,29 @@ footer {
 .dark-mode .btn-ai-parse:hover {
     background: #818cf8; /* Lighter on hover in dark mode */
 }
+
+/* Mobile Statistics Override - Appended for Specificity */
+@media (max-width: 480px) {
+    #statistics-page .stat-item {
+        padding: 1rem 0.8rem !important; /* increased height/padding */
+    }
+    #statistics-page .stat-header {
+        margin-bottom: 0.5rem !important;
+        padding: 0.5rem 0 !important;
+        min-height: auto !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        flex-direction: row !important;
+    }
+    #statistics-page .stat-header h4 {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    #statistics-page .stat-count {
+        padding: 0.2rem 0.6rem !important; /* Smaller button */
+        font-size: 0.8rem !important;
+        margin: 0 !important;
+    }
+}
+
