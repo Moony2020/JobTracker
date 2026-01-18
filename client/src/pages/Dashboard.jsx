@@ -7,7 +7,7 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, lo
     jobTitle: '',
     company: '',
     location: '',
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toLocaleDateString('en-CA'),
     status: 'applied',
     notes: '',
   });
@@ -52,7 +52,7 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, lo
       jobTitle: '',
       company: '',
       location: '',
-      date: new Date().toISOString().split('T')[0],
+      date: new Date().toLocaleDateString('en-CA'),
       status: 'applied',
       notes: '',
     });

@@ -20,7 +20,7 @@ const EditApplicationModal = ({ application, onClose, onUpdate }) => {
         jobTitle: application.jobTitle || '',
         company: application.company || '',
         location: application.location || '',
-        date: application.date ? new Date(application.date).toISOString().split('T')[0] : '',
+        date: application.date ? new Date(application.date).toLocaleDateString('en-CA') : '',
         status: application.status || 'applied',
         notes: application.notes || '',
       });
