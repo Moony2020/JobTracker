@@ -3072,7 +3072,7 @@ footer {
 /* Advanced AI Smart Fill Card */
 .ai-parser-card {
     position: relative;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
     border: 1px solid rgba(99, 102, 241, 0.3);
     border-radius: 16px;
     padding: 1.5rem;
@@ -3247,4 +3247,35 @@ footer {
 .dark-mode .ai-parser-card {
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%);
     border-color: rgba(99, 102, 241, 0.4);
+}
+
+/* AI Parser Button */
+.btn-ai-parse {
+    background: #6366f1; /* Solid Primary Color */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3); /* Subtle shadow for depth */
+}
+
+.btn-ai-parse:hover {
+    background: #4f46e5; /* Darker on hover */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(99, 102, 241, 0.4);
+}
+
+.dark-mode .btn-ai-parse {
+    background: #6366f1;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .btn-ai-parse:hover {
+    background: #818cf8; /* Lighter on hover in dark mode */
 }
