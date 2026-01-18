@@ -2308,14 +2308,8 @@ main {
     animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.modal-content .btn-submit {
-    width: fit-content;
-    min-width: 140px; /* Reduced further */
-    margin: 0;
-    padding: 0.5rem 1.4rem; /* Slightly more compact */
-    font-size: 0.9rem;
-    display: flex; /* Ensure center alignment works with margin: auto */
-}
+/* btn-submit styles handled at the end of the file */
+
 
 @keyframes modalSlideIn {
     from {
@@ -3399,27 +3393,37 @@ footer {
 .modal .modal-content .btn-outline,
 .modal .modal-content .btn-danger,
 .modal .form-actions .btn {
-    width: 110px !important; /* Smaller unified width */
-    height: 38px !important; /* Smaller unified height */
-    min-height: 38px !important;
+    width: 115px !important;
+    min-width: 0 !important;
+    height: 42px !important;
+    min-height: 42px !important;
     display: inline-flex !important;
     justify-content: center !important;
     align-items: center !important;
-    padding: 0 !important;
+    padding: 0 1rem !important;
     border-radius: 50px !important;
-    font-size: 0.85rem !important; /* Slightly smaller font */
+    font-size: 0.9rem !important;
     font-weight: 600 !important;
-    margin: 0 !important;
+    /* margin: 0 !important; Removed to allow specific margins */
     transition: all 0.3s ease !important;
     white-space: nowrap !important;
 }
 
+/* Specifically for Login/Register buttons that are directly in form */
+.modal .modal-content form .btn-submit {
+    margin-top: 0.5rem !important; /* Extremely reduced as requested */
+    margin-right: auto !important;
+    margin-left: 0 !important;
+    display: flex !important;
+    width: 115px !important;
+}
+
 .modal .form-actions {
     display: flex !important;
-    gap: 0.75rem !important;
+    gap: 1.25rem !important;
     justify-content: flex-end !important;
-    margin-top: 1.5rem !important;
-    padding-top: 1rem !important;
+    margin-top: 0.5rem !important; /* Reduced for ultra-compact feel */
+    padding-top: 1.5rem !important;
     border-top: 1px solid var(--light-border) !important;
 }
 
@@ -3439,15 +3443,23 @@ footer {
     .modal .modal-content .btn-outline,
     .modal .modal-content .btn-danger,
     .modal .form-actions .btn {
-        width: 95px !important; /* More compact for mobile */
-        height: 34px !important;
-        min-height: 34px !important;
-        font-size: 0.78rem !important;
+        width: 105px !important; /* Better width for mobile */
+        min-width: 0 !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        font-size: 0.82rem !important;
+    }
+    
+    .modal .modal-content form .btn-submit {
+        margin-top: 0.25rem !important; /* Ultra-reduced for mobile */
+        margin-right: auto !important;
+        margin-left: 0 !important;
+        width: 105px !important;
     }
     
     .modal .form-actions {
-        gap: 0.5rem !important;
-        margin-top: 1rem !important;
+        gap: 0.85rem !important;
+        margin-top: 0.5rem !important; /* Ultra-reduced for mobile actions */
     }
 }
 
