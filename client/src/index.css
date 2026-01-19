@@ -1836,16 +1836,18 @@ main {
 }
 
 .btn-pagination {
-    padding: 0.5rem 1rem;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    justify-content: center;
     background: var(--card-bg);
     border: 1px solid var(--light-border);
-    border-radius: 8px;
+    border-radius: 50%;
     color: var(--text-color);
     font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
     transition: all 0.2s ease;
 }
 
@@ -3505,6 +3507,38 @@ footer {
     .modal .form-actions {
         gap: 0.85rem !important;
         margin-top: 1.5rem !important; /* Reverting to a bit more space for mobile */
+    }
+
+    /* Responsive Pagination for Mobile */
+    .pagination {
+        gap: 0.35rem !important;
+        padding: 0.75rem 0 !important;
+    }
+
+    .btn-pagination {
+        width: 32px !important;
+        height: 32px !important;
+        padding: 0 !important;
+    }
+
+    .btn-pagination i, 
+    .btn-pagination svg {
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    .page-numbers {
+        gap: 0.35rem !important;
+    }
+
+    .page-num {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 0.8rem !important;
+    }
+
+    .page-num.dots {
+        padding: 0 2px !important;
     }
 }
 

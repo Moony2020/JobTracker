@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, ChevronDown, LayoutGrid, List, Download, Edit2, Trash2, MapPin, Calendar, Building } from 'lucide-react';
+import { Search, ChevronDown, LayoutGrid, List, Download, Edit2, Trash2, MapPin, Calendar, Building, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Applications = ({ applications, onEdit, onDelete, loading }) => {
   const [view, setView] = useState('table');
@@ -188,7 +188,7 @@ const Applications = ({ applications, onEdit, onDelete, loading }) => {
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
           >
-            Previous
+            <ChevronLeft size={20} />
           </button>
           <div className="page-numbers">
             {(() => {
@@ -230,7 +230,7 @@ const Applications = ({ applications, onEdit, onDelete, loading }) => {
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
           >
-            Next
+            <ChevronRight size={20} />
           </button>
         </div>
       )}
