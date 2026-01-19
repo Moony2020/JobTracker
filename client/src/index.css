@@ -2390,10 +2390,18 @@ main {
 .modal .form-grid {
     gap: .3rem;
 }
-
+/* Add this to index.css around line 2394 */
+#deleteModal .modal-content {
+    padding: 1rem !important;  /* Was 1.5rem - this reduces space on all sides */
+}
 #deleteModal .btn {
-    transition: all 0.3s ease;
+    transition: all 0.3s ease;  
     border: 1px solid transparent;
+    width: 85px !important;   /* Ultra compact */
+    height: 33px !important;  
+    min-height: 0 !important; /* Force override of global 42px */
+    padding: 0 !important;    /* Remove padding to allow small height */
+    font-size: 0.8rem !important; 
 }
 
 #deleteModal .btn-outline {
@@ -3426,6 +3434,12 @@ footer {
     margin-top: 0.5rem !important;
     padding-top: 1.5rem !important;
     border-top: 1px solid var(--light-border) !important;
+}
+
+#deleteModal .form-actions {
+    border-top: none !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
 }
 
 .modal .form-actions .btn,

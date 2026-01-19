@@ -12,8 +12,8 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, applicationName }
           <button className="close-modal" onClick={onClose}>&times;</button>
         </div>
         
-        <div className="modal-body" style={{ margin: '0.8rem 0 1.2rem', textAlign: 'left' }}>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1rem', lineHeight: '1.4', margin: 0 }}>Are you sure you want to delete this application?</p>
+        <div className="modal-body" style={{ margin: '0.4rem 0 0.8rem', textAlign: 'left' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.4', margin: 0 }}>Are you sure you want to delete this application?</p>
           {applicationName && <p className="delete-target-name" style={{ fontWeight: 600, marginTop: '0.4rem', color: 'var(--text-color)', fontSize: '1.05rem', margin: '0.2rem 0 0' }}>{applicationName}</p>}
         </div>
 
