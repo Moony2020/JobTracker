@@ -3410,8 +3410,8 @@ footer {
 }
 
 /* Specifically for Login/Register buttons that are directly in form */
-.modal .modal-content form .btn-submit {
-    margin-top: 0.5rem !important; /* Extremely reduced as requested */
+.modal .modal-content form > .btn-submit {
+    margin-top: 2rem !important; /* Further reduced for a tighter look */
     margin-right: auto !important;
     margin-left: 0 !important;
     display: flex !important;
@@ -3422,9 +3422,15 @@ footer {
     display: flex !important;
     gap: 1.25rem !important;
     justify-content: flex-end !important;
-    margin-top: 0.5rem !important; /* Reduced for ultra-compact feel */
+    align-items: center !important; /* Ensure vertical alignment */
+    margin-top: 0.5rem !important;
     padding-top: 1.5rem !important;
     border-top: 1px solid var(--light-border) !important;
+}
+
+.modal .form-actions .btn,
+.modal .form-actions .btn-submit {
+    margin-top: 0 !important; /* Reset margin for buttons inside actions container */
 }
 
 /* Specific Mobile Fixes for Modal */
@@ -3450,8 +3456,8 @@ footer {
         font-size: 0.82rem !important;
     }
     
-    .modal .modal-content form .btn-submit {
-        margin-top: 0.25rem !important; /* Ultra-reduced for mobile */
+    .modal .modal-content form > .btn-submit {
+        margin-top: 1.5rem !important; /* Reverting to a more visible gap for mobile */
         margin-right: auto !important;
         margin-left: 0 !important;
         width: 105px !important;
@@ -3459,7 +3465,7 @@ footer {
     
     .modal .form-actions {
         gap: 0.85rem !important;
-        margin-top: 0.5rem !important; /* Ultra-reduced for mobile actions */
+        margin-top: 1.5rem !important; /* Reverting to a bit more space for mobile */
     }
 }
 

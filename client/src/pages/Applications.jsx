@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, LayoutGrid, List, Download, Edit2, Trash2, MapPin, Calendar, Building } from 'lucide-react';
+import { Search, ChevronDown, LayoutGrid, List, Download, Edit2, Trash2, MapPin, Calendar, Building } from 'lucide-react';
 
 const Applications = ({ applications, onEdit, onDelete, loading }) => {
   const [view, setView] = useState('table');
@@ -65,7 +65,7 @@ const Applications = ({ applications, onEdit, onDelete, loading }) => {
                 <option value="rejected">Rejected</option>
                 <option value="canceled">Canceled</option>
               </select>
-              <Filter className="chevron" size={16} />
+              <ChevronDown className="chevron" size={16} />
             </div>
           </div>
         </div>
