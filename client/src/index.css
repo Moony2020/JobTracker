@@ -3433,20 +3433,28 @@ footer {
     margin-top: 0 !important; /* Reset margin for buttons inside actions container */
 }
 
-/* Fix for button visibility on hover */
+/* Ensure action buttons are stable on hover (no movement/shadow) */
+.modal .form-actions .btn:hover,
+.modal .form-actions .btn-submit:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Fix for button visibility on hover - simplified to color only */
 .modal .modal-content .btn-submit:hover,
 .modal .modal-content .btn-primary:hover {
     background: #4338ca !important; /* Indigo 700 - High contrast for light mode */
     color: white !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 25px rgba(67, 56, 202, 0.4) !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 .dark-mode .modal .modal-content .btn-submit:hover,
 .dark-mode .modal .modal-content .btn-primary:hover {
     background: #818cf8 !important; /* Indigo 400 - High contrast for dark mode */
     color: white !important;
-    box-shadow: 0 8px 25px rgba(129, 140, 248, 0.4) !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 /* Specific Mobile Fixes for Modal */
