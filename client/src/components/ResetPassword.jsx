@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import api from '../services/api';
-import { Lock, Eye, EyeOff, CheckCircle } from 'lucide-react';
+import { Lock, Eye, EyeOff, CheckCircle, X } from 'lucide-react';
 
 const ResetPassword = ({ token, onClose }) => {
   const [formData, setFormData] = useState({ password: '', confirmPassword: '' });
@@ -37,11 +37,38 @@ const ResetPassword = ({ token, onClose }) => {
     <div className="modal" style={{ display: 'flex' }}>
       <div className="modal-content">
         <div className="modal-header">
-          <h2>New Password</h2>
-          <button className="close-modal" onClick={() => {
-            onClose();
-            window.location.hash = '';
-          }}>&times;</button>
+          <h2 style={{ margin: 0, fontSize: '1.2rem' }}>New Password</h2>
+          <button 
+            className="close-modal" 
+            onClick={() => {
+              onClose();
+              window.location.hash = '';
+            }}
+            style={{
+              width: '30px',
+              height: '30px',
+              padding: 0,
+              background: 'rgba(150, 150, 150, 0.15)',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: 'none',
+              color: 'var(--text-color)',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
+              e.currentTarget.style.color = 'var(--danger-color)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'rgba(150, 150, 150, 0.15)';
+              e.currentTarget.style.color = 'var(--text-color)';
+            }}
+          >
+            <X size={16} />
+          </button>
         </div>
 
         {error && <div className="notification error show" style={{ position: 'relative', top: 0, right: 0, marginBottom: '1rem', width: '100%', borderRadius: '8px' }}>{error}</div>}

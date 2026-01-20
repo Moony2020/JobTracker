@@ -18,6 +18,7 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "../client/dist")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Database connection
 mongoose

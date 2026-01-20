@@ -50,6 +50,39 @@ const ApplicationSchema = new mongoose.Schema(
       trim: true,
       maxlength: [500, "Notes cannot be more than 500 characters"],
     },
+    jobLink: {
+      type: String,
+      trim: true,
+    },
+    expectedSalary: {
+      type: String,
+      trim: true,
+    },
+    offeredSalary: {
+      type: String,
+      trim: true,
+    },
+    recruiterName: {
+      type: String,
+      trim: true,
+    },
+    recruiterEmail: {
+      type: String,
+      trim: true,
+    },
+    recruiterLinkedIn: {
+      type: String,
+      trim: true,
+    },
+    documents: [{
+      name: String,
+      path: String,
+      uploadDate: { type: Date, default: Date.now }
+    }],
+    statusHistory: [{
+      status: String,
+      date: { type: Date, default: Date.now }
+    }]
   },
   {
     timestamps: true,

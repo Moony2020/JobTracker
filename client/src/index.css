@@ -108,6 +108,10 @@ body::before {
     }
 }
 
+.animate-spin {
+    animation: loader-spin 1s linear infinite;
+}
+
 /* Loader  */
 .loading-overlay {
     position: fixed;
@@ -203,7 +207,7 @@ header {
     display: flex;
     align-items: center;
     width: 100%;
-    gap: 1rem;
+    gap: 0.7rem; /* Slightly increased gap for better balance */
     justify-content: space-between;
 }
 
@@ -217,8 +221,17 @@ header {
 .header-right {
     display: flex;
     align-items: center;
-    gap: 1rem; /* Increased gap */
+    gap: 0.8rem; /* Restored internal icon spacing as requested */
     margin-left: auto;
+    padding-right: 0;
+}
+
+.header-right > * {
+    margin: 0 !important;
+}
+
+@media (max-width: 768px) {
+    /* Hamburger styling is now handled in the Bento Grid section below */
 }
 
 .auth-buttons {
@@ -245,10 +258,21 @@ header {
 .logo {
     font-size: 1.5rem;
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo-text {
     background: var(--primary-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+}
+
+.logo-icon {
+    color: var(--primary-color);
+    filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.3));
 }
 
 .desktop-nav {
@@ -424,6 +448,54 @@ header {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* Compact Language Dropdown */
+.dropdown-menu.lang-dropdown {
+    width: 145px;
+    padding: 3px;
+    gap: 0;
+}
+
+.dropdown-item.lang-item {
+    padding: 0 10px;
+    margin: 1px 0;
+    height: 28px;
+    width: 100%;
+    font-size: 0.85rem;
+    gap: 10px;
+    display: flex;
+    align-items: center;
+    direction: ltr !important;
+    flex-direction: row !important;
+    text-align: left !important;
+    background: transparent;
+    color: var(--text-color); /* Ensure text color adapts to theme */
+}
+
+.dropdown-item.lang-item:hover {
+    background: rgba(99, 102, 241, 0.08) !important;
+}
+
+.lang-flag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 100%;
+    flex-shrink: 0;
+}
+
+.lang-flag-img {
+    width: 20px;
+    height: 14px;
+    object-fit: cover;
+    border-radius: 2px;
+    border: 1px solid rgba(0, 0, 0, 0.08); /* Subtle border for better visibility on white */
+}
+
+.lang-text {
+    flex: 1;
+}
+
 .user-dropdown:hover .dropdown-menu {
     display: flex;
 }
@@ -439,6 +511,22 @@ header {
     z-index: 1;
 }
 
+/* Recruiter Row - Name, Email */
+.form-grid .form-group:nth-child(10),
+.form-grid .form-group:nth-child(11) {
+    flex: 0 1 330px;
+    min-width: 180px;
+    max-width: 330px;
+}
+
+/* Ensure recruiter fields don't stretch on wide screens */
+@media (min-width: 769px) {
+    .form-grid .form-group:nth-child(10),
+    .form-grid .form-group:nth-child(11) {
+        max-width: 330px;
+        flex: 0 1 330px;
+    }
+}
 .dropdown-header {
     padding: 0.6rem 1rem;
     border-bottom: 1px solid var(--glass-border);
@@ -715,41 +803,65 @@ i, .field-icon, .toggle-password {
     z-index: 2;
 }
 
-/* Hamburger Menu */
+/* Modern Bento Grid Menu Icon */
 .hamburger {
-    display: none;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 30px;
-    height: 20px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    z-index: 1001;
+    display: none !important; /* Strictly hidden on desktop */
 }
 
-.hamburger span {
-    display: block;
-    height: 3px;
-    width: 100%;
-    background: var(--primary-gradient);
-    border-radius: 3px;
-    transition: all 0.3s ease;
-    transform-origin: center;
+@media (max-width: 768px) {
+    .hamburger {
+        display: grid !important;
+        grid-template-columns: repeat(2, 12px) !important;
+        grid-template-rows: repeat(2, 12px) !important;
+        gap: 2.2px !important;
+        width: 30px !important;
+        height: 30px !important;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        z-index: 1001;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-left: 0.2rem !important;
+        margin-right: 0.5rem !important;
+        flex-shrink: 0 !important;
+    }
 }
 
-.hamburger.active span:nth-child(1) {
-    transform: translateY(8.5px) rotate(45deg);
+.grid-dot {
+    width: 12px !important;
+    height: 12px !important;
+    /* Vibrant hollow effect with gradient border */
+    background: linear-gradient(var(--bg-color), var(--bg-color)) padding-box, 
+                linear-gradient(135deg, #f43f5e, #8b5cf6) border-box !important;
+    border: 2px solid transparent !important;
+    border-radius: 3px !important; /* Perfect Squircle look */
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
 }
 
-.hamburger.active span:nth-child(2) {
-    opacity: 0;
-    transform: scale(0);
+/* Hover: subtle glow and slight scale */
+.hamburger:hover .grid-dot {
+    filter: brightness(1.1);
+    transform: scale(1.05);
 }
 
-.hamburger.active span:nth-child(3) {
-    transform: translateY(-8.5px) rotate(-45deg);
+/* Active State: Transform into an 'X' formation */
+.hamburger.active {
+    transform: rotate(45deg);
+}
+
+.hamburger.active .grid-dot:nth-child(1) {
+    transform: translate(2px, 2px);
+}
+.hamburger.active .grid-dot:nth-child(2) {
+    transform: translate(-2px, 2px);
+}
+.hamburger.active .grid-dot:nth-child(3) {
+    transform: translate(2px, -2px);
+}
+.hamburger.active .grid-dot:nth-child(4) {
+    transform: translate(-2px, -2px);
 }
 
 /* Mobile Navigation */
@@ -766,7 +878,7 @@ i, .field-icon, .toggle-password {
     z-index: 999;
     transform: translateX(-100%);
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 100px 2rem 2rem;
+    padding: 72px 2rem 2rem;
     overflow-y: auto;
 }
 
@@ -1395,7 +1507,7 @@ main {
 .applications-table td:nth-child(2), /* Company */
 .applications-table th:nth-child(2) {
     width: auto;
-    max-width: 600px; /* Increased to allow better stretching to 100% */
+    max-width: 300px; /* Reduced to prevent pushing Actions column off-screen */
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -1410,12 +1522,12 @@ main {
 
 /* Actions column fixed width */
 .applications-table th:last-child {
-    width: 120px;
+    width: 160px; /* Increased to accommodate 3 buttons */
     text-align: center;
 }
 
 .applications-table td:last-child {
-    width: 120px;
+    width: 160px; /* Increased to accommodate 3 buttons */
     text-align: center;
 }
 
@@ -1986,18 +2098,50 @@ main {
     max-width: 160px; /* Never allow to stretch */
 }
 
+/* Row 4: Professional Info - URL, Expected, Offered */
+.form-grid .form-group:nth-child(7) { /* Job Posting URL */
+    flex: 2 1 300px;
+    min-width: 200px;
+}
+
+.form-grid .form-group:nth-child(8), /* Expected Salary */
+.form-grid .form-group:nth-child(9) { /* Offered Salary */
+    flex: 1 1 150px;
+    min-width: 120px;
+}
+
+/* Recruiter Row - Name, Email */
+.form-grid .form-group:nth-child(10),
+.form-grid .form-group:nth-child(11) {
+    flex: 0 1 280px; /* Do not grow, just fit naturally */
+    min-width: 200px;
+    max-width: 280px;
+}
+
+/* Ensure recruiter fields don't stretch on wide screens */
+@media (min-width: 769px) {
+    .form-grid .form-group:nth-child(10),
+    .form-grid .form-group:nth-child(11) {
+        max-width: 280px;
+        flex: 0 1 280px;
+    }
+}
+
+/* On small mobile, allow full width */
+@media (max-width: 480px) {
+    .form-grid .form-group:nth-child(10),
+    .form-grid .form-group:nth-child(11) {
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+    }
+}
+
 /* Stacking for small mobile only */
 @media (max-width: 480px) {
-    .form-grid .form-group:nth-child(1),
-    .form-grid .form-group:nth-child(2) {
-        flex: 1 1 100%;
-        max-width: 100%;
-    }
-    /* Location and Date still keep their small widths for a tidy look */
-    .form-grid .form-group:nth-child(3),
-    .form-grid .form-group:nth-child(4) {
-        flex: 0 0 100%;
-        max-width: 200px;
+    /* Force all form groups to full width on mobile */
+    .form-grid .form-group {
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
     }
 }
 
@@ -2220,7 +2364,7 @@ main {
     align-items: center;
     justify-content: center;
     flex-wrap: nowrap;
-    min-width: 100px;
+    min-width: 140px; /* Increased for AI Prep + Edit + Delete */
 }
 
 /* Base icon button style */
@@ -2269,6 +2413,17 @@ main {
 .btn-delete:hover {
     transform: translateY(-2px) scale(1.03);
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+}
+
+/* AI Prep icon button */
+.btn-prep {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #ffffff;
+}
+
+.btn-prep:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
 }
 
 /* Modern Modals */
@@ -2982,13 +3137,17 @@ footer {
     }
 
 
+    .logo {
+        font-size: 1.2rem !important;
+    }
+
     .hamburger {
-        transform: scale(0.8);
+        transform: scale(0.85) !important; /* Made smaller as requested */
         transform-origin: right center;
     }
 
-    .logo {
-        font-size: 1.2rem !important;
+    .header-content {
+        gap: 0.4rem !important; /* Significantly reduce gap between icon group and hamburger */
     }
 }
 
@@ -3137,6 +3296,7 @@ footer {
     border: 1px solid rgba(99, 102, 241, 0.3);
     border-radius: 16px;
     padding: 1.5rem;
+    box-sizing: border-box !important;
     margin-bottom: 2rem;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1);
@@ -3167,6 +3327,8 @@ footer {
     margin-bottom: 1.5rem;
     position: relative;
     z-index: 1;
+    width: 100%;
+    min-width: 0;
 }
 
 .ai-magic-icon {
@@ -3187,6 +3349,11 @@ footer {
     0% { transform: scale(1); box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
     50% { transform: scale(1.05); box-shadow: 0 4px 25px rgba(99, 102, 241, 0.6); }
     100% { transform: scale(1); box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
+}
+
+.ai-card-titles {
+    flex: 1;
+    min-width: 0;
 }
 
 .ai-card-titles h2 {
@@ -3368,43 +3535,17 @@ footer {
     }
 }
 
-/* Mobile Date Input Fix - Force Calendar Icon (Stronger Selector) */
-@media (max-width: 768px) {
-    body input[type='date'].form-control {
-        appearance: none !important;
-        -webkit-appearance: none !important;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E") !important;
-        background-repeat: no-repeat !important;
-        background-position: right 12px center !important;
-        background-size: 1.2rem !important;
-        padding-right: 2.5rem !important; /* Make space for icon */
-        position: relative !important;
-    }
-    
-    /* Hide native chevron/arrow if present */
-    body input[type='date']::-webkit-calendar-picker-indicator {
-        opacity: 0 !important;
-        position: absolute !important;
-        right: 0 !important;
-        top: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        cursor: pointer !important;
-        display: block !important;
-        background: transparent !important;
-    }
-}
+
 
 /* Modal Button Fix (Stronger Selector) */
 .modal .modal-content .btn-submit,
 .modal form button[type="submit"],
-.modal .modal-content .btn,
 .modal .modal-content .btn-primary,
 .modal .modal-content .btn-outline,
 .modal .modal-content .btn-danger,
 .modal .form-actions .btn {
-    width: 115px !important;
-    min-width: 0 !important;
+    width: auto !important;
+    min-width: 115px !important;
     height: 42px !important;
     min-height: 42px !important;
     display: inline-flex !important;
@@ -3425,7 +3566,8 @@ footer {
     margin-right: auto !important;
     margin-left: 0 !important;
     display: flex !important;
-    width: 115px !important;
+    width: auto !important;
+    min-width: 115px !important;
 }
 
 .modal .form-actions {
@@ -3437,7 +3579,23 @@ footer {
     padding-top: 1.5rem !important;
     border-top: 1px solid var(--light-border) !important;
 }
+/* Kanban Drag and Drop Styles */
+.kanban-card.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+  border: 2px dashed var(--primary-color);
+  transform: scale(0.98);
+}
 
+.kanban-column.drag-over {
+  background: rgba(99, 102, 241, 0.1);
+  border: 2px solid var(--primary-color);
+  border-radius: 12px;
+}
+
+.kanban-column {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
 #deleteModal .form-actions {
     gap: 0.6rem !important;
     border-top: none !important;
@@ -3490,7 +3648,8 @@ footer {
     .modal .modal-content .btn-outline,
     .modal .modal-content .btn-danger,
     .modal .form-actions .btn {
-        width: 105px !important; /* Better width for mobile */
+        width: auto !important;
+        min-width: 105px !important;
         min-width: 0 !important;
         height: 38px !important;
         min-height: 38px !important;
@@ -3539,6 +3698,27 @@ footer {
 
     .page-num.dots {
         padding: 0 2px !important;
+    }
+}
+
+/* Documents Tab Adjustments */
+.documents-tab .upload-section h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.documents-tab .upload-section p {
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+    .documents-tab .upload-section h3 {
+        font-size: 1.1rem;
+    }
+    .documents-tab .upload-section p {
+        font-size: 0.75rem;
     }
 }
 

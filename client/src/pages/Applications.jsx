@@ -1,11 +1,17 @@
 import React, { useState, useMemo } from 'react';
-import { Search, ChevronDown, LayoutGrid, List, Download, Edit2, Trash2, MapPin, Calendar, Building, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, ChevronDown, LayoutGrid, List, Download, Edit2, Trash2, MapPin, Calendar, Building, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import PrepModal from '../components/PrepModal';
+import translations from '../utils/translations';
 
-const Applications = ({ applications, onEdit, onDelete, loading }) => {
+const Applications = ({ applications, onEdit, onDelete, onStatusChange, loading, language }) => {
+  const t = translations[language] || translations['English'];
   const [view, setView] = useState('table');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [prepModalOpen, setPrepModalOpen] = useState(false);
+  const [selectedApp, setSelectedApp] = useState(null);
+  const [draggedAppId, setDraggedAppId] = useState(null);
   const itemsPerPage = 10;
 
   const filteredApplications = useMemo(() => {
@@ -30,10 +36,39 @@ const Applications = ({ applications, onEdit, onDelete, loading }) => {
 
   const kanbanColumns = ['applied', 'interview', 'test', 'offer', 'rejected', 'canceled'];
 
+  const handleDragStart = (e, id) => {
+    setDraggedAppId(id);
+    e.dataTransfer.setData('text/plain', id);
+    e.currentTarget.classList.add('dragging');
+  };
+
+  const handleDragEnd = (e) => {
+    e.currentTarget.classList.remove('dragging');
+    setDraggedAppId(null);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.currentTarget.classList.add('drag-over');
+  };
+
+  const handleDragLeave = (e) => {
+    e.currentTarget.classList.remove('drag-over');
+  };
+
+  const handleDrop = (e, newStatus) => {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    const id = e.dataTransfer.getData('text/plain');
+    if (id && onStatusChange) {
+      onStatusChange(id, newStatus);
+    }
+  };
+
   return (
     <div id="applications-page" className="page">
       <div className="header-actions" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h1>Job Applications</h1>
+        <h1>{t.applications}</h1>
       </div>
 
       <div className="apps-toolbar">
@@ -44,7 +79,7 @@ const Applications = ({ applications, onEdit, onDelete, loading }) => {
               <input 
                 type="text" 
                 className="form-control" 
-                placeholder="Search jobs, companies..." 
+                placeholder={t.search_placeholder} 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -57,13 +92,11 @@ const Applications = ({ applications, onEdit, onDelete, loading }) => {
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
-                <option value="all">All Statuses</option>
-                <option value="applied">Applied</option>
-                <option value="interview">Interview</option>
-                <option value="test">Test</option>
-                <option value="offer">Offer</option>
-                <option value="rejected">Rejected</option>
-                <option value="canceled">Canceled</option>
+                <option value="all">{t.all}</option>
+                <option value="applied">{t.applied}</option>
+                <option value="interview">{t.interview}</option>
+                <option value="offer">{t.offer}</option>
+                <option value="rejected">{t.rejected}</option>
               </select>
               <ChevronDown className="chevron" size={16} />
             </div>
@@ -96,12 +129,12 @@ const Applications = ({ applications, onEdit, onDelete, loading }) => {
           <table className="applications-table">
             <thead>
               <tr>
-                <th>Job Title</th>
-                <th>Company</th>
-                <th>Location</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>{t.job_title}</th>
+                <th>{t.company}</th>
+                <th>{t.location}</th>
+                <th>{t.date}</th>
+                <th>{t.status}</th>
+                <th>{t.actions}</th>
               </tr>
             </thead>
             <tbody>
@@ -125,10 +158,11 @@ const Applications = ({ applications, onEdit, onDelete, loading }) => {
                     <td>{new Date(app.date).toLocaleDateString()}</td>
                     <td>
                       <span className={`status-badge status-${app.status}`}>
-                        {app.status}
+                        {t[app.status] || app.status}
                       </span>
                     </td>
                     <td className="action-buttons">
+                      <button className="btn-action btn-prep" onClick={() => { setSelectedApp(app); setPrepModalOpen(true); }} title="AI Prep"><Sparkles size={16} /></button>
                       <button className="btn-action btn-edit" onClick={() => onEdit(app)}><Edit2 size={16} /></button>
                       <button className="btn-action btn-delete" onClick={() => onDelete(app._id)}><Trash2 size={16} /></button>
                     </td>
@@ -136,7 +170,7 @@ const Applications = ({ applications, onEdit, onDelete, loading }) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="no-data">No applications found matching your filters.</td>
+                  <td colSpan="6" className="no-data">{t.no_apps}</td>
                 </tr>
               )}
             </tbody>
@@ -146,9 +180,15 @@ const Applications = ({ applications, onEdit, onDelete, loading }) => {
         <div className="kanban-container">
           <div className="kanban-board">
             {kanbanColumns.map(status => (
-              <div key={status} className="kanban-column">
+              <div 
+                key={status} 
+                className="kanban-column"
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, status)}
+              >
                 <div className="kanban-column-header">
-                  {status.toUpperCase()}
+                  {(t[status] || status).toUpperCase()}
                   <span className="count">
                     {filteredApplications.filter(a => a.status === status).length}
                   </span>
@@ -161,7 +201,14 @@ const Applications = ({ applications, onEdit, onDelete, loading }) => {
                   ) : filteredApplications
                     .filter(a => a.status === status)
                     .map(app => (
-                      <div key={app._id} className="kanban-card" style={{ opacity: app.loading ? 0.6 : 1 }}>
+                      <div 
+                        key={app._id} 
+                        className={`kanban-card ${draggedAppId === app._id ? 'dragging' : ''}`}
+                        style={{ opacity: app.loading ? 0.6 : 1 }}
+                        draggable="true"
+                        onDragStart={(e) => handleDragStart(e, app._id)}
+                        onDragEnd={handleDragEnd}
+                      >
                         <h4>{app.jobTitle} {app.loading && <span className="loading-dots">...</span>}</h4>
                         <span className="company">{app.company}</span>
                         <div className="meta">
@@ -169,6 +216,7 @@ const Applications = ({ applications, onEdit, onDelete, loading }) => {
                           <span><Calendar size={12} /> {new Date(app.date).toLocaleDateString()}</span>
                         </div>
                         <div className="actions">
+                           <button className="btn-action btn-prep" onClick={() => { setSelectedApp(app); setPrepModalOpen(true); }} title="AI Prep"><Sparkles size={14} /></button>
                            <button className="btn-action btn-edit" onClick={() => onEdit(app)}><Edit2 size={14} /></button>
                            <button className="btn-action btn-delete" onClick={() => onDelete(app._id)}><Trash2 size={14} /></button>
                         </div>
@@ -234,6 +282,12 @@ const Applications = ({ applications, onEdit, onDelete, loading }) => {
           </button>
         </div>
       )}
+
+      <PrepModal 
+        isOpen={prepModalOpen} 
+        onClose={() => { setPrepModalOpen(false); setSelectedApp(null); }} 
+        application={selectedApp}
+      />
     </div>
   );
 };

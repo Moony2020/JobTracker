@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+import { Sparkles, Edit2, Trash2, CheckCircle2 } from 'lucide-react';
 import StatCard from '../components/StatCard';
+import PrepModal from '../components/PrepModal';
 import api from '../services/api';
+import translations from '../utils/translations';
 
-const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, loading }) => {
+const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, loading, language }) => {
+  const t = translations[language] || translations['English'];
   const [formData, setFormData] = useState({
     jobTitle: '',
     company: '',
@@ -10,10 +14,19 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, lo
     date: new Date().toLocaleDateString('en-CA'),
     status: 'applied',
     notes: '',
+    jobLink: '',
+    expectedSalary: '',
+    offeredSalary: '',
+    recruiterName: '',
+    recruiterEmail: '',
   });
 
   const [aiText, setAiText] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
+  
+  // AI Prep Modal state
+  const [prepModalOpen, setPrepModalOpen] = useState(false);
+  const [selectedAppForPrep, setSelectedAppForPrep] = useState(null);
 
   const handleAiParse = async () => {
     if (!aiText.trim()) return;
@@ -29,6 +42,8 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, lo
         location: data.location || prev.location,
         status: data.status || prev.status,
         notes: data.notes || prev.notes,
+        jobLink: data.jobLink || prev.jobLink,
+        expectedSalary: data.expectedSalary || prev.expectedSalary,
       }));
       
       setAiText(''); // Clear search on success
@@ -55,13 +70,21 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, lo
       date: new Date().toLocaleDateString('en-CA'),
       status: 'applied',
       notes: '',
+      jobLink: '',
+      expectedSalary: '',
+      offeredSalary: '',
+      recruiterName: '',
+      recruiterEmail: '',
+      recruiterLinkedIn: '',
     });
   };
 
   return (
     <div id="dashboard-page" className="page">
-      <h1>Job Application Dashboard</h1>
-      <p>Welcome to your job application tracker. Keep track of all your applications in one place.</p>
+      <div id="dashboard-header" className="dashboard-intro">
+        <h1>{t.dashboard_title}</h1>
+        <p>{t.welcome_message}</p>
+      </div>
 
       <div className="stats-cards">
         {loading && applications.length === 0 ? (
@@ -74,11 +97,11 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, lo
           </>
         ) : (
           <>
-            <StatCard label="This Week" value={stats.thisWeek} />
-            <StatCard label="This Month" value={stats.thisMonth} />
-            <StatCard label="Interviews" value={stats.interviews} />
-            <StatCard label="Total Applications" value={stats.total} />
-            <StatCard label="Success Rate" value={`${stats.successRate}%`} />
+            <StatCard label={t.this_week} value={stats.thisWeek} />
+            <StatCard label={t.this_month} value={stats.thisMonth} />
+            <StatCard label={t.interviews} value={stats.interviews} />
+            <StatCard label={t.total_apps} value={stats.total} />
+            <StatCard label={t.success_rate} value={`${stats.successRate}%`} />
           </>
         )}
       </div>
@@ -86,22 +109,20 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, lo
       <div className={`form-section ai-parser-card ${aiLoading ? 'ai-loading' : ''}`}>
         <div className="ai-card-header">
           <div className="ai-magic-icon">
-            <svg viewBox="0 0 24 24" width="24" height="24">
-              <path fill="currentColor" d="M12 2L14.5 9L21.5 11.5L14.5 14L12 21L9.5 14L2.5 11.5L9.5 9L12 2Z" />
-            </svg>
+            <Sparkles size={24} />
           </div>
           <div className="ai-card-titles">
-            <h2>AI Smart Fill</h2>
-            <p>Paste a job description below and let AI fill the form for you.</p>
+            <h2>{t.ai_smart_fill}</h2>
+            <p>{t.ai_smart_fill_description}</p>
           </div>
-          {aiLoading && <div className="ai-pulse-status">Scanning Application...</div>}
+          {aiLoading && <div className="ai-pulse-status">{t.scanning_application}</div>}
         </div>
 
         <div className="ai-card-body">
           <div className="ai-input-group">
             <textarea 
               className="ai-textarea" 
-              placeholder="Paste job description here..." 
+              placeholder={t.paste_job_description_placeholder}
               value={aiText}
               onChange={(e) => setAiText(e.target.value)}
               disabled={aiLoading}
@@ -113,13 +134,11 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, lo
               disabled={aiLoading || !aiText.trim()}
             >
               {aiLoading ? (
-                <div className="loading-dots-mini">AI is parsing</div>
+                <div className="loading-dots-mini">{t.loading}</div>
               ) : (
                 <>
-                  <svg viewBox="0 0 24 24" width="18" height="18" className="btn-icon">
-                    <path fill="currentColor" d="M17.66 9.53l-7.07 7.07-4.24-4.24 1.41-1.41 2.83 2.83 5.66-5.66 1.41 1.41z" />
-                  </svg>
-                  Parse & Fill
+                  <Sparkles size={18} className="btn-icon" />
+                  {t.parse_and_fill}
                 </>
               )}
             </button>
@@ -128,60 +147,80 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, lo
       </div>
 
       <div className="form-section">
-        <h2>Add New Application</h2>
+        <h2>{t.add_application}</h2>
         <form id="application-form" onSubmit={handleSubmit}>
           <div className="form-grid">
             <div className="form-group">
-              <label htmlFor="job-title">Job Title *</label>
+              <label htmlFor="job-title">{t.job_title} *</label>
               <input type="text" id="job-title" className="form-control" value={formData.jobTitle} onChange={handleChange} required />
             </div>
             <div className="form-group">
-              <label htmlFor="company">Company *</label>
+              <label htmlFor="company">{t.company} *</label>
               <input type="text" id="company" className="form-control" value={formData.company} onChange={handleChange} required />
             </div>
             <div className="form-group">
-              <label htmlFor="location">Location (City/Country)</label>
+              <label htmlFor="location">{t.location}</label>
               <input type="text" id="location" className="form-control" placeholder="e.g., Stockholm, Sweden" value={formData.location} onChange={handleChange} />
             </div>
             <div className="form-group">
-              <label htmlFor="application-date">Application Date *</label>
+              <label htmlFor="application-date">{t.date} *</label>
               <input type="date" id="application-date" className="form-control" value={formData.date} onChange={handleChange} required />
             </div>
             <div className="form-group select-group">
-              <label htmlFor="status">Status *</label>
+              <label htmlFor="status">{t.status} *</label>
               <div className="select-wrapper">
                 <select id="status" className="form-control" value={formData.status} onChange={handleChange} required>
-                  <option value="applied">Applied</option>
-                  <option value="interview">Interview</option>
-                  <option value="test">Test</option>
-                  <option value="offer">Offer</option>
-                  <option value="rejected">Rejected</option>
-                  <option value="canceled">Canceled</option>
+                  <option value="applied">{t.applied}</option>
+                  <option value="interview">{t.interview}</option>
+                  <option value="test">{t.test}</option>
+                  <option value="offer">{t.offer}</option>
+                  <option value="rejected">{t.rejected}</option>
+                  <option value="canceled">{t.canceled}</option>
                 </select>
                 <i className="ri-arrow-down-s-fill chevron" aria-hidden="true"></i>
               </div>
             </div>
             <div className="form-group full-width">
-              <label htmlFor="notes">Notes</label>
-              <textarea id="notes" className="form-control" rows="3" value={formData.notes} onChange={handleChange}></textarea>
+              <label htmlFor="notes">{t.notes}</label>
+              <textarea id="notes" className="form-control" rows="2" value={formData.notes} onChange={handleChange}></textarea>
+            </div>
+            <div className="form-group">
+              <label htmlFor="jobLink">{t.job_posting_url}</label>
+              <input type="url" id="jobLink" className="form-control" placeholder="https://..." value={formData.jobLink} onChange={handleChange} />
+            </div>
+            <div className="form-group">
+              <label htmlFor="expectedSalary">{t.expected_salary}</label>
+              <input type="text" id="expectedSalary" className="form-control" placeholder="e.g., 50k - 60k" value={formData.expectedSalary} onChange={handleChange} />
+            </div>
+            <div className="form-group">
+              <label htmlFor="offeredSalary">{t.offered_salary}</label>
+              <input type="text" id="offeredSalary" className="form-control" placeholder="e.g., 55k" value={formData.offeredSalary} onChange={handleChange} />
+            </div>
+            <div className="form-group">
+              <label htmlFor="recruiterName">{t.recruiter_name}</label>
+              <input type="text" id="recruiterName" className="form-control" value={formData.recruiterName} onChange={handleChange} />
+            </div>
+            <div className="form-group">
+              <label htmlFor="recruiterEmail">{t.recruiter_email}</label>
+              <input type="email" id="recruiterEmail" className="form-control" placeholder="e.g., john@company.com" value={formData.recruiterEmail} onChange={handleChange} />
             </div>
           </div>
-          <button type="submit" className="btn-submit">Add Application</button>
+          <button type="submit" className="btn-submit">{t.add_application}</button>
         </form>
       </div>
 
-      <div className="recent-applications">
-        <h2>Recent Applications</h2>
+      <div id="recent-apps" className="recent-applications-section">
+        <h2>{t.recent_applications}</h2>
         <div className="table-container">
           <table className="applications-table">
             <thead>
               <tr>
-                <th>Job Title</th>
-                <th>Company</th>
-                <th>Location</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>{t.job_title}</th>
+                <th>{t.company}</th>
+                <th>{t.location}</th>
+                <th>{t.date}</th>
+                <th>{t.status}</th>
+                <th>{t.actions}</th>
               </tr>
             </thead>
             <tbody>
@@ -196,41 +235,58 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, lo
                     <td><div className="skeleton-loader" style={{ height: '30px', width: '60px' }} /></td>
                   </tr>
                 ))
-              ) : (
-                applications.slice(0, 5).map((app) => (
+              ) : applications.length > 0 ? (
+                applications.slice(0, 5).map(app => (
                   <tr key={app._id} style={{ opacity: app.loading ? 0.6 : 1 }}>
                     <td>{app.jobTitle} {app.loading && <span className="loading-dots">...</span>}</td>
                     <td>{app.company}</td>
                     <td>{app.location || '-'}</td>
                     <td>{new Date(app.date).toLocaleDateString()}</td>
-                    <td>
+                    <td className="status-cell">
                       <span className={`status-badge status-${app.status}`}>
-                        {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                        {t[app.status] || app.status}
                       </span>
                     </td>
                     <td className="action-buttons">
                       <button 
-                        className="btn-action icon-button btn-edit" 
-                        title="Edit"
-                        onClick={() => onEdit(app)}
+                        className="btn-action btn-prep" 
+                        title={t.ai_prep}
+                        onClick={() => { setSelectedAppForPrep(app); setPrepModalOpen(true); }}
                       >
-                        <i className="ri-edit-2-line"></i>
+                        <Sparkles size={16} />
                       </button>
                       <button 
-                        className="btn-action icon-button btn-delete" 
-                        title="Delete"
+                        className="btn-action btn-edit" 
+                        title={t.edit}
+                        onClick={() => onEdit(app)}
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button 
+                        className="btn-action btn-delete" 
+                        title={t.delete}
                         onClick={() => onDelete(app._id)}
                       >
-                        <i className="ri-delete-bin-6-line"></i>
+                        <Trash2 size={16} />
                       </button>
                     </td>
                   </tr>
                 ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="no-data">{t.no_apps}</td>
+                </tr>
               )}
             </tbody>
           </table>
         </div>
       </div>
+
+      <PrepModal 
+        isOpen={prepModalOpen} 
+        onClose={() => { setPrepModalOpen(false); setSelectedAppForPrep(null); }} 
+        application={selectedAppForPrep}
+      />
     </div>
   );
 };

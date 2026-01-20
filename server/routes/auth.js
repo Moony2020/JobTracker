@@ -5,6 +5,10 @@ const User = require('../models/User');
 const auth = require('../middleware/auth');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const multer = require('multer');
+const pdf = require('pdf-parse'); // standard import
+const fs = require('fs');
+const path = require('path');
 
 const router = express.Router();
 
@@ -12,6 +16,32 @@ const router = express.Router();
 const generateToken = (userId) => {
     return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
 };
+
+// Multer Config for Profile CV Upload
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadPath = path.join(__dirname, '../uploads/');
+        if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, { recursive: true });
+        }
+        cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+        cb(null, `cv-${Date.now()}-${file.originalname}`);
+    }
+});
+
+const upload = multer({ 
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype === 'application/pdf') {
+            cb(null, true);
+        } else {
+            cb(new Error('Only PDF files are allowed'), false);
+        }
+    }
+});
 
 // Register
 router.post('/register', [
@@ -316,6 +346,122 @@ router.post('/reset-password/:token', [
     } catch (error) {
         console.error('Reset password error:', error);
         res.status(500).json({ message: 'Server error during password reset' });
+    }
+});
+
+// Get User Profile
+router.get('/profile', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('profile');
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        res.json({ profile: user.profile || "" });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Update User Profile
+router.put('/profile', auth, async (req, res) => {
+    try {
+        const { profile } = req.body;
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        
+        user.profile = profile;
+        await user.save();
+        res.json({ message: 'Profile updated successfully', profile: user.profile });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+router.post('/profile/upload', [auth, upload.single('cv')], async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        const dataBuffer = fs.readFileSync(req.file.path);
+        // Explicitly convert Buffer to Uint8Array as some parser versions require it
+        const uint8Array = new Uint8Array(dataBuffer);
+        
+        // Final robust check for the parse function
+        let parseFunc = typeof pdf === 'function' ? pdf : (pdf.default || pdf.PDFParse || Object.values(pdf).find(v => typeof v === 'function'));
+        
+        if (typeof parseFunc !== 'function') {
+            try {
+                const internal = require('pdf-parse/lib/pdf-parse.js');
+                parseFunc = typeof internal === 'function' ? internal : (internal.default || internal);
+            } catch (e) {}
+        }
+        
+        if (typeof parseFunc !== 'function') {
+            throw new Error('PDF parsing library is not loaded correctly - no parsing function found');
+        }
+        
+        let data;
+        try {
+            // Try calling as a function first (common for standard pdf-parse)
+            data = await parseFunc(uint8Array);
+        } catch (err) {
+            // Handle class constructors or specific property requirements
+            console.log('PDF Parse Attempt 1 failed, trying fallback. Error:', err.message);
+            try {
+                const parser = new parseFunc(uint8Array);
+                data = await (parser.parse ? parser.parse() : (parser.getText ? parser.getText() : parser));
+            } catch (innerErr) {
+                // Final attempt: if it's an object with a .parse method
+                if (typeof parseFunc.parse === 'function') {
+                    data = await parseFunc.parse(uint8Array);
+                } else {
+                    throw new Error('PDF parser failure: ' + innerErr.message);
+                }
+            }
+        }
+
+        if (!data) {
+            throw new Error('PDF parsing returned no data');
+        }
+
+        // Be extremely defensive about where the text is located
+        let text = "";
+        if (typeof data === 'string') {
+            text = data;
+        } else if (data && typeof data === 'object') {
+            // Standard pdf-parse uses .text, some forks use .content
+            text = data.text || data.content || data.body || "";
+            
+            // If still empty, search for the longest string property
+            if (!text) {
+                const stringProps = Object.values(data).filter(v => typeof v === 'string');
+                if (stringProps.length > 0) {
+                    text = stringProps.sort((a, b) => b.length - a.length)[0];
+                }
+            }
+        }
+
+        if (!text || text.length < 10) {
+            throw new Error('Could not extract text from PDF. Ensure it is not an image-only scan.');
+        }
+        
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        
+        // Clean and save
+        const parsedText = text.replace(/\s+/g, ' ').trim();
+        user.profile = parsedText;
+        await user.save();
+        
+        // delete the temporary file after parsing
+        fs.unlinkSync(req.file.path);
+        
+        res.json({ 
+            message: 'CV uploaded and parsed successfully', 
+            profile: user.profile 
+        });
+    } catch (error) {
+        console.error('CV upload error:', error);
+        res.status(500).json({ message: 'Server error during CV upload: ' + error.message });
     }
 });
 

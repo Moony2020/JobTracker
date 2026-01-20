@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, LogIn, X } from 'lucide-react';
 
 const Login = ({ onClose }) => {
   const { login } = useAuth();
@@ -65,8 +65,35 @@ const Login = ({ onClose }) => {
     <div className="modal" style={{ display: 'flex' }} onClick={handleBackdropClick}>
       <div className="modal-content">
         <div className="modal-header">
-          <h2>{view === 'login' ? 'Login' : 'Reset Password'}</h2>
-          <button className="close-modal" onClick={onClose}>&times;</button>
+          <h2 style={{ margin: 0, fontSize: '1.2rem' }}>{view === 'login' ? 'Login' : 'Reset Password'}</h2>
+          <button 
+            className="close-modal" 
+            onClick={onClose}
+            style={{
+              width: '30px',
+              height: '30px',
+              padding: 0,
+              background: 'rgba(150, 150, 150, 0.15)',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: 'none',
+              color: 'var(--text-color)',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
+              e.currentTarget.style.color = 'var(--danger-color)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'rgba(150, 150, 150, 0.15)';
+              e.currentTarget.style.color = 'var(--text-color)';
+            }}
+          >
+            <X size={16} />
+          </button>
         </div>
         
         {error && <div className="notification error show" style={{ position: 'relative', top: 0, right: 0, marginBottom: '1rem', width: '100%', borderRadius: '8px' }}>{error}</div>}

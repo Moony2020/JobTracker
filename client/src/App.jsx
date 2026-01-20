@@ -12,16 +12,24 @@ import ChangePassword from './components/ChangePassword';
 import ResetPassword from './components/ResetPassword';
 import EditApplicationModal from './components/EditApplicationModal';
 import DeleteConfirmationModal from './components/DeleteConfirmationModal';
+import ProfileModal from './components/ProfileModal';
 
 const AppContent = () => {
   const { user, loading: authLoading } = useAuth();
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(localStorage.getItem('theme') !== 'light');
+  const [language, setLanguage] = useState(localStorage.getItem('jt_language') || 'English');
   const [currentPage, setCurrentPage] = useState('dashboard');
+  
+  useEffect(() => {
+    document.documentElement.dir = language === 'Arabic' ? 'rtl' : 'ltr';
+    localStorage.setItem('jt_language', language);
+  }, [language]);
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   const [resetToken, setResetToken] = useState(() => {
     const hash = window.location.hash;
     if (hash.startsWith('#reset/')) {
@@ -153,6 +161,27 @@ const AppContent = () => {
     }
   };
 
+  const handleStatusChange = async (id, newStatus) => {
+    const appToUpdate = applications.find(a => a._id === id);
+    if (!appToUpdate || appToUpdate.status === newStatus) return;
+
+    // Optimistic Update
+    const previousApplications = [...applications];
+    setApplications(prev => prev.map(app => 
+      app._id === id ? { ...app, status: newStatus, loading: true } : app
+    ));
+
+    try {
+      const response = await api.put(`/applications/${id}`, { ...appToUpdate, status: newStatus });
+      setApplications(prev => prev.map(app => app._id === id ? response.data : app));
+      showNotify(`Status updated to ${newStatus}`);
+    } catch (error) {
+      console.error('Failed to update status', error);
+      setApplications(previousApplications); // Rollback
+      showNotify('Failed to update status', 'error');
+    }
+  };
+
   const stats = useMemo(() => {
     const total = applications.length;
     const interviews = applications.filter(a => a.status === 'interview').length;
@@ -193,10 +222,13 @@ const AppContent = () => {
       <Header 
         darkMode={darkMode} 
         toggleTheme={() => setDarkMode(!darkMode)} 
+        language={language}
+        setLanguage={setLanguage}
         onOpenPage={setCurrentPage}
         onLoginClick={() => setShowLogin(true)}
         onRegisterClick={() => setShowRegister(true)}
         onChangePasswordClick={() => setShowChangePassword(true)}
+        onProfileClick={() => setShowProfile(true)}
         activePage={currentPage}
       />
       <main className="container" style={{ marginTop: '1.5rem' }}>
@@ -208,6 +240,7 @@ const AppContent = () => {
             onEdit={handleEditClick}
             onDelete={handleDeleteClick}
             loading={loading}
+            language={language}
           />
         )}
         {currentPage === 'applications' && (
@@ -215,27 +248,31 @@ const AppContent = () => {
              applications={applications}
              onEdit={handleEditClick}
              onDelete={handleDeleteClick}
+             onStatusChange={handleStatusChange}
              loading={loading}
+             language={language}
           />
         )}
         {currentPage === 'statistics' && (
-          <Statistics applications={applications} loading={loading} />
+          <Statistics applications={applications} loading={loading} language={language} />
         )}
       </main>
 
-      {showLogin && <Login onClose={() => setShowLogin(false)} />}
-      {showRegister && <Register onClose={() => setShowRegister(false)} />}
-      {showChangePassword && <ChangePassword onClose={() => setShowChangePassword(false)} />}
-      {resetToken && <ResetPassword token={resetToken} onClose={() => setResetToken(null)} />}
+      {showLogin && <Login onClose={() => setShowLogin(false)} language={language} />}
+      {showRegister && <Register onClose={() => setShowRegister(false)} language={language} />}
+      {showChangePassword && <ChangePassword onClose={() => setShowChangePassword(false)} language={language} />}
+      {showProfile && <ProfileModal isOpen={showProfile} onClose={() => setShowProfile(false)} language={language} />}
+      {resetToken && <ResetPassword token={resetToken} onClose={() => setResetToken(null)} language={language} />}
       
       {/* Edit Modal */}
-      {isEditModalOpen && (
-        <EditApplicationModal 
-          application={selectedApplication}
-          onClose={() => setIsEditModalOpen(false)}
-          onUpdate={handleUpdateApplication}
-        />
-      )}
+      {isEditModalOpen &&          <EditApplicationModal 
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            application={selectedApplication}
+            onUpdate={handleUpdateApplication}
+            language={language}
+          />
+      }
 
       {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal 
