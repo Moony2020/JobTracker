@@ -50,7 +50,7 @@ router.post(
     auth,
     body("jobTitle").trim().notEmpty().withMessage("Job title is required"),
     body("company").trim().notEmpty().withMessage("Company name is required"),
-    body("date").isDate().withMessage("Valid date is required"),
+    body("date").isISO8601().withMessage("Valid date is required"),
     body("status")
       .isIn(["applied", "interview", "test", "offer", "rejected", "canceled"])
       .withMessage("Invalid status"),
@@ -117,7 +117,7 @@ router.put(
     auth,
     body("jobTitle").trim().notEmpty().withMessage("Job title is required"),
     body("company").trim().notEmpty().withMessage("Company name is required"),
-    body("date").isDate().withMessage("Valid date is required"),
+    body("date").isISO8601().withMessage("Valid date is required"),
     body("status")
       .isIn(["applied", "interview", "test", "offer", "rejected", "canceled"])
       .withMessage("Invalid status"),

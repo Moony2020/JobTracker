@@ -14,6 +14,7 @@ import ResetPassword from './components/ResetPassword';
 import EditApplicationModal from './components/EditApplicationModal';
 import DeleteConfirmationModal from './components/DeleteConfirmationModal';
 import ProfileModal from './components/ProfileModal';
+import ScrollToTop from './components/ScrollToTop';
 
 const AppContent = () => {
   const { user, loading: authLoading } = useAuth();
@@ -240,6 +241,7 @@ const AppContent = () => {
             onAddApplication={handleAddApplication} 
             onEdit={handleEditClick}
             onDelete={handleDeleteClick}
+            onStatusChange={handleStatusChange}
             loading={loading}
             language={language}
           />
@@ -294,6 +296,8 @@ const AppContent = () => {
 
       {loading && <div className="loading-overlay"><div className="loading-spinner"></div><p>Processing...</p></div>}
       
+      <ScrollToTop />
+
       <footer>
         <div className="container">
           <p>&copy; 2026 JobTracker. All rights reserved.</p>

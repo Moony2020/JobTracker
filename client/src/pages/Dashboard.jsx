@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { Sparkles, Edit2, Trash2, CheckCircle2 } from 'lucide-react';
+import { Sparkles, Edit2, Trash2, CheckCircle2, LayoutGrid, List } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import PrepModal from '../components/PrepModal';
+import KanbanBoard from '../components/KanbanBoard';
 import api from '../services/api';
 import translations from '../utils/translations';
 
-const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, loading, language }) => {
+const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, onStatusChange, loading, language }) => {
   const t = translations[language] || translations['English'];
+  const [viewMode, setViewMode] = useState('list'); // 'list' or 'board'
+  
+  // ... existing form state ...
   const [formData, setFormData] = useState({
     jobTitle: '',
     company: '',
@@ -28,6 +32,7 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, lo
   const [prepModalOpen, setPrepModalOpen] = useState(false);
   const [selectedAppForPrep, setSelectedAppForPrep] = useState(null);
 
+  // ... (handlers remain same) ...
   const handleAiParse = async () => {
     if (!aiText.trim()) return;
     try {
@@ -106,6 +111,7 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, lo
         )}
       </div>
 
+      {/* AI Section (Unchanged) */}
       <div className={`form-section ai-parser-card ${aiLoading ? 'ai-loading' : ''}`}>
         <div className="ai-card-header">
           <div className="ai-magic-icon">
@@ -146,9 +152,11 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, lo
         </div>
       </div>
 
+      {/* Manual Form (Unchanged) */}
       <div className="form-section">
         <h2>{t.add_application}</h2>
         <form id="application-form" onSubmit={handleSubmit}>
+          {/* ... (form fields unchanged) ... */}
           <div className="form-grid">
             <div className="form-group">
               <label htmlFor="job-title">{t.job_title} *</label>
@@ -210,76 +218,130 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, lo
       </div>
 
       <div id="recent-apps" className="recent-applications-section">
-        <h2>{t.recent_applications}</h2>
-        <div className="table-container">
-          <table className="applications-table">
-            <thead>
-              <tr>
-                <th>{t.job_title}</th>
-                <th>{t.company}</th>
-                <th>{t.location}</th>
-                <th>{t.date}</th>
-                <th>{t.status}</th>
-                <th>{t.actions}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading && applications.length === 0 ? (
-                [...Array(5)].map((_, i) => (
-                  <tr key={i}>
-                    <td><div className="skeleton-loader" style={{ height: '20px', width: '80%' }} /></td>
-                    <td><div className="skeleton-loader" style={{ height: '20px', width: '60%' }} /></td>
-                    <td><div className="skeleton-loader" style={{ height: '20px', width: '70%' }} /></td>
-                    <td><div className="skeleton-loader" style={{ height: '20px', width: '50%' }} /></td>
-                    <td><div className="skeleton-loader" style={{ height: '24px', width: '60px', borderRadius: '12px' }} /></td>
-                    <td><div className="skeleton-loader" style={{ height: '30px', width: '60px' }} /></td>
-                  </tr>
-                ))
-              ) : applications.length > 0 ? (
-                applications.slice(0, 5).map(app => (
-                  <tr key={app._id} style={{ opacity: app.loading ? 0.6 : 1 }}>
-                    <td>{app.jobTitle} {app.loading && <span className="loading-dots">...</span>}</td>
-                    <td>{app.company}</td>
-                    <td>{app.location || '-'}</td>
-                    <td>{new Date(app.date).toLocaleDateString()}</td>
-                    <td className="status-cell">
-                      <span className={`status-badge status-${app.status}`}>
-                        {t[app.status] || app.status}
-                      </span>
-                    </td>
-                    <td className="action-buttons">
-                      <button 
-                        className="btn-action btn-prep" 
-                        title={t.ai_prep}
-                        onClick={() => { setSelectedAppForPrep(app); setPrepModalOpen(true); }}
-                      >
-                        <Sparkles size={16} />
-                      </button>
-                      <button 
-                        className="btn-action btn-edit" 
-                        title={t.edit}
-                        onClick={() => onEdit(app)}
-                      >
-                        <Edit2 size={16} />
-                      </button>
-                      <button 
-                        className="btn-action btn-delete" 
-                        title={t.delete}
-                        onClick={() => onDelete(app._id)}
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="no-data">{t.no_apps}</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h2 style={{ margin: 0 }}>{t.recent_applications}</h2>
+            <div className="view-toggle" style={{ 
+                background: 'var(--glass-bg)', 
+                padding: '4px', 
+                borderRadius: '8px', 
+                border: '1px solid var(--light-border)',
+                display: 'flex',
+                gap: '4px'
+            }}>
+                <button 
+                    onClick={() => setViewMode('list')}
+                    style={{
+                        background: viewMode === 'list' ? 'var(--primary-color)' : 'transparent',
+                        color: viewMode === 'list' ? 'white' : 'var(--text-muted)',
+                        border: 'none',
+                        borderRadius: '6px',
+                        padding: '6px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}
+                    title="List View"
+                >
+                    <List size={18} />
+                </button>
+                <button 
+                    onClick={() => setViewMode('board')}
+                    style={{
+                        background: viewMode === 'board' ? 'var(--primary-color)' : 'transparent',
+                        color: viewMode === 'board' ? 'white' : 'var(--text-muted)',
+                        border: 'none',
+                        borderRadius: '6px',
+                        padding: '6px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}
+                    title="Board View"
+                >
+                    <LayoutGrid size={18} />
+                </button>
+            </div>
         </div>
+
+        {viewMode === 'board' ? (
+            <KanbanBoard 
+                applications={applications}
+                onStatusChange={onStatusChange}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onPrep={(app) => { setSelectedAppForPrep(app); setPrepModalOpen(true); }}
+            />
+        ) : (
+            <div className="table-container">
+            <table className="applications-table">
+                <thead>
+                <tr>
+                    <th>{t.job_title}</th>
+                    <th>{t.company}</th>
+                    <th>{t.location}</th>
+                    <th>{t.date}</th>
+                    <th>{t.status}</th>
+                    <th>{t.actions}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {loading && applications.length === 0 ? (
+                    [...Array(5)].map((_, i) => (
+                    <tr key={i}>
+                        <td><div className="skeleton-loader" style={{ height: '20px', width: '80%' }} /></td>
+                        <td><div className="skeleton-loader" style={{ height: '20px', width: '60%' }} /></td>
+                        <td><div className="skeleton-loader" style={{ height: '20px', width: '70%' }} /></td>
+                        <td><div className="skeleton-loader" style={{ height: '20px', width: '50%' }} /></td>
+                        <td><div className="skeleton-loader" style={{ height: '24px', width: '60px', borderRadius: '12px' }} /></td>
+                        <td><div className="skeleton-loader" style={{ height: '30px', width: '60px' }} /></td>
+                    </tr>
+                    ))
+                ) : applications.length > 0 ? (
+                    applications.slice(0, 5).map(app => (
+                    <tr key={app._id} style={{ opacity: app.loading ? 0.6 : 1 }}>
+                        <td>{app.jobTitle} {app.loading && <span className="loading-dots">...</span>}</td>
+                        <td>{app.company}</td>
+                        <td>{app.location || '-'}</td>
+                        <td>{new Date(app.date).toLocaleDateString()}</td>
+                        <td className="status-cell">
+                        <span className={`status-badge status-${app.status}`}>
+                            {t[app.status] || app.status}
+                        </span>
+                        </td>
+                        <td className="action-buttons">
+                        <button 
+                            className="btn-action btn-prep" 
+                            title={t.ai_prep}
+                            onClick={() => { setSelectedAppForPrep(app); setPrepModalOpen(true); }}
+                        >
+                            <Sparkles size={16} />
+                        </button>
+                        <button 
+                            className="btn-action btn-edit" 
+                            title={t.edit}
+                            onClick={() => onEdit(app)}
+                        >
+                            <Edit2 size={16} />
+                        </button>
+                        <button 
+                            className="btn-action btn-delete" 
+                            title={t.delete}
+                            onClick={() => onDelete(app._id)}
+                        >
+                            <Trash2 size={16} />
+                        </button>
+                        </td>
+                    </tr>
+                    ))
+                ) : (
+                    <tr>
+                    <td colSpan="6" className="no-data">{t.no_apps}</td>
+                    </tr>
+                )}
+                </tbody>
+            </table>
+            </div>
+        )}
       </div>
 
       <PrepModal 
