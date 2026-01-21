@@ -107,7 +107,8 @@ const translations = {
     email_status_desc: "Drafted for status:",
     cl_desc: "Full professional cover letter draft",
     copy_draft: "Copy Draft",
-    copied: "Copied to clipboard!"
+    copied: "Copied to clipboard!",
+    export: "Export"
   },
   Swedish: {
     dashboard: "Översikt",
@@ -217,7 +218,8 @@ const translations = {
     email_status_desc: "Utkast för status:",
     cl_desc: "Fullständigt professionellt personligt brev",
     copy_draft: "Kopiera utkast",
-    copied: "Kopierat till urklipp!"
+    copied: "Kopierat till urklipp!",
+    export: "Exportera"
   },
   Arabic: {
     dashboard: "لوحة التحكم",
@@ -327,7 +329,8 @@ const translations = {
     email_status_desc: "مسودة للحالة:",
     cl_desc: "مسودة خطاب تقديم احترافي كامل",
     copy_draft: "نسخ المسودة",
-    copied: "تم النسخ للحافظة!"
+    copied: "تم النسخ للحافظة!",
+    export: "تصدير"
   }
 };
 

@@ -1,7 +1,8 @@
 const express = require("express");
-const { body, validationResult } = require("express-validator");
 const Application = require("../models/Application");
 const auth = require("../middleware/auth");
+const validate = require("../middleware/validate");
+const { ApplicationSchema } = require("../validation/schemas");
 const multer = require("multer");
 const path = require("path");
 
@@ -46,24 +47,9 @@ router.get("/", auth, async (req, res) => {
 // Create new application
 router.post(
   "/",
-  [
-    auth,
-    body("jobTitle").trim().notEmpty().withMessage("Job title is required"),
-    body("company").trim().notEmpty().withMessage("Company name is required"),
-    body("date").isISO8601().withMessage("Valid date is required"),
-    body("status")
-      .isIn(["applied", "interview", "test", "offer", "rejected", "canceled"])
-      .withMessage("Invalid status"),
-  ],
+  [auth, validate(ApplicationSchema)],
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({
-          message: "Validation failed",
-          errors: errors.array(),
-        });
-      }
 
       const { jobTitle, company, location, date, status, notes, jobLink, expectedSalary, offeredSalary, recruiterName, recruiterEmail, recruiterLinkedIn } = req.body;
 
@@ -113,24 +99,9 @@ router.post(
 // Update application
 router.put(
   "/:id",
-  [
-    auth,
-    body("jobTitle").trim().notEmpty().withMessage("Job title is required"),
-    body("company").trim().notEmpty().withMessage("Company name is required"),
-    body("date").isISO8601().withMessage("Valid date is required"),
-    body("status")
-      .isIn(["applied", "interview", "test", "offer", "rejected", "canceled"])
-      .withMessage("Invalid status"),
-  ],
+  [auth, validate(ApplicationSchema)],
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({
-          message: "Validation failed",
-          errors: errors.array(),
-        });
-      }
 
       const { jobTitle, company, location, date, status, notes, jobLink, expectedSalary, offeredSalary, recruiterName, recruiterEmail, recruiterLinkedIn } = req.body;
 

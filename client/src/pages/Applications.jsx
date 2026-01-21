@@ -65,6 +65,64 @@ const Applications = ({ applications, onEdit, onDelete, onStatusChange, loading,
     }
   };
 
+  const handleExport = () => {
+    if (filteredApplications.length === 0) return;
+
+    const sanitize = (val, forceText = false) => {
+      const str = val !== undefined && val !== null ? String(val) : "";
+      const clean = str.replace(/"/g, '""').replace(/[\n\r]+/g, " ");
+      if (forceText && clean) {
+        return `="${clean}"`; // Force as text for Excel
+      }
+      return `"${clean}"`;
+    };
+
+    const headers = ["Job Title", "Company", "Location", "Date", "Status", "Notes", "Job Link", "Expected Salary"];
+    const lines = [headers.join(",")];
+
+    filteredApplications.forEach(app => {
+      let dateStr = "";
+      try {
+        if (app.date) {
+          const d = new Date(app.date);
+          if (!isNaN(d.getTime())) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            dateStr = `${y}-${m}-${day}`;
+          }
+        }
+      } catch (e) {
+        dateStr = "";
+      }
+
+      const row = [
+        sanitize(app.jobTitle),
+        sanitize(app.company),
+        sanitize(app.location),
+        sanitize(dateStr, true), // Force date as text
+        sanitize(t[app.status] || app.status),
+        sanitize(app.notes),
+        sanitize(app.jobLink),
+        sanitize(app.expectedSalary)
+      ];
+      lines.push(row.join(","));
+    });
+
+    const csvContent = lines.join("\n");
+    const bom = new Uint8Array([0xEF, 0xBB, 0xBF]); // UTF-8 BOM
+    const blob = new Blob([bom, csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", `job_applications_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div id="applications-page" className="page">
       <div className="header-actions" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
@@ -120,8 +178,11 @@ const Applications = ({ applications, onEdit, onDelete, onStatusChange, loading,
               <LayoutGrid size={18} /> Kanban
             </button>
           </div>
-          <button className="btn btn-outline btn-export">
-            <Download size={18} /> Export
+          <button 
+            className="btn btn-outline btn-export"
+            onClick={handleExport}
+          >
+            <Download size={18} /> {t.export}
           </button>
         </div>
       </div>

@@ -71,4 +71,25 @@ describe('Applications API', () => {
         expect(savedApp.jobTitle).toEqual('Senior Automated Tester');
         expect(savedApp.status).toEqual('applied');
     });
+    it('should fail to create a job application with invalid data', async () => {
+        const invalidApp = {
+            jobTitle: '', // Invalid: required
+            company: 'Test Company',
+            date: 'invalid-date', // Invalid: not ISO
+            status: 'unknown' // Invalid: not in enum
+        };
+
+        const res = await request(app)
+            .post('/api/applications')
+            .send(invalidApp);
+
+        expect(res.statusCode).toEqual(400);
+        expect(res.body.message).toEqual('Validation failed');
+        expect(res.body.errors).toBeDefined();
+        // Zod returns paths like "jobTitle", "date", "status"
+        const errorPaths = res.body.errors.map(e => e.path);
+        expect(errorPaths).toContain('jobTitle');
+        expect(errorPaths).toContain('date');
+        expect(errorPaths).toContain('status');
+    });
 });

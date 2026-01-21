@@ -118,7 +118,7 @@ const ChangePassword = ({ onClose }) => {
                 onClick={() => setShowCurrent(!showCurrent)}
                 style={{ cursor: 'pointer' }}
               >
-                {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showCurrent ? <Eye size={18} /> : <EyeOff size={18} />}
               </div>
             </div>
           </div>
@@ -141,7 +141,7 @@ const ChangePassword = ({ onClose }) => {
                 onClick={() => setShowNew(!showNew)}
                 style={{ cursor: 'pointer' }}
               >
-                {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showNew ? <Eye size={18} /> : <EyeOff size={18} />}
               </div>
             </div>
           </div>
@@ -163,11 +163,10 @@ const ChangePassword = ({ onClose }) => {
                 onClick={() => setShowConfirm(!showConfirm)}
                 style={{ cursor: 'pointer' }}
               >
-                {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showConfirm ? <Eye size={18} /> : <EyeOff size={18} />}
               </div>
             </div>
           </div>
-          
           <button type="submit" className="btn-submit" disabled={loading}>
             <Save size={18} style={{ marginRight: '8px' }} /> 
             {loading ? 'Updating...' : 'Update Password'}

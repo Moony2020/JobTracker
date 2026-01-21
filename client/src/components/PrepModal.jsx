@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Sparkles, MessageSquare, Briefcase, Loader2, CheckCircle2, RotateCw } from 'lucide-react';
+import { X, Sparkles, MessageSquare, Briefcase, Loader2, CheckCircle2, RotateCw, ChevronDown } from 'lucide-react';
 import api from '../services/api';
 import translations from '../utils/translations';
 import IdealAnswerModal from './IdealAnswerModal';
@@ -293,24 +293,28 @@ const PrepModal = ({ isOpen, onClose, application }) => {
                             }}>
                                 {translations[selectedLanguage]?.language_label || 'Language'}:
                             </span>
-                            <select 
-                                value={selectedLanguage} 
-                                onChange={handleLanguageChange}
-                                style={{
-                                    padding: '0.2rem 0.4rem',
-                                    borderRadius: '8px',
-                                    border: '1px solid var(--light-border)',
-                                    fontSize: '0.8rem',
-                                    background: 'var(--glass-bg)',
-                                    color: 'var(--text-color)',
-                                    cursor: 'pointer',
-                                    outline: 'none'
-                                }}
-                            >
-                                <option value="English">English</option>
-                                <option value="Swedish">Swedish</option>
-                                <option value="Arabic">Arabic</option>
-                            </select>
+                            <div className="select-wrapper">
+                                <select 
+                                    value={selectedLanguage} 
+                                    onChange={handleLanguageChange}
+                                    style={{
+                                        padding: '0.2rem 2rem 0.2rem 0.4rem',
+                                        borderRadius: '8px',
+                                        border: '1px solid var(--light-border)',
+                                        fontSize: '0.8rem',
+                                        background: 'var(--glass-bg)',
+                                        color: 'var(--text-color)',
+                                        cursor: 'pointer',
+                                        outline: 'none',
+                                        appearance: 'none'
+                                    }}
+                                >
+                                    <option value="English">English</option>
+                                    <option value="Swedish">Swedish</option>
+                                    <option value="Arabic">Arabic</option>
+                                </select>
+                                <ChevronDown className="chevron" size={12} style={{ right: '6px' }} />
+                            </div>
                             
                             {!loading && (
                                 <button 

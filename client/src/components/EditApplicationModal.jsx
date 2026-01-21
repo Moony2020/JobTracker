@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import api from '../services/api';
-import { X, FileText, History, Settings, Upload, Trash2, ExternalLink, Paperclip } from 'lucide-react';
+import { X, FileText, History, Settings, Upload, Trash2, ExternalLink, Paperclip, ChevronDown } from 'lucide-react';
 import translations from '../utils/translations';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 
@@ -242,6 +242,7 @@ const EditApplicationModal = ({ application, onClose, onUpdate, language }) => {
                     <option value="rejected">{t.rejected}</option>
                     <option value="canceled">{t.canceled}</option>
                   </select>
+                  <ChevronDown className="chevron" size={16} />
                 </div>
               </div>
               <div className="form-group full-width" style={{ gridColumn: '1 / -1' }}>

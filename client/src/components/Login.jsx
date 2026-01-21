@@ -142,12 +142,11 @@ const Login = ({ onClose }) => {
                   onClick={() => setShowPassword(!showPassword)}
                   style={{ cursor: 'pointer' }}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                 </div>
               </div>
             </div>
           )}
-          
           <button 
             type="submit" 
             className="btn-submit" 

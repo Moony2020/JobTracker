@@ -2184,12 +2184,12 @@ main {
 }
 
 .form-group {
-    margin-bottom: .25rem; /* Further reduced from .4rem */
+    margin-bottom: 0.35rem;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 0.15rem; /* Further reduced from 0.3rem */
+    margin-bottom: 0.1rem;
     font-weight: 600;
     color: var(--text-color);
 }
@@ -2472,8 +2472,9 @@ main {
 }
 
 .modal-header {
-    padding-bottom: 0.75rem;
-    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--light-border);
 }
 
 .modal-content {
@@ -2481,16 +2482,22 @@ main {
     backdrop-filter: blur(30px);
     border: 1px solid var(--card-border);
     border-radius: 20px;
-    padding: 1.5rem;
+    padding: 1rem;
     margin: 0.5rem;
     width: 100%;
     max-width: 370px; /* Reduced by 10px for a tighter look */
     max-height: 85vh;
-    /* Limit height */
     overflow-y: auto;
-    /* Enable scrolling */
     box-shadow: var(--shadow-lg);
     animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal form .form-group:last-of-type {
+    margin-bottom: 0.8rem !important;
+}
+
+.modal .btn-submit {
+    margin-top: 0.8rem !important;
 }
 
 /* btn-submit styles handled at the end of the file */
@@ -3583,7 +3590,7 @@ footer {
 
 /* Specifically for Login/Register buttons that are directly in form */
 .modal .modal-content form > .btn-submit {
-    margin-top: 2rem !important; /* Further reduced for a tighter look */
+    margin-top: 0.75rem !important; 
     margin-right: auto !important;
     margin-left: 0 !important;
     display: flex !important;
@@ -3715,7 +3722,7 @@ footer {
     .modal-content {
         max-width: 380px !important; /* Slightly wider for a better balance */
         width: 94% !important;
-        padding: 1.25rem 1rem !important;
+        padding: 1rem 0.8rem !important;
         margin: 0.5rem auto !important;
     }
     
@@ -3734,7 +3741,7 @@ footer {
     }
     
     .modal .modal-content form > .btn-submit {
-        margin-top: 1.5rem !important; /* Reverting to a more visible gap for mobile */
+        margin-top: 1rem !important; 
         margin-right: auto !important;
         margin-left: 0 !important;
         width: 105px !important;

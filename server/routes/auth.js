@@ -1,8 +1,16 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
+const validate = require('../middleware/validate');
+const { 
+    RegisterSchema, 
+    LoginSchema, 
+    ForgotPasswordSchema, 
+    ChangePasswordSchema, 
+    ResetPasswordSchema,
+    ProfileSchema
+} = require('../validation/schemas');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const multer = require('multer');
@@ -44,20 +52,8 @@ const upload = multer({
 });
 
 // Register
-router.post('/register', [
-    body('name').trim().isLength({ min: 2 }).withMessage('Name must be at least 2 characters'),
-    body('email').isEmail().withMessage('Please enter a valid email'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
-], async (req, res) => {
+router.post('/register', validate(RegisterSchema), async (req, res) => {
     try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ 
-                message: 'Validation failed', 
-                errors: errors.array() 
-            });
-        }
-
         const { name, email, password } = req.body;
 
         // Check if user exists
@@ -100,19 +96,8 @@ router.post('/register', [
 });
 
 // Login
-router.post('/login', [
-    body('email').isEmail().withMessage('Please enter a valid email'),
-    body('password').exists().withMessage('Password is required')
-], async (req, res) => {
+router.post('/login', validate(LoginSchema), async (req, res) => {
     try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ 
-                message: 'Validation failed', 
-                errors: errors.array() 
-            });
-        }
-
         const { email, password } = req.body;
 
         // Find user
@@ -188,18 +173,8 @@ router.post('/logout', (req, res) => {
 });
 
 // Forgot Password (Token Generation)
-router.post('/forgot-password', [
-    body('email').isEmail().withMessage('Please enter a valid email')
-], async (req, res) => {
+router.post('/forgot-password', validate(ForgotPasswordSchema), async (req, res) => {
     try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ 
-                message: 'Validation failed', 
-                errors: errors.array() 
-            });
-        }
-
         const { email } = req.body;
         const user = await User.findOne({ email });
 
@@ -276,19 +251,8 @@ router.post('/forgot-password', [
 });
 
 // Change Password (while logged in)
-router.post('/change-password', auth, [
-    body('currentPassword').exists().withMessage('Current password is required'),
-    body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters')
-], async (req, res) => {
+router.post('/change-password', [auth, validate(ChangePasswordSchema)], async (req, res) => {
     try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ 
-                message: 'Validation failed', 
-                errors: errors.array() 
-            });
-        }
-
         const { currentPassword, newPassword } = req.body;
         const user = await User.findById(req.user.id);
 
@@ -314,18 +278,8 @@ router.post('/change-password', auth, [
 });
 
 // Reset Password (Final Step)
-router.post('/reset-password/:token', [
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
-], async (req, res) => {
+router.post('/reset-password/:token', validate(ResetPasswordSchema), async (req, res) => {
     try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ 
-                message: 'Validation failed', 
-                errors: errors.array() 
-            });
-        }
-
         const { password } = req.body;
         const user = await User.findOne({
             resetPasswordToken: req.params.token,
@@ -361,7 +315,7 @@ router.get('/profile', auth, async (req, res) => {
 });
 
 // Update User Profile
-router.put('/profile', auth, async (req, res) => {
+router.put('/profile', [auth, validate(ProfileSchema)], async (req, res) => {
     try {
         const { profile } = req.body;
         const user = await User.findById(req.user.id);

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Edit2, Trash2, CheckCircle2, LayoutGrid, List } from 'lucide-react';
+import { Sparkles, Edit2, Trash2, CheckCircle2, LayoutGrid, List, ChevronDown } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import PrepModal from '../components/PrepModal';
 import KanbanBoard from '../components/KanbanBoard';
@@ -185,8 +185,8 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, on
                   <option value="rejected">{t.rejected}</option>
                   <option value="canceled">{t.canceled}</option>
                 </select>
-                <i className="ri-arrow-down-s-fill chevron" aria-hidden="true"></i>
-              </div>
+                  <ChevronDown className="chevron" size={16} />
+                </div>
             </div>
             <div className="form-group full-width">
               <label htmlFor="notes">{t.notes}</label>
