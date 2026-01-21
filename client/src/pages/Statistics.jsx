@@ -18,6 +18,7 @@ import {
   LabelList
 } from 'recharts';
 import translations from '../utils/translations';
+import Heatmap from '../components/Heatmap';
 
 const Statistics = ({ applications, loading, language }) => {
   const t = translations[language] || translations['English'];
@@ -180,6 +181,11 @@ const Statistics = ({ applications, loading, language }) => {
                 </FunnelChart>
              </ResponsiveContainer>
           </div>
+        </div>
+
+        {/* GitHub Style Heatmap */}
+        <div className="statistics-section full-width" style={{ gridColumn: '1 / -1' }}>
+          <Heatmap applications={applications} language={language} t={t} />
         </div>
 
         {/* Weekly Activity Chart */}
