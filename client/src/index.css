@@ -2582,11 +2582,12 @@ main {
 #deleteModal .btn {
     transition: all 0.3s ease;  
     border: 1px solid transparent;
-    width: 85px !important;   /* Ultra compact */
-    height: 33px !important;  
-    min-height: 0 !important; /* Force override of global 42px */
-    padding: 0 !important;    /* Remove padding to allow small height */
-    font-size: 0.8rem !important; 
+    width: 90px !important;   /* Slightly adjusted for balance */
+    min-width: 90px !important; /* Explicitly override global min-width */
+    height: 34px !important;  
+    min-height: 0 !important; 
+    padding: 0 !important;    
+    font-size: 0.85rem !important; 
 }
 
 #deleteModal .btn-outline {
@@ -3616,6 +3617,63 @@ footer {
 .kanban-column {
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
+
+/* Kanban Board Scrolling Fixes */
+.kanban-board {
+  display: flex !important;
+  gap: 1.25rem !important;
+  padding: 1rem 0.5rem 2rem 0.5rem !important;
+  width: max-content !important;
+  min-width: 100% !important;
+  min-height: 600px;
+  align-items: flex-start !important;
+}
+
+.kanban-board::-webkit-scrollbar {
+  height: 8px;
+}
+
+.kanban-board::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.05);
+  border-radius: 10px;
+}
+
+.kanban-board::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 10px;
+  opacity: 0.5;
+}
+
+.kanban-column {
+  flex: 0 0 300px !important; /* Fixed width ensure they don't shrink */
+  max-width: 300px !important;
+  min-width: 300px !important;
+}
+
+.kanban-container {
+  width: 100%;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) transparent;
+  padding-bottom: 0.5rem;
+}
+
+.kanban-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.kanban-container::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.05);
+  border-radius: 10px;
+}
+
+.kanban-container::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 10px;
+  opacity: 0.5;
+}
 #deleteModal .form-actions {
     gap: 0.6rem !important;
     border-top: none !important;
@@ -3652,8 +3710,8 @@ footer {
     box-shadow: none !important;
 }
 
-/* Specific Mobile Fixes for Modal */
-@media (max-width: 480px) {
+/* Specific Mobile/Tablet Fixes for Modal */
+@media (max-width: 575px) {
     .modal-content {
         max-width: 380px !important; /* Slightly wider for a better balance */
         width: 94% !important;
@@ -3669,11 +3727,10 @@ footer {
     .modal .modal-content .btn-danger,
     .modal .form-actions .btn {
         width: auto !important;
-        min-width: 105px !important;
-        min-width: 0 !important;
+        min-width: 100px !important;
         height: 38px !important;
         min-height: 38px !important;
-        font-size: 0.82rem !important;
+        font-size: 0.85rem !important;
     }
     
     .modal .modal-content form > .btn-submit {
@@ -3686,6 +3743,22 @@ footer {
     .modal .form-actions {
         gap: 0.85rem !important;
         margin-top: 1.5rem !important; /* Reverting to a bit more space for mobile */
+    }
+
+    /* Delete Modal specific text scaling for mobile */
+    #deleteModal .modal-header h2 {
+        font-size: 1.05rem !important;
+    }
+    #deleteModal .modal-body p {
+        font-size: 0.82rem !important;
+    }
+    #deleteModal .delete-target-name {
+        font-size: 0.9rem !important;
+    }
+    #deleteModal .btn {
+        width: 85px !important;
+        min-width: 85px !important;
+        height: 32px !important;
     }
 
     /* Responsive Pagination for Mobile */
@@ -3975,5 +4048,81 @@ footer {
         width: 20px;
         height: 20px;
         stroke-width: 3px; /* Thicker icon for better visibility */
+    }
+}
+
+/* --- Visual Intelligence: Interactive Analytics --- */
+.analytic-card {
+    padding: 1.5rem;
+    background: var(--glass-bg);
+    border: 1px solid var(--light-border);
+    border-radius: 16px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.analytic-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.analytic-card h3 {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.analytic-card .value {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+}
+
+.analytic-card .value.success {
+    color: var(--success-color);
+}
+
+.analytic-card .value.secondary {
+    color: var(--secondary-color);
+}
+
+.analytic-card .desc {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Recharts Tooltip Customization */
+.recharts-default-tooltip {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--light-border) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+    padding: 12px !important;
+}
+
+.recharts-tooltip-item {
+    color: var(--text-color) !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+}
+
+.recharts-tooltip-label {
+    color: var(--text-muted) !important;
+    margin-bottom: 6px !important;
+    font-weight: 600 !important;
+    font-size: 0.8rem !important;
+    text-transform: uppercase !important;
+}
+
+@media (max-width: 575px) {
+    .analytics-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .charts-container {
+        grid-template-columns: 1fr !important;
     }
 }

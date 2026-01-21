@@ -21,13 +21,15 @@ app.use(express.static(path.join(__dirname, "../client/dist")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Database connection
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("MongoDB connected successfully"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+if (process.env.NODE_ENV !== 'test') {
+  mongoose
+    .connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
+    .then(() => console.log("MongoDB connected successfully"))
+    .catch((err) => console.error("MongoDB connection error:", err));
+}
 
 // Routes - Make sure these are properly mounted
 app.use("/api/auth", require("./routes/auth"));
@@ -41,8 +43,13 @@ app.get("*", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Frontend: https://jobtracker-ptwj.onrender.com`);
-  console.log(`API: https://jobtracker-ptwj.onrender.com/api`);
-});
+
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Frontend: https://jobtracker-ptwj.onrender.com`);
+    console.log(`API: https://jobtracker-ptwj.onrender.com/api`);
+  });
+}
+
+module.exports = app;

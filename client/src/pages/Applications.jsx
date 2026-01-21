@@ -95,8 +95,10 @@ const Applications = ({ applications, onEdit, onDelete, onStatusChange, loading,
                 <option value="all">{t.all}</option>
                 <option value="applied">{t.applied}</option>
                 <option value="interview">{t.interview}</option>
+                <option value="test">{t.test}</option>
                 <option value="offer">{t.offer}</option>
                 <option value="rejected">{t.rejected}</option>
+                <option value="canceled">{t.canceled}</option>
               </select>
               <ChevronDown className="chevron" size={16} />
             </div>

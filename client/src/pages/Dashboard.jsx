@@ -264,13 +264,16 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, on
         </div>
 
         {viewMode === 'board' ? (
+          <div className="kanban-container">
             <KanbanBoard 
                 applications={applications}
                 onStatusChange={onStatusChange}
                 onEdit={onEdit}
                 onDelete={onDelete}
                 onPrep={(app) => { setSelectedAppForPrep(app); setPrepModalOpen(true); }}
+                language={language}
             />
+          </div>
         ) : (
             <div className="table-container">
             <table className="applications-table">
