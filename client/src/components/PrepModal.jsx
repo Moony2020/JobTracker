@@ -43,9 +43,15 @@ const PrepModal = ({ isOpen, onClose, application }) => {
     const [showIdealModal, setShowIdealModal] = useState(false);
     const [matchReason, setMatchReason] = useState(null);
     const [profileExists, setProfileExists] = useState(false);
+    const [toast, setToast] = useState(null);
 
     // Ref to prevent parallel identical fetches (especially in Strict Mode)
     const pendingFetchRef = useRef(null);
+
+    const showToast = (message) => {
+        setToast(message);
+        setTimeout(() => setToast(null), 3000);
+    };
 
     // Countdown effect for 429 retry
     useEffect(() => {
@@ -632,7 +638,7 @@ const PrepModal = ({ isOpen, onClose, application }) => {
                                             className="btn btn-outline"
                                             onClick={() => {
                                                 navigator.clipboard.writeText(emailData);
-                                                alert(translations[selectedLanguage]?.copied || 'Copied to clipboard!');
+                                                showToast(translations[selectedLanguage]?.copied || 'Copied to clipboard!');
                                             }}
                                             style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', borderRadius: '50px' }}
                                         >
@@ -666,7 +672,7 @@ const PrepModal = ({ isOpen, onClose, application }) => {
                                             className="btn btn-outline"
                                             onClick={() => {
                                                 navigator.clipboard.writeText(coverLetterData);
-                                                alert(translations[selectedLanguage]?.copied || 'Copied to clipboard!');
+                                                showToast(translations[selectedLanguage]?.copied || 'Copied to clipboard!');
                                             }}
                                             style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', borderRadius: '50px' }}
                                         >
@@ -722,6 +728,30 @@ const PrepModal = ({ isOpen, onClose, application }) => {
                     answer={interviewData?.[currentQuizIndex]?.answer}
                     language={selectedLanguage}
                 />
+
+                {toast && (
+                    <div style={{
+                        position: 'fixed',
+                        bottom: '30px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        background: 'rgba(30, 41, 59, 0.95)',
+                        color: 'white',
+                        padding: '10px 24px',
+                        borderRadius: '50px',
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                        zIndex: 10000,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        animation: 'fadeInUp 0.3s ease-out',
+                        backdropFilter: 'blur(8px)',
+                        border: '1px solid rgba(255,255,255,0.1)'
+                    }}>
+                        <CheckCircle2 size={18} color="#4ade80" />
+                        <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>{toast}</span>
+                    </div>
+                )}
             </div>
         </div>
     );

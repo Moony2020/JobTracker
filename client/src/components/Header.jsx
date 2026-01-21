@@ -62,6 +62,11 @@ const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLo
                   {t.statistics}
                 </a>
               </li>
+              <li>
+                <a href="#" className={`nav-link ${activePage === 'jobs' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); onOpenPage('jobs'); }}>
+                  {t.jobs}
+                </a>
+              </li>
             </ul>
           </nav>
 
@@ -116,21 +121,10 @@ const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLo
               </div>
             )}
 
-            <div className="global-language-selector" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+            <div className="global-language-selector">
               <div 
+                className="lang-selector-btn"
                 onClick={() => setActiveDropdown(activeDropdown === 'lang' ? null : 'lang')} 
-                style={{ 
-                  width: '32px', 
-                  height: '32px', 
-                  borderRadius: '50%', 
-                  background: 'var(--glass-bg)', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  cursor: 'pointer',
-                  border: '1px solid var(--light-border)',
-                  transition: 'background 0.3s'
-                }}
               >
                 <Globe size={18} />
               </div>
@@ -192,6 +186,7 @@ const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLo
             <li><a href="#" className={`mobile-nav-link ${activePage === 'dashboard' ? 'active' : ''}`} onClick={() => { onOpenPage('dashboard'); setMobileMenuOpen(false); }}>{t.dashboard}</a></li>
             <li><a href="#" className={`mobile-nav-link ${activePage === 'applications' ? 'active' : ''}`} onClick={() => { onOpenPage('applications'); setMobileMenuOpen(false); }}>{t.applications}</a></li>
             <li><a href="#" className={`mobile-nav-link ${activePage === 'statistics' ? 'active' : ''}`} onClick={() => { onOpenPage('statistics'); setMobileMenuOpen(false); }}>{t.statistics}</a></li>
+            <li><a href="#" className={`mobile-nav-link ${activePage === 'jobs' ? 'active' : ''}`} onClick={() => { onOpenPage('jobs'); setMobileMenuOpen(false); }}>{t.jobs}</a></li>
           </ul>
         </nav>
 

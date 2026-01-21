@@ -33,6 +33,7 @@ mongoose
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/applications", require("./routes/applications"));
 app.use("/api/ai", require("./routes/ai"));
+app.use("/api/jobs", require("./routes/jobs"));
 
 // Serve React app
 app.get("*", (req, res) => {

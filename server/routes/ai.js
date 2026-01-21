@@ -1,6 +1,7 @@
 const express = require('express');
 const Groq = require('groq-sdk');
 const auth = require('../middleware/auth');
+const User = require('../models/User'); // Import User model
 const router = express.Router();
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY || '' });
@@ -11,11 +12,10 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 // Fallback logic for AI calls using Groq
 async function generateContentWithFallback(prompt) {
     const models = [
-        "llama-3.3-70b-versatile", // Latest & Greatest
-        "llama-3.1-70b-versatile", // Solid alternative
-        "llama-3.1-8b-instant",    // Super fast
-        "llama3-70b-8192",         // Just in case it's a versioning glitch
-        "mixtral-8x7b-32768"
+        "llama-3.3-70b-versatile",
+        "llama-3.2-3b-preview",
+        "llama-3.2-1b-preview",
+        "llama-3.1-8b-instant"
     ];
     let lastError = null;
 
@@ -46,8 +46,11 @@ async function generateContentWithFallback(prompt) {
             
             // If Rate Limit (429), wait and try next
             if (err.status === 429) {
-                console.log(`Groq rate limit hit. Waiting 2s before retry...`);
-                await sleep(2000); 
+                console.log(`Groq rate limit hit for ${modelName}. Trying next model...`);
+                // Only sleep if it's the very last model
+                if (modelName === models[models.length - 1]) {
+                    await sleep(2000);
+                }
                 continue;
             }
             
@@ -174,6 +177,54 @@ router.post('/full-prep', auth, async (req, res) => {
             retryAfter: Math.ceil(retryAfterSeconds) || (statusCode === 429 ? 10 : 0), // Default 10s if 429
             details: error.message
         });
+    }
+});
+
+// New Endpoint: Recommend Job Titles based on CV
+router.get('/recommend-jobs', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user || (!user.profile && !user.name)) {
+            return res.json({ recommendations: [] });
+        }
+
+        const prompt = `
+            Analyze this user's professional background and recommend 5 specific job titles they should search for.
+            Focus on titles that match their likely skills based on their profile text.
+            
+            User's CV Profile: ${user.profile || "Not detailed"}
+            User's Name: ${user.name}
+
+            Return ONLY a JSON object with this structure:
+            {
+                "recommendations": [
+                    { "title": "Senior Frontend Developer" },
+                    { "title": "React Engineer" }
+                ]
+            }
+        `;
+
+        // Use a smaller model first for recommendations to save 70B model daily quota
+        const chatCompletion = await groq.chat.completions.create({
+            messages: [{ role: "user", content: prompt }],
+            model: "llama-3.1-8b-instant",
+            temperature: 0.2,
+        }).catch(async (err) => {
+            // Fallback to main chain if 8B fails
+            const response = await generateContentWithFallback(prompt);
+            return { choices: [{ message: { content: response.text() } }] };
+        });
+
+        const resultText = chatCompletion.choices[0]?.message?.content || '';
+        const jsonMatch = resultText.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error('Invalid AI response');
+
+        res.json(JSON.parse(jsonMatch[0]));
+    } catch (error) {
+        console.error('Job Recommendation Failure:', error.message);
+        
+        // Return 200 with empty list instead of 500 to keep UI clean
+        res.json({ recommendations: [] });
     }
 });
 

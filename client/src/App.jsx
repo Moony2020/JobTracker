@@ -3,6 +3,7 @@ import Header from './components/Header';
 import Dashboard from './pages/Dashboard';
 import Applications from './pages/Applications';
 import Statistics from './pages/Statistics';
+import JobFinder from './pages/JobFinder';
 import Login from './components/Login';
 import Register from './components/Register';
 import api from './services/api';
@@ -255,6 +256,9 @@ const AppContent = () => {
         )}
         {currentPage === 'statistics' && (
           <Statistics applications={applications} loading={loading} language={language} />
+        )}
+        {currentPage === 'jobs' && (
+          <JobFinder language={language} user={user} />
         )}
       </main>
 
