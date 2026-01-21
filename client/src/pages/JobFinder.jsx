@@ -60,7 +60,7 @@ const JobFinder = ({ language, user }) => {
         } finally {
             setRecLoading(false);
         }
-    }, [handleSearch, location]);
+    }, []);
 
     useEffect(() => {
         if (user) {
@@ -101,18 +101,19 @@ const JobFinder = ({ language, user }) => {
                 </div>
                 <div className="discovery-pills" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                     {[
-                        { id: 'remote', label: 'Remote Only', icon: 'ðŸŒ' },
-                        { id: 'ai', label: '🤖 AI & Machine Learning' },
-                        { id: 'high-salary', label: 'High Salary ($100k+)', icon: 'ðŸ’°' },
-                        { id: 'startup', label: '🚀 Startup Hub' }
+                        { id: 'remote', label: 'Remote Only', query: 'Remote', icon: <Globe size={16} /> },
+                        { id: 'ai', label: 'AI & Machine Learning', query: 'AI Machine Learning', icon: <Sparkles size={16} /> },
+                        { id: 'high-salary', label: 'High Salary ($100k+)', query: 'High Salary', icon: <Briefcase size={16} /> },
+                        { id: 'startup', label: 'Startup Hub', query: 'Startup', icon: <ExternalLink size={16} /> }
                     ].map((cat) => (
                         <button 
                             key={cat.id} 
                             className="discovery-pill"
                             onClick={() => {
-                                setSearchQuery(cat.label.replace(/^.+ /, ''));
+                                const q = cat.query;
+                                setSearchQuery(q);
                                 setPage(1);
-                                handleSearch(null, cat.label.replace(/^.+ /, ''), 1);
+                                handleSearch(null, q, 1);
                             }}
                             style={{
                                 padding: '10px 20px',
@@ -128,6 +129,7 @@ const JobFinder = ({ language, user }) => {
                                 transition: 'all 0.3s ease'
                             }}
                         >
+                            <span style={{ display: 'flex', alignItems: 'center' }}>{cat.icon}</span>
                             <span>{cat.label}</span>
                         </button>
                     ))}
