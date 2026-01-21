@@ -88,7 +88,7 @@ async function generateJobsWithAI(query, location, page = 1) {
     return [];
 }
 
-router.get('/search', auth, async (req, res) => {
+router.get('/search', async (req, res) => {
     try {
         const { q, l, page } = req.query;
         if (!q) {

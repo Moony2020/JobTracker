@@ -77,6 +77,11 @@ const JobFinder = ({ language, user }) => {
         return `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(title)}&location=${encodeURIComponent(location)}`;
     };
 
+    const getArbetsformedlingenLink = (title, location) => {
+        // Arbetsförmedlingen search URL - Platsbanken
+        return `https://arbetsformedlingen.se/platsbanken/annonser?q=${encodeURIComponent(title)}&l=${encodeURIComponent(location)}`;
+    };
+
     return (
         <div className="job-finder-container">
             <div className="dashboard-header">
@@ -85,6 +90,47 @@ const JobFinder = ({ language, user }) => {
                     <p style={{ color: 'var(--text-muted)' }}>
                         Find your next opportunity based on your skills and experience.
                     </p>
+                </div>
+            </div>
+
+            {/* Discover Engine */}
+            <div className="form-section discovery-engine" style={{ marginBottom: '2rem' }}>
+                <div className="section-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.2rem' }}>
+                    <Globe size={20} color="var(--primary-color)" />
+                    <h2 style={{ fontSize: '1.2rem', margin: 0 }}>Discover Engine</h2>
+                </div>
+                <div className="discovery-pills" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                    {[
+                        { id: 'remote', label: 'Remote Only', icon: 'ðŸŒ' },
+                        { id: 'ai', label: '🤖 AI & Machine Learning' },
+                        { id: 'high-salary', label: 'High Salary ($100k+)', icon: 'ðŸ’°' },
+                        { id: 'startup', label: '🚀 Startup Hub' }
+                    ].map((cat) => (
+                        <button 
+                            key={cat.id} 
+                            className="discovery-pill"
+                            onClick={() => {
+                                setSearchQuery(cat.label.replace(/^.+ /, ''));
+                                setPage(1);
+                                handleSearch(null, cat.label.replace(/^.+ /, ''), 1);
+                            }}
+                            style={{
+                                padding: '10px 20px',
+                                borderRadius: '12px',
+                                border: '1px solid var(--light-border)',
+                                background: 'var(--glass-bg)',
+                                color: 'var(--text-color)',
+                                cursor: 'pointer',
+                                fontSize: '0.9rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                transition: 'all 0.3s ease'
+                            }}
+                        >
+                            <span>{cat.label}</span>
+                        </button>
+                    ))}
                 </div>
             </div>
 
@@ -213,6 +259,9 @@ const JobFinder = ({ language, user }) => {
                                             </a>
                                             <a href={getLinkedInLink(job.title, location)} target="_blank" rel="noopener noreferrer" className="btn btn-social-job" title="Search on LinkedIn">
                                                 <img src="https://www.google.com/s2/favicons?domain=linkedin.com" width="16" alt="" />
+                                            </a>
+                                            <a href={getArbetsformedlingenLink(job.title, location)} target="_blank" rel="noopener noreferrer" className="btn btn-social-job" title="Search on Arbetsförmedlingen">
+                                                <img src="https://www.google.com/s2/favicons?domain=arbetsformedlingen.se" width="16" alt="" />
                                             </a>
                                         </div>
                                     </div>

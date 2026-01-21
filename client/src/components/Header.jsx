@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, User, LogIn, UserPlus, Settings, Lock, Menu, X, Sun, Moon, Globe, Briefcase, FileText } from 'lucide-react';
+import { LogOut, User, LogIn, UserPlus, FileText, Globe, Briefcase, Lock } from 'lucide-react';
 import translations from '../utils/translations';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLoginClick, onRegisterClick, onChangePasswordClick, onProfileClick, activePage }) => {
   const t = translations[language];
@@ -34,6 +35,13 @@ const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLo
     return name.substring(0, 2).toUpperCase();
   };
 
+  const navItems = [
+    { id: 'dashboard', label: t.dashboard },
+    { id: 'applications', label: t.applications },
+    { id: 'statistics', label: t.statistics },
+    { id: 'jobs', label: t.jobs },
+  ];
+
   return (
     <header>
       <div className="container">
@@ -47,26 +55,24 @@ const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLo
 
           <nav className="desktop-nav">
             <ul>
-              <li>
-                <a href="#" className={`nav-link ${activePage === 'dashboard' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); onOpenPage('dashboard'); }}>
-                  {t.dashboard}
-                </a>
-              </li>
-              <li>
-                <a href="#" className={`nav-link ${activePage === 'applications' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); onOpenPage('applications'); }}>
-                  {t.applications}
-                </a>
-              </li>
-              <li>
-                <a href="#" className={`nav-link ${activePage === 'statistics' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); onOpenPage('statistics'); }}>
-                  {t.statistics}
-                </a>
-              </li>
-              <li>
-                <a href="#" className={`nav-link ${activePage === 'jobs' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); onOpenPage('jobs'); }}>
-                  {t.jobs}
-                </a>
-              </li>
+              {navItems.map((item) => (
+                <li key={item.id}>
+                  <a 
+                    href="#" 
+                    className={`nav-link ${activePage === item.id ? 'active' : ''}`} 
+                    onClick={(e) => { e.preventDefault(); onOpenPage(item.id); }}
+                  >
+                    {item.label}
+                    {activePage === item.id && (
+                      <motion.div 
+                        layoutId="nav-indicator"
+                        className="nav-indicator"
+                        transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                      />
+                    )}
+                  </a>
+                </li>
+              ))}
             </ul>
           </nav>
 

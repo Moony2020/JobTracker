@@ -1,14 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sparkles, Edit2, Trash2, CheckCircle2, LayoutGrid, List, ChevronDown } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import PrepModal from '../components/PrepModal';
 import KanbanBoard from '../components/KanbanBoard';
 import api from '../services/api';
 import translations from '../utils/translations';
+import { motion } from 'framer-motion';
 
 const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, onStatusChange, loading, language }) => {
   const t = translations[language] || translations['English'];
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'board'
+
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.5, 
+        staggerChildren: 0.1 
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
   
   // ... existing form state ...
   const [formData, setFormData] = useState({
@@ -85,13 +103,19 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, on
   };
 
   return (
-    <div id="dashboard-page" className="page">
-      <div id="dashboard-header" className="dashboard-intro">
+    <motion.div 
+      id="dashboard-page" 
+      className="page"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      <motion.div id="dashboard-header" className="dashboard-intro" variants={itemVariants}>
         <h1>{t.dashboard_title}</h1>
         <p>{t.welcome_message}</p>
-      </div>
+      </motion.div>
 
-      <div className="stats-cards">
+      <motion.div className="stats-cards" variants={itemVariants}>
         {loading && applications.length === 0 ? (
           <>
             <div className="stat-card skeleton-loader" style={{ height: '120px' }} />
@@ -109,10 +133,10 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, on
             <StatCard label={t.success_rate} value={`${stats.successRate}%`} />
           </>
         )}
-      </div>
+      </motion.div>
 
       {/* AI Section (Unchanged) */}
-      <div className={`form-section ai-parser-card ${aiLoading ? 'ai-loading' : ''}`}>
+      <motion.div className={`form-section ai-parser-card ${aiLoading ? 'ai-loading' : ''}`} variants={itemVariants}>
         <div className="ai-card-header">
           <div className="ai-magic-icon">
             <Sparkles size={24} />
@@ -150,10 +174,10 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, on
             </button>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Manual Form (Unchanged) */}
-      <div className="form-section">
+      <motion.div className="form-section" variants={itemVariants}>
         <h2>{t.add_application}</h2>
         <form id="application-form" onSubmit={handleSubmit}>
           {/* ... (form fields unchanged) ... */}
@@ -215,9 +239,9 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, on
           </div>
           <button type="submit" className="btn-submit">{t.add_application}</button>
         </form>
-      </div>
+      </motion.div>
 
-      <div id="recent-apps" className="recent-applications-section">
+      <motion.div id="recent-apps" className="recent-applications-section" variants={itemVariants}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h2 style={{ margin: 0 }}>{t.recent_applications}</h2>
             <div className="view-toggle" style={{ 
@@ -345,14 +369,14 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, on
             </table>
             </div>
         )}
-      </div>
+      </motion.div>
 
       <PrepModal 
         isOpen={prepModalOpen} 
         onClose={() => { setPrepModalOpen(false); setSelectedAppForPrep(null); }} 
         application={selectedAppForPrep}
       />
-    </div>
+    </motion.div>
   );
 };
 
