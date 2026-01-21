@@ -24,6 +24,7 @@
     "multer": "^2.0.2",
     "nodemailer": "^7.0.12",
     "pdf-parse": "^2.4.5",
+    "pdfkit": "^0.17.2",
     "zod": "^4.3.5"
   },
   "devDependencies": {

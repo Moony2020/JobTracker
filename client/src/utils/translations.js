@@ -108,7 +108,9 @@ const translations = {
     cl_desc: "Full professional cover letter draft",
     copy_draft: "Copy Draft",
     copied: "Copied to clipboard!",
-    export: "Export"
+    export: "Export",
+    virtual_interview: "Virtual Interview",
+    download_report: "Download PDF Report"
   },
   Swedish: {
     dashboard: "Översikt",
@@ -219,7 +221,9 @@ const translations = {
     cl_desc: "Fullständigt professionellt personligt brev",
     copy_draft: "Kopiera utkast",
     copied: "Kopierat till urklipp!",
-    export: "Exportera"
+    export: "Exportera",
+    virtual_interview: "Virtuell intervju",
+    download_report: "Ladda ner PDF-rapport"
   },
   Arabic: {
     dashboard: "لوحة التحكم",
@@ -330,7 +334,9 @@ const translations = {
     cl_desc: "مسودة خطاب تقديم احترافي كامل",
     copy_draft: "نسخ المسودة",
     copied: "تم النسخ للحافظة!",
-    export: "تصدير"
+    export: "تصدير",
+    virtual_interview: "المقابلة الافتراضية",
+    download_report: "تحميل تقرير PDF"
   }
 };
 

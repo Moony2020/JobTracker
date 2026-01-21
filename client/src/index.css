@@ -3577,6 +3577,54 @@ footer {
 
 
 
+/* Specialized Chat Control Buttons (Virtual Interview) */
+.modal .chat-footer .chat-control-btn {
+    width: 30px !important;
+    min-width: 30px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    padding: 0 !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    flex-shrink: 0 !important;
+    color: white !important;
+}
+
+.modal .chat-footer .chat-send-btn {
+    background: var(--primary-color) !important;
+}
+
+.modal .chat-footer .chat-end-btn {
+    width: auto !important;
+    min-width: 50px !important;
+    padding: 0 0.6rem !important;
+    background: rgba(128, 128, 128, 0.15) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--light-border) !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    text-transform: none !important;
+}
+
+.modal .chat-footer .chat-end-btn:hover {
+    background: rgba(128, 128, 128, 0.25) !important;
+}
+
+.modal .chat-footer .chat-control-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+}
+
+.modal .chat-footer .chat-control-btn:active {
+    transform: translateY(0);
+}
+
 /* Modal Button Fix (Stronger Selector) */
 .modal .modal-content .btn-submit,
 .modal form button[type="submit"],

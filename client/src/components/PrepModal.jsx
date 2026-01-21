@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Sparkles, MessageSquare, Briefcase, Loader2, CheckCircle2, RotateCw, ChevronDown } from 'lucide-react';
+import { X, Sparkles, MessageSquare, Briefcase, Loader2, CheckCircle2, RotateCw, ChevronDown, Send, Download, FileText, Mic, MicOff } from 'lucide-react';
 import api from '../services/api';
 import translations from '../utils/translations';
 import IdealAnswerModal from './IdealAnswerModal';
@@ -44,6 +44,16 @@ const PrepModal = ({ isOpen, onClose, application }) => {
     const [matchReason, setMatchReason] = useState(null);
     const [profileExists, setProfileExists] = useState(false);
     const [toast, setToast] = useState(null);
+    
+    // Virtual Interview States
+    const [interviewMessages, setInterviewMessages] = useState([]);
+    const [interviewSessionId, setInterviewSessionId] = useState(null);
+    const [userMessage, setUserMessage] = useState('');
+    const [isInterviewing, setIsInterviewing] = useState(false);
+    const [interviewReport, setInterviewReport] = useState(null);
+    const [isListening, setIsListening] = useState(false);
+    const chatEndRef = useRef(null);
+    const recognitionRef = useRef(null);
 
     // Ref to prevent parallel identical fetches (especially in Strict Mode)
     const pendingFetchRef = useRef(null);
@@ -200,6 +210,168 @@ const PrepModal = ({ isOpen, onClose, application }) => {
         setCoverLetterData(null);
         setMatchScore(null);
     };
+
+    const handleDownloadReport = async () => {
+        if (!application || !interviewData) return;
+        setLoading(true);
+        try {
+            const response = await api.post('/reports/career-report', {
+                job: {
+                    jobTitle: application.jobTitle,
+                    company: application.company,
+                    location: application.location
+                },
+                insights: {
+                    resume: resumeData,
+                    interview: interviewData,
+                    email: emailData
+                },
+                interviewSummary: interviewReport
+            }, { responseType: 'blob' });
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Career_Report_${application.company}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            showToast('PDF Report Downloaded!');
+        } catch (err) {
+            console.error('PDF Download error:', err);
+            showToast('Failed to download PDF');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const startInterview = async () => {
+        setLoading(true);
+        setIsInterviewing(true);
+        setInterviewReport(null);
+        try {
+            const res = await api.post('/interview/start', {
+                jobTitle: application.jobTitle,
+                company: application.company,
+                notes: application.notes,
+                language: selectedLanguage,
+                userProfile: profileExists ? "Detailed profile available" : "No profile",
+                level: "Mid-level",
+                type: "Mixed"
+            });
+            setInterviewSessionId(res.data.sessionId);
+            setInterviewMessages([{ role: 'assistant', content: res.data.question }]);
+        } catch (err) {
+            console.error('Start interview error:', err);
+            setError('Failed to start virtual interview');
+            setIsInterviewing(false);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const toggleListening = () => {
+        if (isListening) {
+            recognitionRef.current?.stop();
+            setIsListening(false);
+            return;
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+            if (isFirefox) {
+                showToast("Voice-to-Text is not supported in Firefox. Please use Chrome or Edge.");
+            } else {
+                showToast("Speech recognition not supported in this browser.");
+            }
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognitionRef.current = recognition;
+
+        const langMap = {
+            'Swedish': 'sv-SE',
+            'English': 'en-US',
+            'Arabic': 'ar-SA'
+        };
+        recognition.lang = langMap[selectedLanguage] || 'en-US';
+        recognition.interimResults = true;
+        recognition.continuous = true;
+
+        recognition.onstart = () => {
+            setIsListening(true);
+            showToast("Listening...");
+        };
+
+        recognition.onresult = (event) => {
+            let fullTranscript = '';
+            for (let i = 0; i < event.results.length; i++) {
+                fullTranscript += event.results[i][0].transcript;
+            }
+            setUserMessage(fullTranscript);
+        };
+
+        recognition.onerror = (event) => {
+            console.error("Speech recognition error:", event.error);
+            setIsListening(false);
+            if (event.error !== 'no-speech') {
+                showToast(`Error: ${event.error}`);
+            }
+        };
+
+        recognition.onend = () => {
+            setIsListening(false);
+        };
+
+        recognition.start();
+    };
+
+    const sendMessage = async (e) => {
+        if (e) e.preventDefault();
+        if (!userMessage.trim() || !interviewSessionId) return;
+
+        const currentMsg = userMessage;
+        setUserMessage('');
+        setInterviewMessages(prev => [...prev, { role: 'user', content: currentMsg }]);
+        
+        setLoading(true);
+        try {
+            const res = await api.post('/interview/message', {
+                sessionId: interviewSessionId,
+                userAnswer: currentMsg
+            });
+            setInterviewMessages(prev => [...prev, { role: 'assistant', content: res.data.response }]);
+        } catch (err) {
+            console.error('Send message error:', err);
+            showToast('Error sending message');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const endInterview = async () => {
+        setLoading(true);
+        try {
+            const res = await api.post('/interview/end', { sessionId: interviewSessionId });
+            setInterviewReport(res.data.report);
+            setIsInterviewing(false);
+            setInterviewSessionId(null);
+        } catch (err) {
+            console.error('End interview error:', err);
+            showToast('Failed to generate report');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Auto-scroll chat
+    useEffect(() => {
+        if (chatEndRef.current) {
+            chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [interviewMessages]);
 
     if (!isOpen) return null;
 
@@ -396,6 +568,25 @@ const PrepModal = ({ isOpen, onClose, application }) => {
                         }}
                     >
                         <MessageSquare size={16} /> {translations[selectedLanguage]?.interview_prep || 'Interview Prep'}
+                    </button>
+                    <button 
+                        className={`prep-tab ${activeTab === 'virtual-interview' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('virtual-interview')}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            padding: '0.5rem 0.75rem',
+                            color: activeTab === 'virtual-interview' ? 'var(--primary-color)' : 'var(--text-muted)',
+                            fontWeight: activeTab === 'virtual-interview' ? '600' : '400',
+                            borderBottom: activeTab === 'virtual-interview' ? '2px solid var(--primary-color)' : '2px solid transparent',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
+                        <MessageSquare size={16} /> {translations[selectedLanguage]?.virtual_interview || 'Virtual Interview'}
                     </button>
                     <button 
                         className={`prep-tab ${activeTab === 'resume' ? 'active' : ''}`}
@@ -699,8 +890,145 @@ const PrepModal = ({ isOpen, onClose, application }) => {
                                     </div>
                                 </div>
                             )}
+
+                            {activeTab === 'virtual-interview' && (
+                                <div className="virtual-interview-container" style={{ 
+                                    display: 'flex', 
+                                    flexDirection: 'column', 
+                                    minHeight: '400px', 
+                                    background: 'var(--glass-bg)', 
+                                    borderRadius: '16px', 
+                                    border: '1px solid var(--light-border)',
+                                    overflow: 'hidden'
+                                }}>
+                                    {!isInterviewing && !interviewReport ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '2rem', textAlign: 'center', minHeight: '350px' }}>
+                                            <div style={{ background: 'rgba(99, 102, 241, 0.1)', padding: '1.5rem', borderRadius: '50%', marginBottom: '1rem' }}>
+                                                <MessageSquare size={32} color="var(--primary-color)" />
+                                            </div>
+                                            <h3>AI Virtual Interviewer</h3>
+                                            <p style={{ color: 'var(--text-muted)', maxWidth: '300px', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
+                                                Practice your interview skills with our AI. Get real-time feedback and a final performance report.
+                                            </p>
+                                            <button className="btn btn-primary" onClick={startInterview} disabled={loading} style={{ width: 'auto', padding: '0.6rem 1.5rem' }}>
+                                                {loading ? <Loader2 className="animate-spin" size={20} /> : 'Start Mock Interview 🔥'}
+                                            </button>
+                                        </div>
+                                    ) : interviewReport ? (
+                                        <div style={{ padding: '1rem', overflowY: 'auto', height: '100%', maxHeight: '420px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem', borderBottom: '1px solid var(--light-border)', paddingBottom: '0.8rem' }}>
+                                                <CheckCircle2 color="#22c55e" size={20} />
+                                                <h4 style={{ margin: 0 }}>Performance Report</h4>
+                                            </div>
+                                            <div style={{ whiteSpace: 'pre-wrap', fontSize: '0.85rem', lineHeight: '1.5', color: 'var(--text-color)', background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '12px' }}>
+                                                {interviewReport}
+                                            </div>
+                                            <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
+                                                <button className="btn btn-outline" onClick={() => { setInterviewReport(null); setIsInterviewing(false); }} style={{ padding: '0.5rem 1rem', fontSize: '0.8rem' }}>
+                                                    Try Again
+                                                </button>
+                                                <button 
+                                                    className="btn btn-outline" 
+                                                    onClick={handleDownloadReport} 
+                                                    style={{ 
+                                                        padding: '0.5rem 1rem', 
+                                                        fontSize: '0.8rem', 
+                                                        display: 'flex', 
+                                                        alignItems: 'center', 
+                                                        gap: '6px',
+                                                        borderColor: 'var(--primary-color)',
+                                                        color: 'var(--primary-color)',
+                                                        transition: 'all 0.2s ease',
+                                                        borderRadius: '50px'
+                                                    }}
+                                                    onMouseEnter={e => {
+                                                        e.currentTarget.style.color = 'white';
+                                                        e.currentTarget.style.background = 'var(--primary-color)';
+                                                    }}
+                                                    onMouseLeave={e => {
+                                                        e.currentTarget.style.color = 'var(--primary-color)';
+                                                        e.currentTarget.style.background = 'none';
+                                                    }}
+                                                >
+                                                    <Download size={14} /> Save to PDF
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="chat-messages" style={{ flex: 1, padding: '1rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.8rem', maxHeight: '350px' }}>
+                                                {interviewMessages.map((msg, i) => (
+                                                    <div key={i} style={{ 
+                                                        alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                                                        maxWidth: '85%',
+                                                        background: msg.role === 'user' ? 'var(--primary-color)' : 'rgba(255,255,255,0.05)',
+                                                        color: msg.role === 'user' ? 'white' : 'var(--text-color)',
+                                                        padding: '0.6rem 1rem',
+                                                        borderRadius: msg.role === 'user' ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
+                                                        fontSize: '0.85rem',
+                                                        lineHeight: '1.4',
+                                                        border: msg.role === 'user' ? 'none' : '1px solid var(--light-border)'
+                                                    }}>
+                                                        {msg.content}
+                                                    </div>
+                                                ))}
+                                                {loading && (
+                                                    <div style={{ alignSelf: 'flex-start', background: 'rgba(255,255,255,0.05)', padding: '0.6rem 1rem', borderRadius: '14px 14px 14px 2px', border: '1px solid var(--light-border)' }}>
+                                                        <Loader2 className="animate-spin" size={14} />
+                                                    </div>
+                                                )}
+                                                <div ref={chatEndRef} />
+                                            </div>
+                                            <div className="chat-footer" style={{ padding: '0.4rem 0.6rem', borderTop: '1px solid var(--light-border)', background: 'rgba(255,255,255,0.02)' }}>
+                                                <form onSubmit={sendMessage} style={{ display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
+                                                    <input 
+                                                        type="text" 
+                                                        value={userMessage}
+                                                        onChange={(e) => setUserMessage(e.target.value)}
+                                                        placeholder="Type your response..."
+                                                        style={{ 
+                                                            flex: 1,
+                                                            background: 'rgba(0,0,0,0.1)',
+                                                            border: '1px solid var(--light-border)',
+                                                            padding: '0.6rem 0.8rem',
+                                                            borderRadius: '8px',
+                                                            color: 'var(--text-color)',
+                                                            fontSize: '0.85rem',
+                                                            outline: 'none'
+                                                        }}
+                                                    />
+                                                    <button 
+                                                        type="button" 
+                                                        className="chat-control-btn"
+                                                        onClick={toggleListening}
+                                                        style={{ 
+                                                            background: isListening ? 'var(--danger-color)' : 'var(--primary-color)',
+                                                            boxShadow: isListening ? '0 0 10px var(--danger-color)' : 'none',
+                                                        }}
+                                                    >
+                                                        {isListening ? <MicOff size={14} /> : <Mic size={14} />}
+                                                    </button>
+                                                    <button 
+                                                        type="submit" 
+                                                        className="chat-control-btn chat-send-btn"
+                                                    >
+                                                        <Send size={14} />
+                                                    </button>
+                                                    <button 
+                                                        type="button" 
+                                                        className="chat-control-btn chat-end-btn"
+                                                        onClick={endInterview} 
+                                                    >
+                                                        End
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            )}
                         </div>
-                    ) }
+                    )}
                 </div>
             </div>
 
@@ -708,6 +1036,30 @@ const PrepModal = ({ isOpen, onClose, application }) => {
                     <button className="btn btn-outline" onClick={onClose} style={{ borderRadius: '50px', width: 'auto', minWidth: '100px' }}>
                         {translations[selectedLanguage]?.cancel || 'Close'}
                     </button>
+                    {interviewData && (
+                        <button 
+                            className="btn btn-outline" 
+                            onClick={handleDownloadReport} 
+                            style={{ 
+                                borderRadius: '50px', 
+                                width: 'auto', 
+                                gap: '8px',
+                                borderColor: 'var(--primary-color)',
+                                color: 'var(--primary-color)',
+                                transition: 'all 0.2s ease'
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.color = 'white';
+                                e.currentTarget.style.background = 'var(--primary-color)';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.color = 'var(--primary-color)';
+                                e.currentTarget.style.background = 'none';
+                            }}
+                        >
+                            <FileText size={16} /> {translations[selectedLanguage]?.download_report}
+                        </button>
+                    )}
                     <button 
                         className="btn btn-primary" 
                         onClick={() => fetchAIInsights(selectedLanguage, true)} 
