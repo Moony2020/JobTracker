@@ -330,7 +330,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                           onChange={(e) => updateNestedState('data.personal.lastName', e.target.value)}
                         />
                       </div>
-                      <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                      <div className="form-group span-2">
                         <label className="form-label">Job Title</label>
                         <input 
                           className="form-input" 
@@ -338,7 +338,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                           onChange={(e) => updateNestedState('data.personal.jobTitle', e.target.value)}
                         />
                       </div>
-                      <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                      <div className="form-group span-2">
                         <label className="form-label">Email</label>
                         <input 
                           className="form-input" 
