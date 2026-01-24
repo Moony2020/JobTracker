@@ -1,6 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+let stripe;
+if (process.env.STRIPE_SECRET_KEY) {
+  stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+} else {
+  console.warn("Stripe Secret Key missing. Payment routes will be disabled.");
+}
+
 const paypal = require("@paypal/checkout-server-sdk");
 const auth = require("../middleware/auth");
 const Purchase = require("../models/Purchase");
@@ -8,16 +14,26 @@ const CVDocument = require("../models/CVDocument");
 const Template = require("../models/Template");
 
 // PayPal Setup
-let environment = new paypal.core.SandboxEnvironment(
-  process.env.PAYPAL_CLIENT_ID,
-  process.env.PAYPAL_SECRET
-);
-let client = new paypal.core.PayPalHttpClient(environment);
+let client;
+try {
+  if (process.env.PAYPAL_CLIENT_ID && process.env.PAYPAL_SECRET) {
+    let environment = new paypal.core.SandboxEnvironment(
+      process.env.PAYPAL_CLIENT_ID,
+      process.env.PAYPAL_SECRET
+    );
+    client = new paypal.core.PayPalHttpClient(environment);
+  }
+} catch (error) {
+  console.warn("PayPal environment setup failed:", error.message);
+}
 
 // @route   POST api/payment/stripe/create-session
 // @desc    Create Stripe Checkout session for CV download
 // @access  Private
 router.post("/stripe/create-session", auth, async (req, res) => {
+  if (!stripe) {
+    return res.status(503).json({ msg: "Stripe payments are currently unavailable (Missing API Key)" });
+  }
   const { cvId, templateId } = req.body;
 
   try {
@@ -59,6 +75,9 @@ router.post("/stripe/create-session", auth, async (req, res) => {
 // @desc    Stripe webhook to handle payment success
 // @access  Public
 router.post("/stripe/webhook", express.raw({ type: "application/json" }), async (req, res) => {
+  if (!stripe) {
+     return res.status(503).send("Stripe not initialized");
+  }
   const sig = req.headers["stripe-signature"];
   let event;
 
@@ -97,6 +116,9 @@ router.post("/stripe/webhook", express.raw({ type: "application/json" }), async 
 // @desc    Create PayPal order
 // @access  Private
 router.post("/paypal/create-order", auth, async (req, res) => {
+  if (!client) {
+     return res.status(503).json({ msg: "PayPal payments are currently unavailable (Missing Credentials)" });
+  }
   const { cvId, templateId } = req.body;
 
   try {

@@ -1366,3 +1366,26 @@
     align-items: center;
     gap: 12px;
 }
+/* Rich Text Editor Customization */
+.ql-container {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.9rem !important;
+  border-bottom-left-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+}
+
+.ql-toolbar.ql-snow {
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+.ql-container.ql-snow {
+  border-color: #e2e8f0 !important;
+  background-color: white !important;
+}
+
+.ql-editor {
+  min-height: 120px;
+}

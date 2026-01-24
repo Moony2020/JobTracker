@@ -13,7 +13,7 @@ const ModernTemplate = ({ data, settings }) => {
         <h1>{personal.firstName || 'Your Name'} <span>{personal.lastName}</span></h1>
         <p className="job-title" style={{ fontSize: '1.2rem', color: '#64748b', marginTop: '4px' }}>{personal.jobTitle || 'Professional Title'}</p>
         {(personal.summary || !personal.firstName) && (
-          <p className="summary">{personal.summary || 'Professional summary goes here. Briefly describe your career highlights and key skills.'}</p>
+          <div className="summary" dangerouslySetInnerHTML={{ __html: personal.summary || 'Professional summary goes here. Briefly describe your career highlights and key skills.' }} />
         )}
       </div>
       
@@ -26,7 +26,7 @@ const ModernTemplate = ({ data, settings }) => {
                 <div key={i} className="exp-item">
                   <h3>{exp.title}</h3>
                   <div className="meta">{exp.company} | {exp.startDate} - {exp.current ? 'Present' : exp.endDate}</div>
-                  {exp.description && <p className="description">{exp.description}</p>}
+                  {exp.description && <div className="description" dangerouslySetInnerHTML={{ __html: exp.description }} />}
                 </div>
               )) : (
                 <div className="exp-item">
@@ -45,7 +45,7 @@ const ModernTemplate = ({ data, settings }) => {
                 <div key={i} className="exp-item">
                   <h3>{edu.degree}</h3>
                   <div className="meta">{edu.school} | {edu.startDate} - {edu.endDate}</div>
-                  {edu.description && <p className="description">{edu.description}</p>}
+                  {edu.description && <div className="description" dangerouslySetInnerHTML={{ __html: edu.description }} />}
                 </div>
               )) : (
                  <div className="exp-item">
@@ -63,7 +63,7 @@ const ModernTemplate = ({ data, settings }) => {
                 <div key={i} className="exp-item">
                   <h3>{item.role}</h3>
                   <div className="meta">{item.organization}</div>
-                  {item.description && <p className="description">{item.description}</p>}
+                  {item.description && <div className="description" dangerouslySetInnerHTML={{ __html: item.description }} />}
                 </div>
               ))}
             </section>

@@ -1,17 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import TemplateRenderer from './Templates/TemplateRenderer';
+import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
+import RichTextEditor from '../../components/RichTextEditor';
 import { 
-  X, ChevronDown, ChevronUp, Save, Layout, Palette, Type, 
-  User, Briefcase, GraduationCap, Globe, Code, Heart, 
-  Plus, Trash2, Download, Eye, FileText, CheckCircle,
-  ArrowLeft, Check, HelpCircle, ChevronLeft
+  Bold, Italic, Underline, Link as LinkIcon, List, AlignLeft, AlignCenter, AlignRight,
+  CheckCircle, Trash2, Plus, ChevronUp, ChevronDown, Layout, X, ChevronLeft, Download,
+  User, Briefcase, GraduationCap, Globe, Code, Heart, Type, ArrowLeft, Palette, Save, Eye, FileText, HelpCircle, Check
 } from 'lucide-react';
 import './CVBuilder.css';
 import api from '../../services/api';
-import TemplateRenderer from './Templates/TemplateRenderer';
-import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
-import { 
-  Bold, Italic, Underline, Link as LinkIcon, List, AlignLeft, AlignCenter, AlignRight 
-} from 'lucide-react';
 
 const SAMPLE_DATA = {
   personal: {
@@ -62,8 +59,6 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
       volunteering: [],
       courses: [],
       military: [],
-      courses: [],
-      military: [],
       references: [],
       gdpr: []
     },
@@ -80,6 +75,12 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
   const [activeSection, setActiveSection] = useState('personal');
   const [isSaved, setIsSaved] = useState(true);
   const [availableTemplates, setAvailableTemplates] = useState([]);
+  const [deleteModal, setDeleteModal] = useState({
+    isOpen: false,
+    section: null,
+    index: null,
+    title: ''
+  });
 
   // Fetch CV data if editing
   useEffect(() => {
@@ -105,7 +106,6 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                 links: res.data.data?.links || [],
                 volunteering: res.data.data?.volunteering || [],
                 courses: res.data.data?.courses || [],
-                military: res.data.data?.military || [],
                 military: res.data.data?.military || [],
                 references: res.data.data?.references || [],
                 gdpr: res.data.data?.gdpr || []
@@ -190,20 +190,13 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
     });
   };
 
-  const [deleteModal, setDeleteModal] = useState({ 
-    isOpen: false, 
-    section: null, 
-    index: null, 
-    title: '' 
-  });
-
   const confirmDeleteCategory = () => {
     const { section, index } = deleteModal;
     if (section && index !== null) {
       const newList = cvData.data[section].filter((_, i) => i !== index);
       updateNestedState(`data.${section}`, newList);
       if (showNotify) {
-        showNotify(`Deleted ${deleteModal.title}`, 'success');
+         showNotify(`${deleteModal.title} deleted successfully!`, 'success');
       }
     }
     setDeleteModal({ isOpen: false, section: null, index: null, title: '' });
@@ -372,11 +365,10 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                     </div>
                     <div className="form-group" style={{ marginTop: '20px' }}>
                       <label className="form-label">Professional Summary</label>
-                      <textarea 
-                        className="form-input" 
-                        rows="4" 
+                      <RichTextEditor 
                         value={cvData.data.personal.summary} 
-                        onChange={(e) => updateNestedState('data.personal.summary', e.target.value)}
+                        onChange={(val) => updateNestedState('data.personal.summary', val)}
+                        placeholder="Write a professional summary..."
                       />
                     </div>
                   </div>
@@ -396,7 +388,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                   <div className="section-content-inner">
                     {cvData.data.experience.map((exp, idx) => (
                       <div key={idx} className="card-item-wrapper">
-                        <button className="btn-remove-item" onClick={() => removeItem('experience', idx)}>
+                        <button className="btn-remove-item" onClick={() => removeItem('experience', idx, exp.title || 'Experience')}>
                           <Trash2 size={16} />
                         </button>
                         <div className="form-grid">
@@ -436,11 +428,10 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                         </div>
                         <div className="form-group" style={{ marginTop: '12px' }}>
                           <label className="form-label">Description</label>
-                          <textarea 
-                            className="form-input" 
-                            rows="3" 
+                          <RichTextEditor 
                             value={exp.description} 
-                            onChange={(e) => updateItem('experience', idx, 'description', e.target.value)}
+                            onChange={(val) => updateItem('experience', idx, 'description', val)}
+                            placeholder="Describe your responsibilities and achievements..."
                           />
                         </div>
                       </div>
@@ -466,7 +457,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                   <div className="section-content-inner">
                     {cvData.data.education.map((edu, idx) => (
                       <div key={idx} className="card-item-wrapper">
-                        <button className="btn-remove-item" onClick={() => removeItem('education', idx)}>
+                        <button className="btn-remove-item" onClick={() => removeItem('education', idx, edu.school || 'Education')}>
                           <Trash2 size={16} />
                         </button>
                         <div className="form-grid">
@@ -503,6 +494,14 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                             />
                           </div>
                         </div>
+                        <div className="form-group" style={{ marginTop: '12px' }}>
+                          <label className="form-label">Description</label>
+                          <RichTextEditor 
+                            value={edu.description} 
+                            onChange={(val) => updateItem('education', idx, 'description', val)}
+                            placeholder="Describe your studies and achievements..."
+                          />
+                        </div>
                       </div>
                     ))}
                     <button className="btn-add-section" onClick={() => addItem('education')}>
@@ -532,7 +531,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                             value={skill} 
                             onChange={(e) => updateItem('skills', idx, null, e.target.value)}
                           />
-                          <button className="action-btn delete" onClick={() => removeItem('skills', idx)}>
+                          <button className="action-btn delete" onClick={() => removeItem('skills', idx, skill || 'Skill')}>
                             <Trash2 size={14} />
                           </button>
                         </div>
@@ -548,7 +547,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
 
               {/* Dynamic Sections rendering */}
                 {Object.keys(cvData.data).map(key => {
-                  if (['personal', 'experience', 'education', 'skills'].includes(key)) return null;
+                  if (['personal', 'experience', 'education', 'skills', 'gdpr'].includes(key)) return null;
                   if (!cvData.data[key] || cvData.data[key].length === 0) return null;
 
                   const sectionTitles = {
@@ -578,18 +577,26 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                         <div className="section-content-inner">
                           {cvData.data[key].map((item, idx) => (
                             <div key={idx} className="card-item-wrapper">
-                              <button className="btn-remove-item" onClick={() => removeItem(key, idx)}>
+                              <button className="btn-remove-item" onClick={() => removeItem(key, idx, item[config.itemFields[0]] || config.title)}>
                                 <Trash2 size={16} />
                               </button>
                               <div className="form-grid">
                                 {config.itemFields.map(field => (
-                                  <div key={field} className="form-group">
+                                  <div key={field} className={field === 'description' ? "form-group full" : "form-group"}>
                                     <label className="form-label">{field.charAt(0).toUpperCase() + field.slice(1)}</label>
-                                    <input 
-                                      className="form-input" 
-                                      value={item[field] || ''} 
-                                      onChange={(e) => updateItem(key, idx, field, e.target.value)}
-                                    />
+                                    {field === 'description' ? (
+                                      <RichTextEditor 
+                                        value={item[field] || ''} 
+                                        onChange={(val) => updateItem(key, idx, field, val)}
+                                        placeholder={`Describe your ${config.title.toLowerCase()}...`}
+                                      />
+                                    ) : (
+                                      <input 
+                                        className="form-input" 
+                                        value={item[field] || ''} 
+                                        onChange={(e) => updateItem(key, idx, field, e.target.value)}
+                                      />
+                                    )}
                                   </div>
                                 ))}
                               </div>
@@ -605,10 +612,10 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                   );
                 })}
 
-              {/* GDPR Section (Custom Render) */}
+              {/* GDPR Section */}
               {cvData.data.gdpr && cvData.data.gdpr.length > 0 && (
                 <div className="form-section-card">
-                   <button className="section-trigger" onClick={() => toggleSection('gdpr')}>
+                  <button className="section-trigger" onClick={() => toggleSection('gdpr')}>
                     <div className="section-title-box">
                       <CheckCircle size={20} color="#6366f1" />
                       <span>GDPR</span>
@@ -623,50 +630,11 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                             <Trash2 size={16} />
                           </button>
                           
-                          {/* Fake Rich Text Toolbar */}
-                          <div className="rich-text-editor-wrapper" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden' }}>
-                            <div className="rte-toolbar" style={{ 
-                               background: '#f8fafc', 
-                               borderBottom: '1px solid #e2e8f0', 
-                               padding: '8px 12px',
-                               display: 'flex',
-                               gap: '12px',
-                               alignItems: 'center'
-                            }}>
-                               <div style={{ display: 'flex', gap: '4px' }}>
-                                 <button className="rte-btn" disabled><ArrowLeft size={14} /></button>
-                                 <button className="rte-btn" disabled><span style={{fontSize: '12px', fontWeight: 'bold'}}>→</span></button>
-                               </div>
-                               <div style={{ height: '16px', width: '1px', background: '#cbd5e1' }}></div>
-                               <div style={{ display: 'flex', gap: '4px' }}>
-                                 <button className="rte-btn" disabled><Type size={14} /></button>
-                                 <button className="rte-btn" disabled><span style={{fontSize: '12px'}}>AI</span></button>
-                               </div>
-                               <div style={{ height: '16px', width: '1px', background: '#cbd5e1' }}></div>
-                               <div style={{ display: 'flex', gap: '4px' }}>
-                                 <button className="rte-btn" disabled><Bold size={14} /></button>
-                                 <button className="rte-btn" disabled><Italic size={14} /></button>
-                                 <button className="rte-btn" disabled><Underline size={14} /></button>
-                               </div>
-                               <div style={{ height: '16px', width: '1px', background: '#cbd5e1' }}></div>
-                               <div style={{ display: 'flex', gap: '4px' }}>
-                                 <button className="rte-btn" disabled><AlignLeft size={14} /></button>
-                                 <button className="rte-btn" disabled><List size={14} /></button>
-                               </div>
-                            </div>
-                            <textarea 
-                              className="form-input" 
-                              rows="6" 
+                          <div className="rich-text-editor-wrapper">
+                            <RichTextEditor 
                               value={item.text} 
-                              onChange={(e) => updateItem('gdpr', idx, 'text', e.target.value)}
-                              style={{ 
-                                border: 'none', 
-                                borderRadius: '0 0 8px 8px',
-                                padding: '12px',
-                                fontSize: '0.85rem',
-                                lineHeight: '1.5',
-                                resize: 'vertical'
-                              }}
+                              onChange={(val) => updateItem('gdpr', idx, 'text', val)}
+                              placeholder="Enter your GDPR consent text here..."
                             />
                           </div>
                         </div>
@@ -675,6 +643,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                   )}
                 </div>
               )}
+
 
               {/* Add Category Section */}
               <div className="add-category-section" style={{ marginTop: '24px', padding: '0 10px 40px 10px' }}>
@@ -719,11 +688,6 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                    <button className="cat-btn-add" disabled={cvData.data.gdpr && cvData.data.gdpr.length > 0} onClick={() => addItem('gdpr')}>
                       <CheckCircle size={18} />
                       <span>GDPR</span>
-                   </button>
-
-                   <button className="cat-btn-add" disabled style={{ opacity: 0.5, cursor: 'not-allowed' }}>
-                      <Plus size={18} />
-                      <span>Custom</span>
                    </button>
 
                 </div>
@@ -878,6 +842,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
           </div>
         </main>
       </div>
+
       <DeleteConfirmationModal 
         isOpen={deleteModal.isOpen}
         onClose={cancelDeleteCategory}

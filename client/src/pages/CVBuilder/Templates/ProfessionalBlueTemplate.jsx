@@ -134,7 +134,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
         {personal.summary && (
           <section className="pro-content-section">
             <h2 className="pro-content-title" style={{ color: themeColor }}>PROFESSIONAL SUMMARY</h2>
-            <p className="pro-summary">{personal.summary}</p>
+            <div className="pro-summary" dangerouslySetInnerHTML={{ __html: personal.summary }} />
           </section>
         )}
 
@@ -149,7 +149,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
                   <span className="pro-exp-date">{exp.startDate} - {exp.endDate || 'Present'}</span>
                 </div>
                 <p className="pro-exp-company">{exp.company}</p>
-                {exp.description && <p className="pro-exp-desc">{exp.description}</p>}
+                {exp.description && <div className="pro-exp-desc" dangerouslySetInnerHTML={{ __html: exp.description }} />}
               </div>
             ))}
           </section>
@@ -178,7 +178,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
                   <span className="pro-exp-date">{edu.startDate} - {edu.endDate}</span>
                 </div>
                 <p className="pro-exp-company">{edu.school}</p>
-                {edu.description && <p className="pro-exp-desc">{edu.description}</p>}
+                {edu.description && <div className="pro-exp-desc" dangerouslySetInnerHTML={{ __html: edu.description }} />}
               </div>
             ))}
           </section>
@@ -205,7 +205,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
                   <h3 className="pro-exp-title">{item.role}</h3>
                 </div>
                 <p className="pro-exp-company">{item.organization}</p>
-                {item.description && <p className="pro-exp-desc">{item.description}</p>}
+                {item.description && <div className="pro-exp-desc" dangerouslySetInnerHTML={{ __html: item.description }} />}
               </div>
             ))}
           </section>
@@ -239,9 +239,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
 
         {/* GDPR Section */}
         {data.gdpr && data.gdpr.length > 0 && (
-          <div className="pro-gdpr-footer" style={{ marginTop: 'auto', paddingTop: '20px', fontSize: '0.65rem', color: '#64748b', lineHeight: '1.4', borderTop: '1px solid #e2e8f0' }}>
-             {data.gdpr[0].text}
-          </div>
+          <div className="pro-gdpr-footer" style={{ marginTop: 'auto', paddingTop: '20px', fontSize: '0.65rem', color: '#64748b', lineHeight: '1.4', borderTop: '1px solid #e2e8f0' }} dangerouslySetInnerHTML={{ __html: data.gdpr[0].text }} />
         )}
       </div>
     </div>
