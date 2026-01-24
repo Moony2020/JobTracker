@@ -1392,9 +1392,24 @@
 }
 
 
+
 /* Responsive Grid Span */
 .form-group.span-2 {
   grid-column: span 2;
+}
+
+/* Fix for Global index.css Conflict (Job Title/Email small width) */
+/* Reset strict sizing from index.css for CV Editor context */
+.cv-editor-design .form-grid .form-group:nth-child(n) {
+    flex: 1 1 auto;
+    max-width: none;
+    min-width: 0;
+}
+
+/* Re-assert span-2 width for desktop */
+.cv-editor-design .form-grid .form-group.span-2 {
+    grid-column: span 2;
+    width: 100%;
 }
 
 /* ========================================= */
@@ -1418,6 +1433,7 @@
     grid-column: auto !important;
     margin-bottom: 0 !important;
   }
+
 
   /* Reset span-2 for mobile */
   .form-group.span-2 {
