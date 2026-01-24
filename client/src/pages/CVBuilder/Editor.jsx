@@ -8,6 +8,10 @@ import {
 import './CVBuilder.css';
 import api from '../../services/api';
 import TemplateRenderer from './Templates/TemplateRenderer';
+import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
+import { 
+  Bold, Italic, Underline, Link as LinkIcon, List, AlignLeft, AlignCenter, AlignRight 
+} from 'lucide-react';
 
 const SAMPLE_DATA = {
   personal: {
@@ -31,7 +35,7 @@ const SAMPLE_DATA = {
   links: []
 };
 
-const Editor = ({ cvId, onBack, language }) => {
+const Editor = ({ cvId, onBack, language, showNotify }) => {
   const [loading, setLoading] = useState(cvId ? true : false);
   const [viewMode, setViewMode] = useState('content'); // 'content' or 'design'
   const [cvData, setCvData] = useState({
@@ -58,7 +62,10 @@ const Editor = ({ cvId, onBack, language }) => {
       volunteering: [],
       courses: [],
       military: [],
-      references: []
+      courses: [],
+      military: [],
+      references: [],
+      gdpr: []
     },
     settings: {
       themeColor: '#2563eb',
@@ -99,7 +106,9 @@ const Editor = ({ cvId, onBack, language }) => {
                 volunteering: res.data.data?.volunteering || [],
                 courses: res.data.data?.courses || [],
                 military: res.data.data?.military || [],
-                references: res.data.data?.references || []
+                military: res.data.data?.military || [],
+                references: res.data.data?.references || [],
+                gdpr: res.data.data?.gdpr || []
               },
               settings: res.data.settings || { themeColor: '#2563eb', font: 'Inter', lineSpacing: 100 },
               templateKey: res.data.templateId?.key || 'modern'
@@ -181,6 +190,29 @@ const Editor = ({ cvId, onBack, language }) => {
     });
   };
 
+  const [deleteModal, setDeleteModal] = useState({ 
+    isOpen: false, 
+    section: null, 
+    index: null, 
+    title: '' 
+  });
+
+  const confirmDeleteCategory = () => {
+    const { section, index } = deleteModal;
+    if (section && index !== null) {
+      const newList = cvData.data[section].filter((_, i) => i !== index);
+      updateNestedState(`data.${section}`, newList);
+      if (showNotify) {
+        showNotify(`Deleted ${deleteModal.title}`, 'success');
+      }
+    }
+    setDeleteModal({ isOpen: false, section: null, index: null, title: '' });
+  };
+
+  const cancelDeleteCategory = () => {
+    setDeleteModal({ isOpen: false, section: null, index: null, title: '' });
+  };
+
   const addItem = (section) => {
     const newItem = section === 'experience' ? { title: '', company: '', startDate: '', endDate: '', current: false, description: '' }
                : section === 'education' ? { school: '', degree: '', startDate: '', endDate: '', description: '' }
@@ -193,6 +225,7 @@ const Editor = ({ cvId, onBack, language }) => {
                : section === 'courses' ? { name: '', institution: '' }
                : section === 'military' ? { role: '', organization: '' }
                : section === 'references' ? { name: '', contact: '' }
+               : section === 'gdpr' ? { text: 'I hereby give consent for my personal data included in the application to be processed for the purposes of the recruitment process in accordance with Art. 6 paragraph 1 letter a of the Regulation of the European Parliament and of the Council (EU) 2016/679 of 27 April 2016 on the protection of natural persons with regard to the processing of personal data and on the free movement of such data, and repealing Directive 95/46/EC (General Data Protection Regulation).' }
                : null;
 
     if (newItem !== null) {
@@ -211,9 +244,8 @@ const Editor = ({ cvId, onBack, language }) => {
     updateNestedState(`data.${section}`, newList);
   };
 
-  const removeItem = (section, index) => {
-    const newList = cvData.data[section].filter((_, i) => i !== index);
-    updateNestedState(`data.${section}`, newList);
+  const removeItem = (section, index, title = 'Item') => {
+    setDeleteModal({ isOpen: true, section, index, title });
   };
 
   const toggleSection = (section) => {
@@ -573,6 +605,77 @@ const Editor = ({ cvId, onBack, language }) => {
                   );
                 })}
 
+              {/* GDPR Section (Custom Render) */}
+              {cvData.data.gdpr && cvData.data.gdpr.length > 0 && (
+                <div className="form-section-card">
+                   <button className="section-trigger" onClick={() => toggleSection('gdpr')}>
+                    <div className="section-title-box">
+                      <CheckCircle size={20} color="#6366f1" />
+                      <span>GDPR</span>
+                    </div>
+                    {activeSection === 'gdpr' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                  </button>
+                  {activeSection === 'gdpr' && (
+                    <div className="section-content-inner">
+                      {cvData.data.gdpr.map((item, idx) => (
+                        <div key={idx} className="card-item-wrapper">
+                          <button className="btn-remove-item" onClick={() => removeItem('gdpr', idx, 'GDPR')}>
+                            <Trash2 size={16} />
+                          </button>
+                          
+                          {/* Fake Rich Text Toolbar */}
+                          <div className="rich-text-editor-wrapper" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden' }}>
+                            <div className="rte-toolbar" style={{ 
+                               background: '#f8fafc', 
+                               borderBottom: '1px solid #e2e8f0', 
+                               padding: '8px 12px',
+                               display: 'flex',
+                               gap: '12px',
+                               alignItems: 'center'
+                            }}>
+                               <div style={{ display: 'flex', gap: '4px' }}>
+                                 <button className="rte-btn" disabled><ArrowLeft size={14} /></button>
+                                 <button className="rte-btn" disabled><span style={{fontSize: '12px', fontWeight: 'bold'}}>→</span></button>
+                               </div>
+                               <div style={{ height: '16px', width: '1px', background: '#cbd5e1' }}></div>
+                               <div style={{ display: 'flex', gap: '4px' }}>
+                                 <button className="rte-btn" disabled><Type size={14} /></button>
+                                 <button className="rte-btn" disabled><span style={{fontSize: '12px'}}>AI</span></button>
+                               </div>
+                               <div style={{ height: '16px', width: '1px', background: '#cbd5e1' }}></div>
+                               <div style={{ display: 'flex', gap: '4px' }}>
+                                 <button className="rte-btn" disabled><Bold size={14} /></button>
+                                 <button className="rte-btn" disabled><Italic size={14} /></button>
+                                 <button className="rte-btn" disabled><Underline size={14} /></button>
+                               </div>
+                               <div style={{ height: '16px', width: '1px', background: '#cbd5e1' }}></div>
+                               <div style={{ display: 'flex', gap: '4px' }}>
+                                 <button className="rte-btn" disabled><AlignLeft size={14} /></button>
+                                 <button className="rte-btn" disabled><List size={14} /></button>
+                               </div>
+                            </div>
+                            <textarea 
+                              className="form-input" 
+                              rows="6" 
+                              value={item.text} 
+                              onChange={(e) => updateItem('gdpr', idx, 'text', e.target.value)}
+                              style={{ 
+                                border: 'none', 
+                                borderRadius: '0 0 8px 8px',
+                                padding: '12px',
+                                fontSize: '0.85rem',
+                                lineHeight: '1.5',
+                                resize: 'vertical'
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Add Category Section */}
               <div className="add-category-section" style={{ marginTop: '24px', padding: '0 10px 40px 10px' }}>
                 <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: '#334155', marginBottom: '12px' }}>Add Category</h4>
@@ -613,7 +716,7 @@ const Editor = ({ cvId, onBack, language }) => {
                       <span>References</span>
                    </button>
                    
-                   <button className="cat-btn-add" disabled style={{ opacity: 0.5, cursor: 'not-allowed' }}>
+                   <button className="cat-btn-add" disabled={cvData.data.gdpr && cvData.data.gdpr.length > 0} onClick={() => addItem('gdpr')}>
                       <CheckCircle size={18} />
                       <span>GDPR</span>
                    </button>
@@ -775,6 +878,14 @@ const Editor = ({ cvId, onBack, language }) => {
           </div>
         </main>
       </div>
+      <DeleteConfirmationModal 
+        isOpen={deleteModal.isOpen}
+        onClose={cancelDeleteCategory}
+        onConfirm={confirmDeleteCategory}
+        applicationName={deleteModal.title}
+        itemType="category"
+        message={`Are you sure you want to delete this ${deleteModal.title}?`}
+      />
     </div>
   );
 };

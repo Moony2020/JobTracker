@@ -236,6 +236,13 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
             ))}
           </section>
         )}
+
+        {/* GDPR Section */}
+        {data.gdpr && data.gdpr.length > 0 && (
+          <div className="pro-gdpr-footer" style={{ marginTop: 'auto', paddingTop: '20px', fontSize: '0.65rem', color: '#64748b', lineHeight: '1.4', borderTop: '1px solid #e2e8f0' }}>
+             {data.gdpr[0].text}
+          </div>
+        )}
       </div>
     </div>
   );
