@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "@paypal/checkout-server-sdk": "^1.0.3",
+    "@paypal/payouts-sdk": "^1.1.1",
     "axios": "^1.13.2",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
@@ -25,6 +27,8 @@
     "nodemailer": "^7.0.12",
     "pdf-parse": "^2.4.5",
     "pdfkit": "^0.17.2",
+    "puppeteer": "^24.35.0",
+    "stripe": "^20.2.0",
     "zod": "^4.3.5"
   },
   "devDependencies": {

@@ -38,6 +38,8 @@ app.use("/api/ai", require("./routes/ai"));
 app.use("/api/jobs", require("./routes/jobs"));
 app.use("/api/interview", require("./routes/interview"));
 app.use("/api/reports", require("./routes/reports"));
+app.use("/api/cv", require("./routes/cv"));
+app.use("/api/payment", require("./routes/payment"));
 
 // Serve React app
 app.get("*", (req, res) => {

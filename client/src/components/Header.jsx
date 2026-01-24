@@ -38,6 +38,7 @@ const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLo
   const navItems = [
     { id: 'dashboard', label: t.dashboard },
     { id: 'applications', label: t.applications },
+    { id: 'cv-builder', label: t.cv_builder },
     { id: 'statistics', label: t.statistics },
     { id: 'jobs', label: t.jobs },
   ];
@@ -191,6 +192,7 @@ const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLo
           <ul>
             <li><a href="#" className={`mobile-nav-link ${activePage === 'dashboard' ? 'active' : ''}`} onClick={() => { onOpenPage('dashboard'); setMobileMenuOpen(false); }}>{t.dashboard}</a></li>
             <li><a href="#" className={`mobile-nav-link ${activePage === 'applications' ? 'active' : ''}`} onClick={() => { onOpenPage('applications'); setMobileMenuOpen(false); }}>{t.applications}</a></li>
+            <li><a href="#" className={`mobile-nav-link ${activePage === 'cv-builder' ? 'active' : ''}`} onClick={() => { onOpenPage('cv-builder'); setMobileMenuOpen(false); }}>{t.cv_builder}</a></li>
             <li><a href="#" className={`mobile-nav-link ${activePage === 'statistics' ? 'active' : ''}`} onClick={() => { onOpenPage('statistics'); setMobileMenuOpen(false); }}>{t.statistics}</a></li>
             <li><a href="#" className={`mobile-nav-link ${activePage === 'jobs' ? 'active' : ''}`} onClick={() => { onOpenPage('jobs'); setMobileMenuOpen(false); }}>{t.jobs}</a></li>
           </ul>

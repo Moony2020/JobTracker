@@ -1,0 +1,152 @@
+import React, { useState, useEffect } from 'react';
+import api from '../../services/api';
+import { Plus, Edit3, Trash2, FileText, Download, Crown } from 'lucide-react';
+import TemplateRenderer from './Templates/TemplateRenderer';
+
+// Sample data for preview
+const sampleData = {
+  personal: {
+    firstName: "John",
+    lastName: "Doe",
+    email: "john.doe@email.com",
+    phone: "(555) 123-4567",
+    location: "Anytown, ST 12345",
+    summary: "IT professional with over 5 years of experience specializing in technical support, network administration, and software troubleshooting.",
+    jobTitle: "IT Professional",
+    photo: null
+  },
+  experience: [
+    {
+      title: "Senior IT Specialist",
+      company: "ABC Tech Solutions",
+      startDate: "Jun 2022",
+      endDate: "Present",
+      description: "Provide Tier 2 technical support for employees. Troubleshoot network hardware and software issues."
+    }
+  ],
+  education: [
+    {
+      school: "State University",
+      degree: "Bachelor of Science in Information Technology",
+      startDate: "2014",
+      endDate: "2018"
+    }
+  ],
+  skills: ["Technical Support", "Network Administration", "Software Troubleshooting"],
+  languages: ["English", "Spanish"],
+  projects: []
+};
+
+const ResumeList = ({ onEdit, onCreate, language, onBack }) => {
+  const [resumes, setResumes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [templates, setTemplates] = useState([]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const [resumesRes, templatesRes] = await Promise.all([
+        api.get('/cv'),
+        api.get('/cv/templates')
+      ]);
+      setResumes(resumesRes.data);
+      setTemplates(templatesRes.data);
+    } catch (err) {
+      console.error("Error fetching CV data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <div className="cv-loading">Loading CV Builder...</div>;
+
+  return (
+    <div className="resume-list-container">
+      <div className="list-header">
+
+        <h1>{language === 'Arabic' ? 'السير الذاتية' : 'My Resumes'}</h1>
+        <p>{language === 'Arabic' ? 'قم بإنشاء وتعديل سيرتك الذاتية باحترافية' : 'Create and manage your professional resumes'}</p>
+      </div>
+
+      <section className="templates-section">
+        <div className="section-title-wrapper">
+          <h2>{language === 'Arabic' ? 'القوالب المتاحة' : 'Available Templates'}</h2>
+        </div>
+        <div className="template-grid">
+          {templates.map(tpl => (
+            <div key={tpl._id} className="template-card" onClick={() => onCreate(tpl)}>
+              <div className="template-preview-live">
+                <div className="template-preview-wrapper">
+                  <TemplateRenderer 
+                    templateKey={tpl.key} 
+                    data={sampleData} 
+                    settings={{ themeColor: "#2563eb", font: "Inter", lineHeight: 1.5 }} 
+                  />
+                </div>
+                {/* Badges restored - Visible always */}
+                {tpl.category === 'Premium' && (
+                  <div className="premium-badge">
+                    <Crown size={14} />
+                    <span>PRO</span>
+                  </div>
+                )}
+                {tpl.price === 0 && (
+                  <div className="free-badge">FREE</div>
+                )}
+              </div>
+              <div className="template-info">
+                <h3>{tpl.name.split(' ')[0]}</h3>
+              </div>
+            </div>
+          ))}
+          <div className="create-blank-card" onClick={onCreate}>
+            <div className="plus-icon">
+              <Plus size={40} />
+            </div>
+            <span>{language === 'Arabic' ? 'بداية من الصفر' : 'Start from Blank'}</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="saved-resumes-section">
+        <h2>{language === 'Arabic' ? 'سيري الذاتية المحفوظة' : 'My Saved Resumes'}</h2>
+        {resumes.length > 0 ? (
+          <div className="resume-grid">
+            {resumes.map(cv => (
+              <div key={cv._id} className="resume-item-card">
+                <div className="resume-icon">
+                  <FileText size={32} />
+                </div>
+                <div className="resume-details">
+                  <h3>{cv.title}</h3>
+                  <span className="template-name">{cv.templateId?.name || 'Custom Template'}</span>
+                  <span className="last-updated">Updated {new Date(cv.updatedAt).toLocaleDateString()}</span>
+                </div>
+                <div className="resume-actions">
+                  <button className="action-btn edit" title="Edit" onClick={() => onEdit(cv)}>
+                    <Edit3 size={18} />
+                  </button>
+                  <button className="action-btn download" title="Download">
+                    <Download size={18} />
+                  </button>
+                  <button className="action-btn delete" title="Delete">
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '40px', background: '#f8fafc', borderRadius: '12px', border: '2px dashed #e2e8f0' }}>
+             <p style={{ color: '#64748b' }}>{language === 'Arabic' ? 'لا توجد سير ذاتية محفوظة حاليا' : 'No saved resumes found. Start by selecting a template above!'}</p>
+          </div>
+        )}
+      </section>
+    </div>
+  );
+};
+
+export default ResumeList;

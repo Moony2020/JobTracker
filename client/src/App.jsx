@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard';
 import Applications from './pages/Applications';
 import Statistics from './pages/Statistics';
 import JobFinder from './pages/JobFinder';
+import CVBuilder from './pages/CVBuilder/CVBuilder';
 import Login from './components/Login';
 import Register from './components/Register';
 import api from './services/api';
@@ -22,7 +23,14 @@ const AppContent = () => {
   const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(localStorage.getItem('theme') !== 'light');
   const [language, setLanguage] = useState(localStorage.getItem('jt_language') || 'English');
-  const [currentPage, setCurrentPage] = useState('dashboard');
+  // Persist current page
+  const [currentPage, setCurrentPage] = useState(() => {
+    return localStorage.getItem('jt_currentPage') || 'dashboard';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('jt_currentPage', currentPage);
+  }, [currentPage]);
   
   useEffect(() => {
     document.documentElement.dir = language === 'Arabic' ? 'rtl' : 'ltr';
@@ -217,23 +225,42 @@ const AppContent = () => {
     return { total, interviews, offers, thisWeek, thisMonth, successRate };
   }, [applications]);
 
+  /* Full Screen Mode for detailed editors */
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
+  // Reset full screen on page change
+  useEffect(() => {
+    setIsFullScreen(false);
+  }, [currentPage]);
+
   if (authLoading && !resetToken) return <div className="loading-overlay"><div className="loading-spinner"></div><p>Loading...</p></div>;
 
   return (
     <div className="app-container">
-      <Header 
-        darkMode={darkMode} 
-        toggleTheme={() => setDarkMode(!darkMode)} 
-        language={language}
-        setLanguage={setLanguage}
-        onOpenPage={setCurrentPage}
-        onLoginClick={() => setShowLogin(true)}
-        onRegisterClick={() => setShowRegister(true)}
-        onChangePasswordClick={() => setShowChangePassword(true)}
-        onProfileClick={() => setShowProfile(true)}
-        activePage={currentPage}
-      />
-      <main className="container" style={{ marginTop: '1.5rem' }}>
+      {/* Hide Header only if isFullScreen is true. Otherwise show it for all pages including cv-builder list view */}
+      {!isFullScreen && (
+        <Header 
+          darkMode={darkMode} 
+          toggleTheme={() => setDarkMode(!darkMode)} 
+          language={language}
+          setLanguage={setLanguage}
+          onOpenPage={setCurrentPage}
+          onLoginClick={() => setShowLogin(true)}
+          onRegisterClick={() => setShowRegister(true)}
+          onChangePasswordClick={() => setShowChangePassword(true)}
+          onProfileClick={() => setShowProfile(true)}
+          activePage={currentPage}
+        />
+      )}
+      <main 
+        className={isFullScreen ? '' : 'container'} 
+        style={{ 
+          marginTop: isFullScreen ? '0' : '1.5rem',
+          width: isFullScreen ? '100%' : undefined,
+          maxWidth: isFullScreen ? '100%' : undefined,
+          padding: isFullScreen ? '0' : undefined 
+        }}
+      >
         {currentPage === 'dashboard' && (
           <Dashboard 
             applications={applications} 
@@ -248,12 +275,12 @@ const AppContent = () => {
         )}
         {currentPage === 'applications' && (
           <Applications 
-             applications={applications}
-             onEdit={handleEditClick}
-             onDelete={handleDeleteClick}
-             onStatusChange={handleStatusChange}
-             loading={loading}
-             language={language}
+            applications={applications}
+            onEdit={handleEditClick}
+            onDelete={handleDeleteClick}
+            onStatusChange={handleStatusChange}
+            loading={loading}
+            language={language}
           />
         )}
         {currentPage === 'statistics' && (
@@ -261,6 +288,14 @@ const AppContent = () => {
         )}
         {currentPage === 'jobs' && (
           <JobFinder language={language} user={user} />
+        )}
+        {currentPage === 'cv-builder' && (
+          <CVBuilder 
+            language={language} 
+            user={user} 
+            onExit={() => setCurrentPage('dashboard')} 
+            setFullScreen={setIsFullScreen} 
+          />
         )}
       </main>
 
@@ -297,12 +332,14 @@ const AppContent = () => {
       {loading && <div className="loading-overlay"><div className="loading-spinner"></div><p>Processing...</p></div>}
       
       <ScrollToTop />
-
-      <footer>
-        <div className="container">
-          <p>&copy; 2026 JobTracker. All rights reserved.</p>
-        </div>
-      </footer>
+      
+      {!isFullScreen && (
+        <footer>
+          <div className="container">
+            <p>&copy; 2026 JobTracker. All rights reserved.</p>
+          </div>
+        </footer>
+      )}
     </div>
   );
 };
