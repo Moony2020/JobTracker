@@ -264,8 +264,8 @@
     min-height: auto;
     overflow: visible !important;
     justify-content: flex-start !important;
-    padding-top: 40px !important;
-    padding-bottom: 40px !important;
+    padding-top: 10px !important;
+    padding-bottom: 20px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -597,7 +597,7 @@
 /* Keep same size for all desktop and tablet views */
 @media (max-width: 1600px) { 
   .preview-scaler { 
-    transform: scale(0.52); 
+    transform: scale(0.55); 
     height: 584px; 
   } 
 }
@@ -982,7 +982,7 @@
 
 
 
-@media (max-width: 600px) {
+@media (max-width: 992px) {
     .form-grid {
         grid-template-columns: 1fr;
         gap: 12px;
@@ -1391,27 +1391,6 @@
   min-height: 120px;
 }
 
-
-
-/* Responsive Grid Span */
-.form-group.span-2 {
-  grid-column: span 2;
-}
-
-/* Fix for Global index.css Conflict (Job Title/Email small width) */
-/* Reset strict sizing from index.css for CV Editor context */
-.cv-editor-design .form-grid .form-group:nth-child(n) {
-    flex: 1 1 auto;
-    max-width: none;
-    min-width: 0;
-}
-
-/* Re-assert span-2 width for desktop */
-.cv-editor-design .form-grid .form-group.span-2 {
-    grid-column: span 2;
-    width: 100%;
-}
-
 /* ========================================= */
 /* MOBILE RESPONSIVENESS FIXES (< 620px) */
 /* ========================================= */
@@ -1421,24 +1400,12 @@
   .form-grid {
     display: flex !important;
     flex-direction: column !important;
-    gap: 12px !important; /* Balanced gap */
+    gap: 16px !important;
   }
   
-  /* FORCE OVERRIDE of index.css rigid rules for all children */
-  .form-grid .form-group,
-  .form-grid .form-group:nth-child(n) {
+  .form-group {
     width: 100% !important;
-    max-width: 100% !important;
-    flex: 1 1 100% !important;
-    grid-column: auto !important;
-    margin-bottom: 0 !important;
-  }
-
-
-  /* Reset span-2 for mobile */
-  .form-group.span-2 {
-    grid-column: auto !important;
-    width: 100% !important;
+    grid-column: span 1 !important;
   }
 
   /* 2. Fix Horizontal Overflow / Right Gap */
@@ -1452,7 +1419,7 @@
   }
 
   .editor-sidebar-forms {
-     padding: 16px 16px !important; 
+     padding: 20px 16px !important; /* Reduced padding */
   }
 
   /* 3. Header Adjustments */
@@ -1477,7 +1444,7 @@
 
   .cv-title-display {
      flex: 1;
-     max-width: 180px; 
+     max-width: 200px;
   }
   
   .title-edit-input {
@@ -1490,7 +1457,7 @@
   .download-btn-red {
     flex: 1 !important;
     justify-content: center !important;
-    padding: 8px !important; 
+    padding: 10px !important;
     font-size: 0.85rem !important;
   }
   
@@ -1502,14 +1469,45 @@
   /* 4. Fix Category Grid (Add Section) */
   .category-grid {
     grid-template-columns: 1fr !important; /* Stack add buttons */
-    gap: 8px !important;
   }
 
-  /* Fix Form Label Spacing */
-  .form-label {
-    margin-bottom: 6px !important; /* Slightly more space for readability */
-  }
 }
 
 
+/* ROBUST OVERRIDES FOR FORM GRID LAYOUT */
+/* Force clean 2-column grid on desktop/tablet */
+.cv-editor-design .form-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 20px !important;
+    width: 100% !important;
+}
 
+/* Ensure every input takes exactly 1 cell (50%) by default */
+.cv-editor-design .form-grid .form-group,
+.cv-editor-design .form-grid .form-group:nth-child(n) {
+    grid-column: auto !important; /* Reset any specific span overrides */
+    width: 100% !important;
+    max-width: none !important;
+    flex: none !important; /* Disable flex behaviors in grid */
+}
+
+/* Only explicit span-2 classes should span */
+.cv-editor-design .form-grid .span-2 {
+    grid-column: span 2 !important;
+    width: 100% !important;
+}
+
+/* Mobile Stack Enforcement (< 650px) */
+@media (max-width: 650px) {
+    .cv-editor-design .form-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+    
+    .cv-editor-design .form-grid .form-group {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
