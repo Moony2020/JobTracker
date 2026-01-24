@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { X } from 'lucide-react';
 
-const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, applicationName }) => {
+const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, applicationName, itemType = 'application', message }) => {
   if (!isOpen) return null;
 
   return ReactDOM.createPortal(
@@ -40,7 +40,9 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, applicationName }
         </div>
         
         <div className="modal-body" style={{ margin: '0.4rem 0 0.8rem', textAlign: 'left' }}>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.4', margin: 0 }}>Are you sure you want to delete this application?</p>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.4', margin: 0 }}>
+            {message || `Are you sure you want to delete this ${itemType}?`}
+          </p>
           {applicationName && <p className="delete-target-name" style={{ fontWeight: 600, marginTop: '0.4rem', color: 'var(--text-color)', fontSize: '1rem', margin: '0.2rem 0 0' }}>{applicationName}</p>}
         </div>
 

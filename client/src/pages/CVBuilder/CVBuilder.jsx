@@ -3,7 +3,7 @@ import ResumeList from './ResumeList';
 import Editor from './Editor';
 import './CVBuilder.css';
 
-const CVBuilder = ({ language, user, onExit, setFullScreen }) => {
+const CVBuilder = ({ language, user, onExit, setFullScreen, showNotify }) => {
   // Default to list view to prevent getting stuck
   const [view, setView] = useState('list');
   
@@ -90,6 +90,7 @@ const CVBuilder = ({ language, user, onExit, setFullScreen }) => {
           onCreate={handleCreateNew} 
           language={language}
           onBack={onExit}
+          showNotify={showNotify}
         />
       ) : (
         <Editor 

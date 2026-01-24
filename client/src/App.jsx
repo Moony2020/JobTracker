@@ -294,7 +294,8 @@ const AppContent = () => {
             language={language} 
             user={user} 
             onExit={() => setCurrentPage('dashboard')} 
-            setFullScreen={setIsFullScreen} 
+            setFullScreen={setIsFullScreen}
+            showNotify={showNotify} 
           />
         )}
       </main>

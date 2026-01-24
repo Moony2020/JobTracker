@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Plus, Edit3, Trash2, FileText, Download, Crown } from 'lucide-react';
 import TemplateRenderer from './Templates/TemplateRenderer';
+import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
 
 // Sample data for preview
 const sampleData = {
@@ -37,10 +38,12 @@ const sampleData = {
   projects: []
 };
 
-const ResumeList = ({ onEdit, onCreate, language }) => {
+const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
   const [resumes, setResumes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [templates, setTemplates] = useState([]);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [resumeToDelete, setResumeToDelete] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -61,14 +64,26 @@ const ResumeList = ({ onEdit, onCreate, language }) => {
     }
   };
 
-  const handleDelete = async (e, id) => {
-    e.stopPropagation(); // Prevent triggering the card click
-    if (window.confirm('Are you sure you want to delete this resume?')) {
-      try {
-        await api.delete(`/cv/${id}`);
-        setResumes(prev => prev.filter(r => r._id !== id));
-      } catch (err) {
-        console.error("Error deleting resume:", err);
+  const handleDelete = (e, cv) => {
+    e.stopPropagation(); 
+    setResumeToDelete(cv);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!resumeToDelete) return;
+    try {
+      await api.delete(`/cv/${resumeToDelete._id}`);
+      setResumes(prev => prev.filter(r => r._id !== resumeToDelete._id));
+      if (showNotify) {
+        showNotify('CV deleted successfully!', 'success');
+      }
+      setDeleteModalOpen(false);
+      setResumeToDelete(null);
+    } catch (err) {
+      console.error("Error deleting resume:", err);
+      if (showNotify) {
+        showNotify("Failed to delete resume", "error");
       }
     }
   };
@@ -144,7 +159,7 @@ const ResumeList = ({ onEdit, onCreate, language }) => {
                   <button className="action-btn download" title="Download">
                     <Download size={18} />
                   </button>
-                  <button className="action-btn delete" title="Delete" onClick={(e) => handleDelete(e, cv._id)}>
+                  <button className="action-btn delete" title="Delete" onClick={(e) => handleDelete(e, cv)}>
                     <Trash2 size={18} />
                   </button>
                 </div>
@@ -157,6 +172,14 @@ const ResumeList = ({ onEdit, onCreate, language }) => {
           </div>
         )}
       </section>
+
+      <DeleteConfirmationModal 
+        isOpen={isDeleteModalOpen} 
+        onClose={() => setDeleteModalOpen(false)} 
+        onConfirm={confirmDelete} 
+        applicationName={resumeToDelete?.title}
+        itemType="CV"
+      />
     </div>
   );
 };

@@ -305,7 +305,7 @@ const Editor = ({ cvId, onBack, language }) => {
                           onChange={(e) => updateNestedState('data.personal.lastName', e.target.value)}
                         />
                       </div>
-                      <div className="form-group">
+                      <div className="form-group" style={{ gridColumn: 'span 2' }}>
                         <label className="form-label">Job Title</label>
                         <input 
                           className="form-input" 
@@ -313,7 +313,7 @@ const Editor = ({ cvId, onBack, language }) => {
                           onChange={(e) => updateNestedState('data.personal.jobTitle', e.target.value)}
                         />
                       </div>
-                      <div className="form-group">
+                      <div className="form-group" style={{ gridColumn: 'span 2' }}>
                         <label className="form-label">Email</label>
                         <input 
                           className="form-input" 
@@ -578,37 +578,37 @@ const Editor = ({ cvId, onBack, language }) => {
                 <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: '#334155', marginBottom: '12px' }}>Add Category</h4>
                 <div className="category-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                    
-                   <button className="cat-btn-add" onClick={() => addItem('languages')}>
+                   <button className="cat-btn-add" disabled={cvData.data.languages && cvData.data.languages.length > 0} onClick={() => addItem('languages')}>
                       <Globe size={18} />
                       <span>Languages</span>
                    </button>
 
-                   <button className="cat-btn-add" onClick={() => addItem('volunteering')}>
+                   <button className="cat-btn-add" disabled={cvData.data.volunteering && cvData.data.volunteering.length > 0} onClick={() => addItem('volunteering')}>
                       <Heart size={18} />
                       <span>Volunteering</span>
                    </button>
                    
-                   <button className="cat-btn-add" onClick={() => addItem('courses')}>
+                   <button className="cat-btn-add" disabled={cvData.data.courses && cvData.data.courses.length > 0} onClick={() => addItem('courses')}>
                       <GraduationCap size={18} />
                       <span>Courses</span>
                    </button>
 
-                   <button className="cat-btn-add" onClick={() => addItem('military')}>
+                   <button className="cat-btn-add" disabled={cvData.data.military && cvData.data.military.length > 0} onClick={() => addItem('military')}>
                       <Briefcase size={18} />
                       <span>Military Service</span>
                    </button>
 
-                   <button className="cat-btn-add" onClick={() => addItem('links')}>
+                   <button className="cat-btn-add" disabled={cvData.data.links && cvData.data.links.length > 0} onClick={() => addItem('links')}>
                       <Globe size={18} />
                       <span>Links</span>
                    </button>
 
-                   <button className="cat-btn-add" onClick={() => addItem('hobbies')}>
+                   <button className="cat-btn-add" disabled={cvData.data.hobbies && cvData.data.hobbies.length > 0} onClick={() => addItem('hobbies')}>
                       <Heart size={18} />
                       <span>Hobbies</span>
                    </button>
 
-                   <button className="cat-btn-add" onClick={() => addItem('references')}>
+                   <button className="cat-btn-add" disabled={cvData.data.references && cvData.data.references.length > 0} onClick={() => addItem('references')}>
                       <User size={18} />
                       <span>References</span>
                    </button>
