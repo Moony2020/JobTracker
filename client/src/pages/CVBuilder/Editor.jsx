@@ -32,7 +32,7 @@ const SAMPLE_DATA = {
   links: []
 };
 
-const Editor = ({ cvId, onBack, language, showNotify }) => {
+const Editor = ({ cvId, onBack, showNotify }) => {
   const [loading, setLoading] = useState(cvId ? true : false);
   const [viewMode, setViewMode] = useState('content'); // 'content' or 'design'
   const [cvData, setCvData] = useState({
@@ -134,7 +134,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
     init();
   }, [cvId]);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     // Find template ID based on key
     const currentTemplate = availableTemplates.find(t => t.key === cvData.templateKey);
     const templateIdToSave = currentTemplate?._id || cvData.templateId;
@@ -164,7 +164,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
         console.error("Error updating CV:", err);
       }
     }
-  };
+  }, [cvId, cvData.data, cvData.settings, cvData.title, cvData.templateKey, cvData.templateId, availableTemplates]);
 
   useEffect(() => {
     if (!isSaved) {
@@ -173,7 +173,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [cvData, isSaved]);
+  }, [handleSave, isSaved]);
 
   const updateNestedState = (path, value) => {
     setIsSaved(false);
@@ -330,7 +330,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                           onChange={(e) => updateNestedState('data.personal.lastName', e.target.value)}
                         />
                       </div>
-                      <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                      <div className="form-group">
                         <label className="form-label">Job Title</label>
                         <input 
                           className="form-input" 
@@ -338,7 +338,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                           onChange={(e) => updateNestedState('data.personal.jobTitle', e.target.value)}
                         />
                       </div>
-                      <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                      <div className="form-group">
                         <label className="form-label">Email</label>
                         <input 
                           className="form-input" 
@@ -411,6 +411,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                           <div className="form-group">
                             <label className="form-label">Start Date</label>
                             <input 
+                              type="date"
                               className="form-input" 
                               value={exp.startDate} 
                               onChange={(e) => updateItem('experience', idx, 'startDate', e.target.value)}
@@ -419,6 +420,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                           <div className="form-group">
                             <label className="form-label">End Date</label>
                             <input 
+                              type="date"
                               className="form-input" 
                               value={exp.endDate} 
                               disabled={exp.current}
@@ -480,6 +482,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                           <div className="form-group">
                             <label className="form-label">Start Date</label>
                             <input 
+                              type="date"
                               className="form-input" 
                               value={edu.startDate} 
                               onChange={(e) => updateItem('education', idx, 'startDate', e.target.value)}
@@ -488,6 +491,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
                           <div className="form-group">
                             <label className="form-label">End Date</label>
                             <input 
+                              type="date"
                               className="form-input" 
                               value={edu.endDate} 
                               onChange={(e) => updateItem('education', idx, 'endDate', e.target.value)}
@@ -825,7 +829,7 @@ const Editor = ({ cvId, onBack, language, showNotify }) => {
             </div>
           </div>
           {/* Centered Footer Pill - Moved inside preview pane for correct absolute positioning */}
-          <div className="preview-footer-minimal" style={{ position: 'absolute', bottom: '30px', left: '50%', transform: 'translateX(-50%)', margin: 0 }}>
+          <div className="preview-footer-minimal" style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)' }}>
              {isSaved ? (
                <div className="status-saved-text">
                  <CheckCircle size={14} />
