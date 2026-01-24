@@ -54,7 +54,11 @@ const Editor = ({ cvId, onBack, language }) => {
       projects: [],
       certifications: [],
       hobbies: [],
-      links: []
+      links: [],
+      volunteering: [],
+      courses: [],
+      military: [],
+      references: []
     },
     settings: {
       themeColor: '#2563eb',
@@ -91,7 +95,11 @@ const Editor = ({ cvId, onBack, language }) => {
                 projects: res.data.data?.projects || [],
                 certifications: res.data.data?.certifications || [],
                 hobbies: res.data.data?.hobbies || [],
-                links: res.data.data?.links || []
+                links: res.data.data?.links || [],
+                volunteering: res.data.data?.volunteering || [],
+                courses: res.data.data?.courses || [],
+                military: res.data.data?.military || [],
+                references: res.data.data?.references || []
               },
               settings: res.data.settings || { themeColor: '#2563eb', font: 'Inter', lineSpacing: 100 },
               templateKey: res.data.templateId?.key || 'modern'
@@ -181,10 +189,15 @@ const Editor = ({ cvId, onBack, language }) => {
                : section === 'projects' ? { name: '', description: '', url: '' }
                : section === 'links' ? { name: '', url: '' }
                : section === 'hobbies' ? { name: '' }
+               : section === 'volunteering' ? { role: '', organization: '', description: '' }
+               : section === 'courses' ? { name: '', institution: '' }
+               : section === 'military' ? { role: '', organization: '' }
+               : section === 'references' ? { name: '', contact: '' }
                : null;
 
     if (newItem !== null) {
-      updateNestedState(`data.${section}`, [...cvData.data[section], newItem]);
+      const currentList = cvData.data[section] || [];
+      updateNestedState(`data.${section}`, [...currentList, newItem]);
     }
   };
 

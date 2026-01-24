@@ -37,7 +37,7 @@ const sampleData = {
   projects: []
 };
 
-const ResumeList = ({ onEdit, onCreate, language, onBack }) => {
+const ResumeList = ({ onEdit, onCreate, language }) => {
   const [resumes, setResumes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [templates, setTemplates] = useState([]);
@@ -58,6 +58,18 @@ const ResumeList = ({ onEdit, onCreate, language, onBack }) => {
       console.error("Error fetching CV data:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (e, id) => {
+    e.stopPropagation(); // Prevent triggering the card click
+    if (window.confirm('Are you sure you want to delete this resume?')) {
+      try {
+        await api.delete(`/cv/${id}`);
+        setResumes(prev => prev.filter(r => r._id !== id));
+      } catch (err) {
+        console.error("Error deleting resume:", err);
+      }
     }
   };
 
@@ -132,7 +144,7 @@ const ResumeList = ({ onEdit, onCreate, language, onBack }) => {
                   <button className="action-btn download" title="Download">
                     <Download size={18} />
                   </button>
-                  <button className="action-btn delete" title="Delete">
+                  <button className="action-btn delete" title="Delete" onClick={(e) => handleDelete(e, cv._id)}>
                     <Trash2 size={18} />
                   </button>
                 </div>

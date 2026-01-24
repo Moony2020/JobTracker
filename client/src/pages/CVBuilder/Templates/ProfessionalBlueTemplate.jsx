@@ -5,65 +5,77 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
   const { personal, experience, education, skills, languages } = data;
   const themeColor = settings?.themeColor || '#2563eb';
 
+  // Helper to check if array has valid items
+  const hasItems = (arr) => arr && arr.length > 0;
+
+  // Helper to check if we should show placeholders (if main fields are empty)
+  const showPlaceholders = !personal.firstName && !personal.lastName;
+
   return (
     <div className="professional-blue-template" style={{ fontFamily: settings?.font || 'Inter', lineHeight: `${settings?.lineSpacing || 100}%` }}>
       {/* LEFT SIDEBAR - Dark Blue */}
       <div className="pro-sidebar" style={{ backgroundColor: themeColor }}>
         {/* Profile Photo */}
-        {personal.photo && (
-          <div className="pro-photo-container">
-            <img src={personal.photo} alt="Profile" className="pro-photo" />
-          </div>
-        )}
+        <div className="pro-photo-container">
+            {personal.photo ? (
+               <img src={personal.photo} alt="Profile" className="pro-photo" />
+            ) : (
+               <div className="pro-photo placeholder" style={{ backgroundColor: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '2rem' }}>
+                  {personal.firstName ? personal.firstName[0] : 'JS'}
+               </div>
+            )}
+        </div>
 
         {/* Contact Section */}
         <section className="pro-section">
           <h2 className="pro-section-title">CONTACT</h2>
           <div className="pro-contact-list">
-            {personal.email && (
-              <div className="pro-contact-item">
+             <div className="pro-contact-item">
                 <span className="pro-label">Email</span>
-                <span className="pro-value">{personal.email}</span>
+                <span className="pro-value" style={!personal.email ? { opacity: 0.7 } : {}}>{personal.email || 'email@example.com'}</span>
               </div>
-            )}
-            {personal.phone && (
               <div className="pro-contact-item">
                 <span className="pro-label">Phone</span>
-                <span className="pro-value">{personal.phone}</span>
+                <span className="pro-value" style={!personal.phone ? { opacity: 0.7 } : {}}>{personal.phone || '(555) 123-4567'}</span>
               </div>
-            )}
-            {personal.location && (
               <div className="pro-contact-item">
                 <span className="pro-label">Location</span>
-                <span className="pro-value">{personal.location}</span>
+                <span className="pro-value" style={!personal.location ? { opacity: 0.7 } : {}}>{personal.location || 'City, Country'}</span>
               </div>
-            )}
           </div>
         </section>
 
         {/* Skills Section */}
-        {skills && skills.length > 0 && (
-          <section className="pro-section">
+        <section className="pro-section">
             <h2 className="pro-section-title">SKILLS</h2>
             <ul className="pro-list">
-              {skills.map((skill, i) => (
+              {hasItems(skills) ? skills.map((skill, i) => (
                 <li key={i} className="pro-list-item">{skill}</li>
-              ))}
+              )) : (
+                <div style={{ opacity: 0.7 }}>
+                  <li className="pro-list-item">Skill One</li>
+                  <li className="pro-list-item">Skill Two</li>
+                  <li className="pro-list-item">Skill Three</li>
+                  <li className="pro-list-item">Skill Four</li>
+                </div>
+              )}
             </ul>
-          </section>
-        )}
+        </section>
 
         {/* Languages Section */}
-        {languages && languages.length > 0 && (
-          <section className="pro-section">
+        <section className="pro-section">
             <h2 className="pro-section-title">LANGUAGES</h2>
             <ul className="pro-list">
-              {languages.map((lang, i) => (
+              {hasItems(languages) ? languages.map((lang, i) => (
                 <li key={i} className="pro-list-item">{lang.name} - {lang.level}</li>
-              ))}
+              )) : (
+                <div style={{ opacity: 0.7 }}>
+                  <li className="pro-list-item">English - Native</li>
+                  <li className="pro-list-item">Spanish - Intermediate</li>
+                </div>
+              )}
             </ul>
-          </section>
-        )}
+        </section>
 
         {/* Links Section */}
         {data.links && data.links.length > 0 && (
@@ -113,6 +125,12 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
       </div>
 
         {/* Professional Summary */}
+        {(!personal.summary) && (
+          <section className="pro-content-section">
+            <h2 className="pro-content-title" style={{ color: themeColor }}>PROFESSIONAL SUMMARY</h2>
+            <p className="pro-summary" style={{ opacity: 0.7 }}>Professional summary goes here. Briefly describe your career highlights, key skills, and professional achievements to give recruiters a quick overview of your qualifications.</p>
+          </section>
+        )}
         {personal.summary && (
           <section className="pro-content-section">
             <h2 className="pro-content-title" style={{ color: themeColor }}>PROFESSIONAL SUMMARY</h2>
@@ -121,7 +139,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
         )}
 
         {/* Work Experience */}
-        {experience && experience.length > 0 && (
+        {hasItems(experience) ? (
           <section className="pro-content-section">
             <h2 className="pro-content-title" style={{ color: themeColor }}>WORK EXPERIENCE</h2>
             {experience.map((exp, i) => (
@@ -135,10 +153,22 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
               </div>
             ))}
           </section>
+        ) : (
+          <section className="pro-content-section" style={{ opacity: 0.7 }}>
+            <h2 className="pro-content-title" style={{ color: themeColor }}>WORK EXPERIENCE</h2>
+            <div className="pro-exp-item">
+               <div className="pro-exp-header">
+                 <h3 className="pro-exp-title">Job Position</h3>
+                 <span className="pro-exp-date">2020 - Present</span>
+               </div>
+               <p className="pro-exp-company">Company Name</p>
+               <p className="pro-exp-desc">Describe your key responsibilities, achievements, and the impact you made in this role.</p>
+            </div>
+          </section>
         )}
 
         {/* Education */}
-        {education && education.length > 0 && (
+        {hasItems(education) ? (
           <section className="pro-content-section">
             <h2 className="pro-content-title" style={{ color: themeColor }}>EDUCATION</h2>
             {education.map((edu, i) => (
@@ -152,6 +182,17 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
               </div>
             ))}
           </section>
+        ) : (
+           <section className="pro-content-section" style={{ opacity: 0.7 }}>
+            <h2 className="pro-content-title" style={{ color: themeColor }}>EDUCATION</h2>
+            <div className="pro-exp-item">
+              <div className="pro-exp-header">
+                <h3 className="pro-exp-title">Degree / Major</h3>
+                <span className="pro-exp-date">2016 - 2020</span>
+              </div>
+              <p className="pro-exp-company">University Name</p>
+            </div>
+           </section>
         )}
 
         {/* Volunteering */}
