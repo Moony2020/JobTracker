@@ -2196,12 +2196,12 @@ main {
 }
 
 .form-group {
-    margin-bottom: 0.35rem;
+    margin-bottom: 1rem;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 0.1rem;
+    margin-bottom: 0.3rem;
     font-weight: 600;
     color: var(--text-color);
 }
@@ -2544,7 +2544,7 @@ body:not(.dark-mode) .form-control::placeholder {
 }
 
 .modal .btn-submit {
-    margin-top: 0.8rem !important;
+    margin-top: -0.25rem !important;
 }
 
 /* btn-submit styles handled at the end of the file */
@@ -3685,7 +3685,7 @@ footer {
 
 /* Specifically for Login/Register buttons that are directly in form */
 .modal .modal-content form > .btn-submit {
-    margin-top: 0.75rem !important; 
+    margin-top: -0.25rem !important; /* Maximized pull-up */
     margin-right: auto !important;
     margin-left: 0 !important;
     display: flex !important;
