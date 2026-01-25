@@ -740,17 +740,6 @@
     color: #1e293b;
 }
 
-.resume-paper-canvas {
-  width: 794px; /* A4 exactly @ 96dpi */
-  min-height: 1123px;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-  position: relative;
-  overflow: hidden;
-}
-
 /* Watermark Styles */
 .resume-watermark {
     position: absolute;
