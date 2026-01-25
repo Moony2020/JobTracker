@@ -282,11 +282,10 @@
     min-height: auto;
     overflow: visible !important;
     justify-content: flex-start !important;
-    padding-top: 10px !important;
-    padding-bottom: 20px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
+    padding: 2px 0 10px 0 !important; /* Just 2px top padding */
   }
 
   .preview-scaler {
@@ -605,12 +604,13 @@
 
 /* Scaling container - uses transform without fixed dimensions */
 .preview-scaler {
+  margin: -15px 0 0 0 !important;
   transform-origin: top center; 
   transition: all 0.3s ease;
   flex-shrink: 0;
   display: inline-block;
-  transform: scale(0.5); /* Reduced to fit viewport height */
-  height: 574px; /* 1123px * 0.52 */
+  transform: scale(0.53) !important; /* Reduced to fit viewport height */
+  height: 574px !important; /* 1123px * 0.52 */
   position: relative;
 }
 
@@ -667,7 +667,7 @@
 }
 
 .resume-paper-canvas {
-  width: 794px; /* Internal A4 size remains constant */
+  width: 806px !important; /* Internal A4 size remains constant */
   min-height: 1123px;
   background: white;
   display: flex;
@@ -680,7 +680,7 @@
 
 /* Tiny Floating Footer Pill - Positioned statically under CV */
 .preview-footer-minimal {
-    margin: -30px auto!important; /* Pushes it DOWN */
+    margin: -20px auto!important; /* Pushes it DOWN */
     display: flex;
     gap: 12px;
     align-items: center;
