@@ -379,7 +379,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
           {viewMode === 'content' ? (
             <button className="template-toggle-btn-top" onClick={() => setViewMode('design')}>
               <Layout size={18} />
-              <span>Design & Templates</span>
+                <span>Templates</span>
             </button>
           ) : null}
           <button className="download-btn-red" onClick={handleDownload}>

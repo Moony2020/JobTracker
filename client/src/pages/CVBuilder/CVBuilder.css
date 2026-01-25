@@ -1592,11 +1592,19 @@
 @media (max-width: 450px) { .preview-scaler { transform: scale(0.35); height: 394px; } }
 
 @media (max-width: 420px) {
-  .template-grid { max-width: none !important; width: 100% !important; }
-  .template-card { width: 100%; max-width: 100%; }
-  .template-preview-live { height: 340px !important; }
-  .template-preview-wrapper { transform: scale(0.6) !important; }
-  .preview-scaler { transform: scale(0.34) !important; height: 385px !important; }
+   .template-grid {
+    max-width: none !important; /* REMOVE max-width restriction */
+    width: 100% !important; /* Take full width of container */
+  }
+  
+  /* Keep original scaling for the preview */
+  .template-preview-wrapper {
+    transform: scale(0.38) !important; /* Keep original scale */
+  }
+  
+  .template-preview-live {
+    height: 320px !important; /* Keep original height */
+  }
 }
 
 @media (max-width: 380px) { .resume-list-container { padding-left: 8px !important; padding-right: 8px !important; } }
