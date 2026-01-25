@@ -88,6 +88,46 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
     }
   };
 
+  const handleDownload = async (e, cv) => {
+    e.stopPropagation();
+    try {
+      const response = await api.get(`/cv/export/${cv._id}`, {
+        responseType: 'blob'
+      });
+      
+      // Safety check for backend error hidden in a blob
+      if (response.data.size < 500) {
+        const text = await response.data.text();
+        if (text.includes('Error')) {
+           throw new Error(text);
+        }
+      }
+
+      // Create a blob URL and trigger download
+      const url = window.URL.createObjectURL(response.data);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${cv.title || 'CV'}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      if (showNotify) showNotify('PDF downloaded successfully!', 'success');
+    } catch (err) {
+      console.error("Error downloading CV:", err);
+      if (showNotify) {
+        if (err.response && err.response.status === 402) {
+          showNotify("Payment required for premium template", "error");
+        } else {
+          showNotify("Failed to download PDF", "error");
+        }
+      }
+    }
+  };
+
   if (loading) return <div className="cv-loading">Loading CV Builder...</div>;
 
   return (
@@ -156,7 +196,7 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
                   <button className="action-btn edit" title="Edit" onClick={() => onEdit(cv)}>
                     <Edit3 size={18} />
                   </button>
-                  <button className="action-btn download" title="Download">
+                  <button className="action-btn download" title="Download" onClick={(e) => handleDownload(e, cv)}>
                     <Download size={18} />
                   </button>
                   <button className="action-btn delete" title="Delete" onClick={(e) => handleDelete(e, cv)}>

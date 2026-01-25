@@ -32,8 +32,9 @@ const SAMPLE_DATA = {
   links: []
 };
 
-const Editor = ({ cvId, onBack, showNotify }) => {
-  const [loading, setLoading] = useState(cvId ? true : false);
+const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
+  const [activeCvId, setActiveCvId] = useState(propCvId);
+  const [loading, setLoading] = useState(activeCvId ? true : false);
   const [viewMode, setViewMode] = useState('content'); // 'content' or 'design'
   const [cvData, setCvData] = useState({
     title: 'Untitled CV',
@@ -89,8 +90,10 @@ const Editor = ({ cvId, onBack, showNotify }) => {
         const tplRes = await api.get('/cv/templates');
         setAvailableTemplates(tplRes.data);
         
-        if (cvId) {
-          const res = await api.get(`/cv/${cvId}`);
+        if (activeCvId) {
+          console.log(`[Editor] Fetching CV data for ID: ${activeCvId}`);
+          const res = await api.get(`/cv/${activeCvId}`);
+          console.log(`[Editor] CV data received:`, res.data ? 'Success' : 'Empty');
           if (res.data) {
             const normalizedData = {
               ...res.data,
@@ -116,6 +119,7 @@ const Editor = ({ cvId, onBack, showNotify }) => {
             setCvData(normalizedData);
           }
         } else {
+             console.log(`[Editor] Initializing new CV`);
              // Initialize from history state if creating new
              const historyState = window.history.state;
              if (historyState && historyState.templateKey) {
@@ -126,34 +130,41 @@ const Editor = ({ cvId, onBack, showNotify }) => {
              }
         }
       } catch (err) {
-        console.error("Error initializing editor:", err);
+        console.error("[Editor ERROR] Error initializing editor:", err);
       } finally {
         setLoading(false);
       }
     };
     init();
-  }, [cvId]);
+  }, [propCvId]);
+
+  useEffect(() => {
+    setActiveCvId(propCvId);
+  }, [propCvId]);
 
   const handleSave = useCallback(async () => {
     // Find template ID based on key
     const currentTemplate = availableTemplates.find(t => t.key === cvData.templateKey);
     const templateIdToSave = currentTemplate?._id || cvData.templateId;
 
-    if (!cvId) {
+    if (!activeCvId) {
       try {
-        await api.post('/cv', {
+        const res = await api.post('/cv', {
           title: cvData.data.personal.firstName ? `${cvData.data.personal.firstName}'s CV` : 'New CV',
           data: cvData.data,
           settings: cvData.settings,
           templateId: templateIdToSave
         });
+        if (res.data?._id) {
+          setActiveCvId(res.data._id);
+        }
         setIsSaved(true);
       } catch (err) {
         console.error("Error creating CV:", err);
       }
     } else {
       try {
-        await api.put(`/cv/${cvId}`, {
+        await api.put(`/cv/${activeCvId}`, {
           data: cvData.data,
           settings: cvData.settings,
           title: cvData.title,
@@ -164,7 +175,7 @@ const Editor = ({ cvId, onBack, showNotify }) => {
         console.error("Error updating CV:", err);
       }
     }
-  }, [cvId, cvData.data, cvData.settings, cvData.title, cvData.templateKey, cvData.templateId, availableTemplates]);
+  }, [activeCvId, cvData.data, cvData.settings, cvData.title, cvData.templateKey, cvData.templateId, availableTemplates]);
 
   useEffect(() => {
     if (!isSaved) {
@@ -204,6 +215,47 @@ const Editor = ({ cvId, onBack, showNotify }) => {
 
   const cancelDeleteCategory = () => {
     setDeleteModal({ isOpen: false, section: null, index: null, title: '' });
+  };
+
+  const handleDownload = async () => {
+    if (!activeCvId) {
+        if (showNotify) showNotify('Please wait for the CV to save or enter some details first.', 'info');
+        await handleSave();
+        return;
+    }
+
+    try {
+      if (showNotify) showNotify('Generating PDF...', 'info');
+      
+      const response = await api.get(`/cv/export/${activeCvId}`, {
+        responseType: 'blob'
+      });
+      
+      // Safety check for backend error hidden in a blob
+      if (response.data.size < 500) {
+        const text = await response.data.text();
+        if (text.includes('Error')) {
+           throw new Error(text);
+        }
+      }
+
+      const url = window.URL.createObjectURL(response.data);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${cvData.title || 'CV'}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      if (showNotify) showNotify('PDF downloaded successfully!', 'success');
+    } catch (err) {
+      console.error("Error downloading CV:", err);
+      if (showNotify) {
+        showNotify("Failed to download PDF. Please try again.", "error");
+      }
+    }
   };
 
   const addItem = (section) => {
@@ -251,6 +303,18 @@ const Editor = ({ cvId, onBack, showNotify }) => {
   ];
 
   if (loading) return <div className="cv-loading">Loading Editor...</div>;
+  
+  if (isPrintMode) {
+    return (
+      <div className="cv-print-only">
+        <TemplateRenderer 
+          templateKey={cvData.templateKey}
+          data={cvData.data}
+          settings={cvData.settings}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={`cv-editor-design ${viewMode === 'design' ? 'mode-design' : 'mode-content'}`}>
@@ -287,7 +351,7 @@ const Editor = ({ cvId, onBack, showNotify }) => {
               <span>Design & Templates</span>
             </button>
           ) : null}
-          <button className="download-btn-red" onClick={() => window.print()}>
+          <button className="download-btn-red" onClick={handleDownload}>
             <Download size={18} />
             <span>PDF</span>
           </button>

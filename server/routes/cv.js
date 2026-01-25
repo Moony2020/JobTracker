@@ -184,13 +184,13 @@ router.get("/export/:id", auth, async (req, res) => {
       }
     }
 
-    const pdfBuffer = await generatePDF(cv._id, req.user.id, cv.templateId.key);
+    const pdfBuffer = await generatePDF(cv._id, req.user.id, cv.templateId.key, req.token);
 
     res.contentType("application/pdf");
-    res.send(pdfBuffer);
+    res.end(pdfBuffer, 'binary');
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error during export");
+    console.error("Export Error:", err);
+    res.status(500).send("Server Error during export: " + err.message);
   }
 });
 

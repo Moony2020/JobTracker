@@ -3,15 +3,24 @@ import ResumeList from './ResumeList';
 import Editor from './Editor';
 import './CVBuilder.css';
 
-const CVBuilder = ({ language, user, onExit, setFullScreen, showNotify }) => {
+const CVBuilder = ({ language, user, onExit, setFullScreen, showNotify, isPrinting }) => {
   // Default to list view to prevent getting stuck
-  const [view, setView] = useState('list');
+  const [view, setView] = useState(isPrinting ? 'print' : 'list');
   
   // Persist selected CV ID (optional, but let's keep it safe or reset it)
-  const [selectedCV, setSelectedCV] = useState(null);
+  const [selectedCV, setSelectedCV] = useState(() => {
+    if (isPrinting) {
+      const parts = window.location.pathname.split('/');
+      const id = parts[parts.length - 1];
+      return { _id: id };
+    }
+    return null;
+  });
 
   // Ensure full screen is disabled on mount (list view) and set initial history state
   useEffect(() => {
+    if (isPrinting) return; // Skip history logic when printing
+    
     if (setFullScreen) setFullScreen(false);
     
     // Replace current state with 'list' so we have a base to go back to
@@ -22,8 +31,9 @@ const CVBuilder = ({ language, user, onExit, setFullScreen, showNotify }) => {
     };
   }, [setFullScreen]);
 
-  // Sync with browser history for back button support
   useEffect(() => {
+    if (isPrinting) return; // Skip history logic when printing
+    
     const handlePopState = (event) => {
       // If we go back and there's no state, or state says list, go to list
       if (!event.state || event.state.view === 'list') {
@@ -81,6 +91,17 @@ const CVBuilder = ({ language, user, onExit, setFullScreen, showNotify }) => {
     // This simulates hitting the browser back button
     window.history.back();
   };
+
+  if (view === 'print') {
+    return (
+      <div className="cv-print-view">
+        <Editor 
+          cvId={selectedCV?._id} 
+          isPrintMode={true}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="cv-builder-page">

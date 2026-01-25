@@ -1617,3 +1617,41 @@
         max-width: 100% !important;
     }
 }
+
+/* Print View Styles */
+.cv-print-view {
+  background: white;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+}
+
+.cv-print-only {
+  width: 210mm;
+  background: white;
+  box-shadow: none;
+}
+
+.resume-template {
+  width: 100%;
+  height: auto;
+  min-height: 297mm;
+  background: white;
+  position: relative;
+}
+
+/* Ensure templates fill the print container */
+.resume-template > div {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: 297mm;
+  transform: none !important; /* NO SCALING in print mode */
+  margin: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+@media print { .editor-sidebar-forms, .editor-global-header, .action-btn, .template-toggle-btn-top, .exit-editor-btn, .header-divider, .cv-title-display, header, footer, .notification, .help-btn-floating { display: none !important; } body, html { background: white !important; margin: 0 !important; padding: 0 !important; } .app-container, .container, main { margin: 0 !important; padding: 0 !important; max-width: none !important; width: 100% !important; } .cv-editor-design { padding: 0 !important; margin: 0 !important; background: white !important; } .editor-main-split { display: block !important; height: auto !important; } .resume-preview-container { width: 100% !important; height: auto !important; transform: none !important; position: static !important; margin: 0 !important; padding: 0 !important; } }

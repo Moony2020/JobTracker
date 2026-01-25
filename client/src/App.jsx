@@ -25,12 +25,21 @@ const AppContent = () => {
   const [language, setLanguage] = useState(localStorage.getItem('jt_language') || 'English');
   // Persist current page
   const [currentPage, setCurrentPage] = useState(() => {
+    // Check if we are in print mode first
+    if (window.location.pathname.startsWith('/cv-builder/print/')) {
+      return 'cv-builder';
+    }
     return localStorage.getItem('jt_currentPage') || 'dashboard';
   });
 
+  const isPrinting = useMemo(() => {
+    return window.location.pathname.startsWith('/cv-builder/print/');
+  }, []); // Stable across the session
+
   useEffect(() => {
+    if (isPrinting) return; // Don't persist print page as last page
     localStorage.setItem('jt_currentPage', currentPage);
-  }, [currentPage]);
+  }, [currentPage, isPrinting]);
   
   useEffect(() => {
     document.documentElement.dir = language === 'Arabic' ? 'rtl' : 'ltr';
@@ -238,7 +247,7 @@ const AppContent = () => {
   return (
     <div className="app-container">
       {/* Hide Header only if isFullScreen is true. Otherwise show it for all pages including cv-builder list view */}
-      {!isFullScreen && (
+      {!isFullScreen && !isPrinting && (
         <Header 
           darkMode={darkMode} 
           toggleTheme={() => setDarkMode(!darkMode)} 
@@ -295,7 +304,8 @@ const AppContent = () => {
             user={user} 
             onExit={() => setCurrentPage('dashboard')} 
             setFullScreen={setIsFullScreen}
-            showNotify={showNotify} 
+            showNotify={showNotify}
+            isPrinting={isPrinting}
           />
         )}
       </main>

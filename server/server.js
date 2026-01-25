@@ -10,7 +10,7 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: ["https://jobtracker-ptwj.onrender.com", "http://localhost:3000", "http://localhost:5174"],
+    origin: ["https://jobtracker-ptwj.onrender.com", "http://localhost:3000", "http://localhost:5174", "http://localhost:5173"],
     credentials: true,
   })
 );

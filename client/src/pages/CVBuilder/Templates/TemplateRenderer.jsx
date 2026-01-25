@@ -9,20 +9,28 @@ const TemplateRenderer = ({ templateKey, data, settings }) => {
   const key = (templateKey || 'modern').toLowerCase();
 
   // Map database keys to components
-  switch (key) {
-    case 'modern':
-    case 'minimalist':
-      return <ModernTemplate data={data} settings={settings} />;
-    case 'classic':
-      return <ClassicTemplate data={data} settings={settings} />;
-    case 'creative':
-    case 'professional':
-    case 'professional-blue':
-    case 'professional blue': 
-      return <ProfessionalBlueTemplate data={data} settings={settings} />;
-    default:
-      return <ModernTemplate data={data} settings={settings} />;
-  }
+  const renderTemplate = () => {
+    switch (key) {
+      case 'modern':
+      case 'minimalist':
+        return <ModernTemplate data={data} settings={settings} />;
+      case 'classic':
+        return <ClassicTemplate data={data} settings={settings} />;
+      case 'creative':
+      case 'professional':
+      case 'professional-blue':
+      case 'professional blue': 
+        return <ProfessionalBlueTemplate data={data} settings={settings} />;
+      default:
+        return <ModernTemplate data={data} settings={settings} />;
+    }
+  };
+
+  return (
+    <div className="resume-template">
+      {renderTemplate()}
+    </div>
+  );
 };
 
 export default TemplateRenderer;
