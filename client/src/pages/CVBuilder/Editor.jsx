@@ -351,40 +351,42 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
     <div className={`cv-editor-design ${viewMode === 'design' ? 'mode-design' : 'mode-content'}`}>
       <div className="editor-global-header">
         <div className="header-left">
-          {viewMode === 'content' && (
-            <>
-              <button className="exit-editor-btn" onClick={onBack} title="Exit">
-                 <X size={20} />
-              </button>
-              <div className="header-divider"></div>
-            </>
-          )}
           {viewMode === 'content' ? (
-             <div className="cv-title-display">
-               <span style={{color: '#94a3b8'}}>Editing:</span>
-               <input 
-                  className="title-edit-input" 
-                  value={cvData.title} 
-                  onChange={(e) => updateNestedState('title', e.target.value)}
-               />
-             </div>
+            <div className="cv-title-display">
+              <span className="title-label">Editing:</span>
+              <input 
+                 className="title-edit-input" 
+                 value={cvData.title} 
+                 onChange={(e) => updateNestedState('title', e.target.value)}
+              />
+            </div>
           ) : (
-             <button className="btn-edit-resume" onClick={() => setViewMode('content')}>
-               <ChevronLeft size={18} />
-               <span>Edit Resume</span>
-             </button>
+            <button className="btn-edit-resume" onClick={() => setViewMode('content')}>
+              <ChevronLeft size={18} />
+              <span>Edit Resume</span>
+            </button>
           )}
         </div>
-        <div className="header-right">
-          {viewMode === 'content' ? (
-            <button className="template-toggle-btn-top" onClick={() => setViewMode('design')}>
+
+        <div className="header-center-actions">
+          {viewMode === 'content' && (
+            <button 
+              className="template-toggle-btn-top" 
+              onClick={() => setViewMode('design')} 
+            >
               <Layout size={18} />
-                <span>Templates</span>
+              <span>Templates</span>
             </button>
-          ) : null}
+          )}
           <button className="download-btn-red" onClick={handleDownload}>
             <Download size={18} />
             <span>PDF</span>
+          </button>
+        </div>
+
+        <div className="header-right">
+          <button className="exit-editor-btn" onClick={onBack} title="Exit">
+            <X size={20} />
           </button>
         </div>
       </div>
