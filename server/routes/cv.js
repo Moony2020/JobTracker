@@ -183,14 +183,17 @@ router.get("/export/:id", auth, async (req, res) => {
         return res.status(402).json({ msg: "Payment required for premium template" });
       }
     }
+    // Ensure template exists to avoid crash
+    const templateKey = cv.templateId?.key || "modern";
 
-    const pdfBuffer = await generatePDF(cv._id, req.user.id, cv.templateId.key, req.token);
+    const pdfBuffer = await generatePDF(cv._id, req.user.id, templateKey, req.token);
 
     res.contentType("application/pdf");
     res.end(pdfBuffer, 'binary');
   } catch (err) {
     console.error("Export Error:", err);
-    res.status(500).send("Server Error during export: " + err.message);
+    // Explicitly reset content type for errors to avoid "corrupted PDF" browser errors
+    res.status(500).setHeader('Content-Type', 'text/plain').send("Server Error during export: " + err.message);
   }
 });
 

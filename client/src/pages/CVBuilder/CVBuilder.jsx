@@ -3,7 +3,7 @@ import ResumeList from './ResumeList';
 import Editor from './Editor';
 import './CVBuilder.css';
 
-const CVBuilder = ({ language, user, onExit, setFullScreen, showNotify, isPrinting }) => {
+const CVBuilder = ({ language, onExit, setFullScreen, showNotify, isPrinting }) => {
   // Default to list view to prevent getting stuck
   const [view, setView] = useState(isPrinting ? 'print' : 'list');
   
@@ -29,7 +29,7 @@ const CVBuilder = ({ language, user, onExit, setFullScreen, showNotify, isPrinti
     return () => {
       if (setFullScreen) setFullScreen(false); // Cleanup on unmount
     };
-  }, [setFullScreen]);
+  }, [setFullScreen, isPrinting]);
 
   useEffect(() => {
     if (isPrinting) return; // Skip history logic when printing
@@ -55,7 +55,7 @@ const CVBuilder = ({ language, user, onExit, setFullScreen, showNotify, isPrinti
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [setFullScreen]);
+  }, [setFullScreen, isPrinting]);
 
   const handleEdit = (cv) => {
     setSelectedCV(cv);

@@ -1,11 +1,13 @@
 /* Shared Template Styles */
-.resume-paper {
+.resume-paper, .modern-template, .classic-template, .professional-blue-template, .timeline-template {
     background: white;
-    box-sizing: border-box;
+    box-sizing: border-box !important;
     color: #1e293b;
     line-height: 1.5;
     word-wrap: break-word; /* Prevent text clipping */
     overflow-wrap: break-word;
+    width: 100% !important;
+    max-width: 100% !important;
 }
 
 /* Modern Template */
@@ -364,3 +366,186 @@
     margin: 0;
 }
 
+/* Timeline Template - New Design */
+.timeline-template {
+    width: 100%;
+    min-height: 1123px;
+    background: white;
+    padding: 0;
+    color: #334155;
+}
+
+.timeline-container {
+    display: grid;
+    grid-template-columns: 260px 40px 1fr;
+    min-height: 1123px;
+}
+
+/* LEFT SIDEBAR */
+.timeline-sidebar {
+    padding: 60px 30px;
+    background: white;
+}
+
+.timeline-sidebar .sidebar-header {
+    margin-bottom: 45px;
+}
+
+.timeline-sidebar .name-display {
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin: 0;
+    color: #1e293b;
+    line-height: 1.1;
+}
+
+.timeline-sidebar .job-title-display {
+    font-size: 1rem;
+    color: #64748b;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sidebar-section {
+    margin-bottom: 35px;
+}
+
+.sidebar-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: #1e293b;
+    border-bottom: 1px solid #1e293b;
+    padding-bottom: 5px;
+}
+
+.sidebar-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: #475569;
+}
+
+.sidebar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sidebar-list-item {
+    font-size: 0.9rem;
+    color: #334155;
+    padding-bottom: 4px;
+    border-bottom: 2px solid #1e293b; /* Horizontal bars from reference */
+    width: 100%;
+}
+
+/* TIMELINE AXIS */
+.timeline-axis {
+    position: relative;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.axis-line {
+    position: absolute;
+    top: 60px;
+    bottom: 60px;
+    width: 1.5px;
+    background: #cbd5e1;
+}
+
+.axis-point {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 5px 0;
+    z-index: 5;
+}
+
+.icon-box {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #1e293b;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    color: #1e293b;
+}
+
+/* MAIN CONTENT */
+.timeline-main {
+    padding: 60px 40px 60px 20px;
+}
+
+.main-section {
+    margin-bottom: 45px;
+}
+
+.section-header-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #1e293b;
+    text-transform: capitalize;
+}
+
+.section-content-text {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #475569;
+}
+
+.experience-item-box, .education-item-box {
+    margin-bottom: 25px;
+}
+
+.exp-title-bold, .edu-degree-bold {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 5px 0;
+}
+
+.exp-meta-row, .edu-meta-row {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 10px;
+}
+
+.exp-dots, .edu-dots {
+    margin: 0 8px;
+}
+
+.exp-description-text {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #475569;
+}
+
+.exp-description-text ul {
+    padding-left: 18px;
+    margin-top: 8px;
+}
+
+.reference-item-box {
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+.ref-contact-small {
+    font-size: 0.8rem;
+    color: #64748b;
+}

@@ -2,101 +2,106 @@
 
 /* Resume List Page */
 .resume-list-container {
-  padding: 10px 4px 60px 4px !important; 
-  width: 100% !important; 
-  max-width: 1400px !important; 
-  margin: 0 auto !important; 
-  display: block; /* Use block to allow child width to behave naturally */
+  padding: 0 24px 40px 24px; /* Reduced top padding to 0 for tighter layout */
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-/* Base styles cover all sizes now, individual media query overrides removed */
-
-.list-header {
+.resume-list-header {
   margin-bottom: 40px;
   text-align: center;
-  width: 100%;
 }
 
-.list-header h1 {
+.resume-list-header h1 {
   font-size: 2.5rem;
   color: #1e293b;
   margin-bottom: 12px;
 }
 
-.list-header p {
+.resume-list-header p {
   color: #64748b;
   font-size: 1.1rem;
 }
 
 .template-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 358px); 
-  gap: 12px 24px; 
-  justify-content: center; 
+  grid-template-columns: repeat(3, 358px); /* Force 3 columns on desktop */
+  gap: 32px;
+  justify-content: center;
   margin-bottom: 60px;
   width: 100%;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1150px) {
   .template-grid {
-    gap: 8px 16px; /* Even tighter gaps on tablet/mobile */
+    grid-template-columns: repeat(2, 358px); /* 2 columns for smaller screens */
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 800px) {
+  .template-grid {
+    grid-template-columns: 1fr;
+    max-width: 358px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
 .template-card {
-  background: white; /* Ensure solid background to prevent "holes" */
+  background: white;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid #f1f5f9; /* Soft border for definition */
+  transition: all 0.3s ease;
+  border: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
-  align-items: center; 
-  padding: 0;
-  width: 100%;
 }
 
 .template-card:hover {
-  transform: none !important; 
-  box-shadow: 0 12px 40px rgba(0,0,0,0.15); /* Stronger, more elegant shadow */
-  border-color: rgba(99, 102, 241, 0.3); 
+  border-color: #3b82f6;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
 }
 
+/* Spacing below "Available Templates" */
 .section-title-wrapper {
-  margin-bottom: 24px;
+  margin-bottom: 24px; /* Added spacing below title */
 }
 
+/* Template Preview in List */
 .template-preview-live {
   position: relative;
-  height: 460px; /* Reduced further to tighten vertical gap */
-  background: transparent;
-  overflow: hidden; 
-  border-bottom: none;
+  height: 420px;
+  background: white;
+  overflow: hidden;
+  border-bottom: 1px solid #f1f5f9;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding: 0;
-  width: 100%;
+  align-items: flex-start; /* Aligns content to top */
+  padding-top: 0; /* Remove top padding to eliminate gap */
 }
 
 .template-preview-wrapper {
-  transform: scale(0.45); 
+  transform: scale(0.45);
   transform-origin: top center;
   width: 794px;
   min-width: 794px;
   height: 1123px;
   pointer-events: none;
   background: white;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
-  margin-top: 0; /* REMOVED margin to fix top corner gap */
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08); /* Softer shadow */
+  margin-top: 0; /* Ensure no top margin */
 }
 
+/* Overlay and Badge for List */
 .template-overlay {
   position: absolute;
   top: 0;
-  left: 0;
+  left: 0; 
   width: 100%;
   height: 100%;
   background: rgba(30, 41, 59, 0.4);
@@ -116,74 +121,36 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  background: #f59e0b; /* Amber/Gold for PRO */
+  background: #f59e0b;
   color: white;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   gap: 4px;
-  z-index: 5;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-  animation: badgePulse 2s infinite ease-in-out;
+  z-index: 15;
 }
 
 .free-badge {
   position: absolute;
   top: 12px;
-  right: 12px;
-  background: #10b981; /* Emerald for FREE */
+  right: 12px; /* Moved to right side */
+  background: #10b981;
   color: white;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
   font-weight: 700;
-  z-index: 5;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-
-@keyframes badgePulse {
-  0% { transform: scale(1); box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
-  50% { transform: scale(1.05); box-shadow: 0 6px 16px rgba(245, 158, 11, 0.5); }
-  100% { transform: scale(1); box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+  z-index: 15;
 }
 
 .template-info {
-  padding: 14px;
+  padding: 16px;
   text-align: center;
-  border-top: 1px solid #f1f5f9; 
-  width: 100%;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-  transition: all 0.3s ease;
-}
-
-/* Unique subtle colors for each template label */
-.template-card:nth-child(1) .template-info {
-  background: #f0f4ff; /* Light Indigo */
-  color: #4338ca;
-}
-
-.template-card:nth-child(2) .template-info {
-  background: #f0fdf4; /* Light Green */
-  color: #15803d;
-}
-
-.template-card:nth-child(3) .template-info {
-  background: #fff7ed; /* Light Orange */
-  color: #c2410c;
-}
-
-.template-card:nth-child(4) .template-info {
-  background: #faf5ff; /* Light Purple */
-  color: #7e22ce;
-}
-
-.template-card:nth-child(5) .template-info {
-  background: #fef2f2; /* Light Red */
-  color: #b91c1c;
+  background: #f8fafc; /* Light silver background as requested */
+  border-top: 1px solid #e2e8f0; /* Clear separation */
 }
 
 .template-info h3 {
@@ -192,6 +159,7 @@
   color: #1e293b;
 }
 
+/* CV Editor - Content-First Split Layout */
 .cv-editor-design {
   display: flex;
   flex-direction: column;
@@ -200,6 +168,7 @@
   width: 100%;
 }
 
+/* Custom Thin Scrollbar for the whole editor context */
 .cv-editor-design *::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -220,6 +189,7 @@
   background-color: #94a3b8;
 }
 
+/* Global Unified Header - Dark Theme */
 .editor-global-header {
   height: 60px;
   background: #1e293b;
@@ -246,30 +216,35 @@
   height: calc(100vh - 60px);
 }
 
+/* Left side: Forms Sidebar */
 .editor-sidebar-forms {
+  /* Default/Base styles */
   background: white;
-  border-right: none;
+  border-right: none; /* Removed sidebar divider as requested */
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  padding: 40px 30px 30px 30px;
+  padding: 40px 30px 30px 30px; /* Increased top padding to match preview alignment */
 }
 
+/* Edit Mode: Wide Sidebar */
 .mode-content .editor-sidebar-forms {
   flex: 0 0 55%;
   min-width: 500px;
 }
 
+/* Design Mode: Narrow Sidebar */
 .mode-design .editor-sidebar-forms {
-  flex: 0 0 28%;
+  flex: 0 0 28%; /* Narrower for templates */
   min-width: 350px;
-  padding: 20px;
+  padding: 20px; /* Reduced padding */
 }
 
+/* Responsive: Stack layout on smaller screens */
 @media (max-width: 992px) {
   .cv-editor-design {
-    height: 100vh !important;
-    overflow-y: auto !important;
+    height: 100vh !important; /* Fixed height for the screen */
+    overflow-y: auto !important; /* Allow the root container to scroll */
     position: fixed;
     scroll-behavior: smooth;
   }
@@ -289,7 +264,7 @@
     max-width: 100%;
     border-right: none;
     height: auto;
-    overflow: visible !important;
+    overflow: visible !important; /* Let parent scroll */
   }
   
   .editor-preview-pane {
@@ -297,9 +272,9 @@
     width: 100% !important;
     height: auto;
     min-height: auto;
-    overflow: visible !important;
+    overflow: visible !important; /* Let parent scroll */
     background: #cbd5e1;
-    padding-bottom: 40px;
+    padding-bottom: 50px;
   }
 
   .preview-scroll-area {
@@ -307,8 +282,8 @@
     min-height: auto;
     overflow: visible !important;
     justify-content: flex-start !important;
-    padding-top: 5px !important; /* REDUCED from 10px */
-    padding-bottom: 10px !important; /* REDUCED from 20px */
+    padding-top: 10px !important;
+    padding-bottom: 20px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -316,10 +291,1250 @@
 
   .preview-scaler {
     transform-origin: top center !important;
-    margin-top: 5px !important; /* REDUCED from 20px */
+    margin-top: 20px;
+  }
+}
+
+.forms-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.forms-header-top .left-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.lang-select-compact {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.upload-btn-ghost {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #6366f1;
+  color: white;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+}
+
+.upload-btn-ghost:hover {
+  opacity: 0.9;
+}
+
+/* Form Sections */
+.form-section-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.section-trigger {
+  width: 100%;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.section-trigger:hover {
+  background: #f8fafc;
+}
+
+.section-title-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.section-content-inner {
+  padding: 24px;
+  border-top: 1px solid #f1f5f9;
+  background: #ffffff;
+}
+
+/* Add Section Button */
+.add-section-wrapper {
+  margin-top: 20px;
+  padding-bottom: 40px;
+}
+
+.btn-add-section {
+  width: 100%;
+  padding: 14px;
+  background: #f1f5f9;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  color: #64748b;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-add-section:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #475569;
+}
+
+/* Right side: Preview Pane */
+.editor-preview-pane {
+  flex: 1;
+  background: #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden; /* Hide scrollbar on container, let child handle it or simple hidden */
+}
+
+/* Ensure only one scrollable area if content overflows */
+.editor-preview-pane > * {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+
+
+/* Category Grid Buttons */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.cat-btn-add {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between icon and text */
+  padding: 12px 16px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px; /* Slightly rounded corners */
+  color: #334155;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  justify-content: flex-start; /* Left align icon and text */
+  width: 100%;
+}
+
+.cat-btn-add:hover {
+  background: white;
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transform: translateY(-1px);
+}
+
+.cat-btn-add:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.cat-btn-add svg {
+  color: #475569;
+  flex-shrink: 0;
+}
+
+/* Design Header Sidebar */
+.design-header-sidebar {
+  padding: 10px 0 20px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.design-header-sidebar h3 {
+  margin: 12px 0 4px 0;
+  font-size: 1.1rem;
+  color: #1e293b;
+}
+
+.text-btn-back {
+  background: transparent;
+  color: #64748b;
+  border: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.text-btn-back:hover {
+  color: #1e293b;
+}
+
+.preview-top-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  z-index: 1000;
+}
+
+.template-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #4f46e5;
+  color: white;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+/* Edit Resume Button (White Text for Dark Header) */
+.btn-edit-resume {
+  background: transparent;
+  color: white;
+  padding: 0;
+  border: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: opacity 0.2s;
+  height: auto;
+}
+
+.btn-edit-resume:hover {
+  opacity: 0.8;
+  background: transparent;
+}
+
+.preview-right-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.download-btn-red {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.exit-editor-btn {
+  background: rgba(255,255,255,0.1);
+  color: white;
+  border: none;
+  width: 28px; 
+  height: 28px;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.exit-editor-btn:hover {
+  background: rgba(239, 68, 68, 0.8); /* Red on hover */
+  transform: rotate(90deg);
+}
+
+.preview-scroll-area {
+  flex: 1;
+  overflow: visible !important; /* CHANGED from hidden */
+  background: #cbd5e1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 !important; /* CHANGED from 20px 10px */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  height: auto !important; /* ADDED */
+  min-height: 0;
+}
+
+/* Hide scrollbar for Chrome/Safari/Opera */
+.preview-scroll-area::-webkit-scrollbar {
+  display: none;
+}
+
+
+
+/* Scaling container - uses transform without fixed dimensions */
+.preview-scaler {
+  transform-origin: top center; 
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  display: inline-block;
+  transform: scale(0.5); /* Reduced to fit viewport height */
+  height: 574px; /* 1123px * 0.52 */
+  position: relative;
+}
+
+/* Keep same size for all desktop and tablet views */
+@media (max-width: 1600px) { 
+  .preview-scaler { 
+    transform: scale(0.55); 
+    height: 584px; 
+  } 
+}
+
+@media (max-width: 1400px) { 
+  .preview-scaler { 
+    transform: scale(0.52); 
+    height: 584px; 
+  } 
+}
+
+@media (max-width: 1200px) { 
+  .preview-scaler { 
+    transform: scale(0.52); 
+    height: 584px;
+  } 
+}
+
+/* Breakpoint 992px: Switches to stacked. Resume gets full container width */
+@media (max-width: 992px) { 
+  .preview-scaler { 
+    transform: scale(0.65); 
+    height: 730px;
+    margin-top: 20px;
+  } 
+}
+
+@media (max-width: 800px) { 
+  .preview-scaler { 
+    transform: scale(0.55); 
+    height: 618px; 
+  } 
+}
+
+@media (max-width: 600px) { 
+  .preview-scaler { 
+    transform: scale(0.45); 
+    height: 506px; 
+  } 
+}
+
+@media (max-width: 450px) { 
+  .preview-scaler { 
+    transform: scale(0.35); 
+    height: 394px; 
+  } 
+}
+
+.resume-paper-canvas {
+  width: 794px; /* Internal A4 size remains constant */
+  min-height: 1123px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* Tiny Floating Footer Pill - Positioned statically under CV */
+.preview-footer-minimal {
+    margin: -30px auto!important; /* Pushes it DOWN */
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 14px;
+    background: rgba(30, 41, 59, 0.85);
+    backdrop-filter: blur(4px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    color: #cbd5e1;
+    font-weight: 500;
+    z-index: 10;
+    white-space: nowrap;
+    font-size: 0.7rem;
+    height: 32px;
+    min-width: 150px;
+    width: fit-content;
+    flex-shrink: 0;
+    position: static !important;
+    transform: none !important;
+}
+
+.preview-footer-minimal:hover {
+    background: rgba(15, 23, 42, 0.95);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    color: white;
+}
+
+.status-saved-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #10b981;
+    font-size: 0.85rem;
+}
+
+.pagination-text {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 0.9rem;
+}
+
+.page-link-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.4rem;
+    color: #64748b;
+    padding: 0 5px;
+    transition: color 0.2s;
+}
+
+.page-link-btn:hover {
+    color: #1e293b;
+}
+
+.resume-paper-canvas {
+  width: 794px; /* A4 exactly @ 96dpi */
+  min-height: 1123px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Watermark Styles */
+.resume-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 120px;
+    font-weight: 900;
+    color: rgba(0, 0, 0, 0.05); /* Very light gray */
+    pointer-events: none;
+    z-index: 100;
+    text-transform: uppercase;
+    letter-spacing: 15px;
+    white-space: nowrap;
+    user-select: none;
+}
+
+/* Preview Footer Styles */
+/* Legacy absolute footer removed */
+
+.preview-footer-saved {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #10b981;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.preview-page-indicator {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #475569;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.page-nav-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    transition: color 0.2s;
+}
+
+.page-nav-btn:hover {
+    color: #1e293b;
+}
+
+/* Overlap & Spacing Fixes */
+.card-item-wrapper {
+    position: relative;
+    margin-bottom: 24px;
+    padding: 16px 48px 16px 16px; /* Right padding for trash icon */
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
+    transition: all 0.2s;
+}
+
+.dark-mode .card-item-wrapper {
+    border-color: #334155;
+    background: #1e293b;
+}
+
+.btn-remove-item {
+    position: absolute;
+    top: 16px;
+    right: 12px;
+    color: #94a3b8;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-remove-item:hover {
+    color: #ef4444;
+}
+
+.add-category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.category-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+.category-toggle-btn.active {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    color: #1e40af;
+    font-weight: 600;
+}
+
+.dark-mode .category-toggle-btn {
+    background: #1e293b;
+    border-color: #334155;
+    color: #cbd5e1;
+}
+
+.dark-mode .category-toggle-btn.active {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #6366f1;
+    color: #818cf8;
+}
+
+.category-icon-box {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    border-radius: 8px;
+    color: #6366f1;
+}
+
+.category-toggle-btn.active .category-icon-box {
+    background: #3b82f6;
+    color: white;
+}
+
+.dark-mode .category-icon-box {
+    background: #0f172a;
+}
+
+
+/* SIDEBAR DESIGN MODE */
+.editor-sidebar-forms.design-mode-active {
+    background: #1e293b;
+    color: white;
+    padding: 0;
+    overflow: hidden; /* Hide outer overflow to allow internal scroll */
+}
+
+.sidebar-design-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.design-header-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 30px;
+    padding-left: 30px;
+    padding-right: 30px;
+    margin-bottom: 5px;
+}
+
+.design-header-sidebar h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: white;
+}
+
+/* Page 1 (Edit Mode) - Specific Styles */
+.template-toggle-btn-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    background: #6366f1; /* Consistent indigo */
+    color: white;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+}
+
+.template-toggle-btn-top:hover {
+    background: #4f46e5;
+}
+
+.design-sections-scrollable {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    padding: 0 30px 40px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.design-sections-scrollable::-webkit-scrollbar {
+    width: 6px;
+}
+
+.design-sections-scrollable::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.btn-back-to-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #4338ca; /* High contrast indigo */
+    color: white !important;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 24px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-back-to-edit:hover {
+    background: #4f46e5;
+    transform: translateX(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns side-by-side */
+    gap: 0 20px; /* No vertical gap */
+    width: 100%;
+    margin-top: 10px;
+}
+
+.form-group {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+@media (max-width: 992px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}
+
+.section-content-inner {
+    padding: 20px 24px; /* Tighter padding for wider inputs */
+}
+
+/* Form Styling - New */
+.form-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    margin: 0 0 2px 0 !important;
+    transition: color 0.2s;
+}
+
+.form-input {
+    width: 100%;
+    padding: 8px 12px; /* Compact padding */
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1e293b;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.form-input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Dark Mode Overrides for CV Builder */
+.dark-mode .editor-sidebar-forms {
+    background: #0f172a;
+    border-right-color: #1e293b;
+}
+
+.dark-mode .form-section-card {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+.dark-mode .section-trigger:hover {
+    background: #334155;
+}
+
+.dark-mode .section-title-box {
+    color: #f1f5f9;
+}
+
+.dark-mode .section-content-inner {
+    border-top-color: #334155;
+    background: #1e293b;
+}
+
+.dark-mode .form-label {
+    color: #cbd5e1;
+}
+
+.dark-mode .form-input {
+    background: #0f172a;
+    color: #f1f5f9;
+    border-color: #334155;
+}
+
+.dark-mode .form-input:focus {
+    border-color: #818cf8;
+}
+
+.dark-mode .btn-add-section {
+    background: #1e293b;
+    border-color: #475569;
+    color: #94a3b8;
+}
+
+.dark-mode .btn-add-section:hover {
+    background: #334155;
+}
+
+.design-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.spacing-icons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #94a3b8;
+    font-size: 1.2rem;
+}
+
+/* Active Overlays for Templates & Colors */
+.tpl-thumb-sidebar {
+  width: 100%;
+  height: 210px;
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid #334155;
+  transition: all 0.2s;
+  padding: 0;
+  /* Not using flex here to avoid scaling conflicts */
+}
+
+.tpl-preview-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.tpl-active-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999; /* Force to very top */
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.03); /* Extremely subtle tint to confirm it's there */
+}
+
+.active-check-badge {
+    background: #ef4444; /* Clean red */
+    color: white;
+    width: 28px; /* Smaller as requested */
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    opacity: 0.85; /* Slight transparency */
+    /* Extra centering insurance */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.active-check-badge svg {
+    display: block; /* Remove baseline spacing */
+}
+
+.color-circle-mini {
+    width: 24px; /* Reduced further as requested */
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.color-circle-mini:hover {
+    transform: scale(1.1);
+}
+
+.color-circle-mini.active {
+    border: 3px solid white; /* Essential white border for active state */
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.1); /* Subtle definition */
+}
+/* Ensure the icon inside has no margin that offsets it */
+.color-circle-mini svg {
+    margin: 0;
+    display: block;
+}
+
+
+/* Ensure selected state for cards */
+.tpl-card-sidebar.active .tpl-thumb-sidebar {
+    border: 3.5px solid #ef4444 !important; /* Thicker red border for active */
+}
+
+/* Sticky Bottom Bar for Sidebar Content Mode */
+.editor-footer-info {
+  margin-top: auto;
+  padding: 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 0.9rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* Standardized Design Mode Controls */
+.design-group-sidebar {
+    display: flex;
+    flex-direction: column;
+}
+
+.design-group-sidebar label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.design-group-sidebar input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: #334155;
+    border-radius: 2px;
+    outline: none;
+    margin-top: 10px;
+}
+
+.design-group-sidebar input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #6366f1;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid #1e293b;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+.font-select-sidebar {
+    width: 100%;
+    padding: 12px 16px;
+    background: #334155;
+    border: 1px solid #475569;
+    color: white;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.template-grid-sidebar {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding-bottom: 40px;
+    width: 100%;
+}
+
+.tpl-card-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 6px; /* Reduced from 10px */
+    cursor: pointer;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.tpl-card-sidebar:hover .tpl-thumb-sidebar {
+    border: 3px solid #6366f1 !important; /* Thicker blueish hover border */
+    /* Removed transform as requested */
+}
+
+.tpl-name-sidebar {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    text-align: center;
+    text-transform: capitalize;
+    font-weight: 500;
+}
+
+.premium-badge-sidebar {
+    font-size: 0.7rem;
+    color: #6366f1;
+    font-weight: 700;
+    border: 1px solid #6366f1;
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+
+/* Color Circles Layout */
+.color-circles-sidebar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-top: 12px;
+}
+
+/* Precise Thumbnail Scaling - Applied only to the container */
+.tpl-preview-container > div {
+    transform: scale(0.185); 
+    transform-origin: top center;
+    width: 210mm !important;
+    height: 297mm !important;
+    min-width: 210mm !important;
+}
+
+/* End of template styles */
+
+.custom-picker-sidebar {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px dashed #475569;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.custom-picker-sidebar:hover {
+    border-color: #6366f1;
+}
+
+/* Global Scrollbar removal removed to allow form sidebar to have scrollbar */
+/* Floating Help Button */
+.help-btn-floating {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #2563eb;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.help-btn-floating:hover {
+    transform: scale(1.1);
+    background: #1d4ed8;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+}
+
+.title-edit-input {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    outline: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+    width: 200px;
+}
+
+.title-edit-input:focus {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.cv-title-display {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Rich Text Editor Customization */
+.ql-container {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.9rem !important;
+  border-bottom-left-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+}
+
+.ql-toolbar.ql-snow {
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+.ql-container.ql-snow {
+  border-color: #e2e8f0 !important;
+  background-color: white !important;
+}
+
+.ql-editor {
+  min-height: 120px;
+}
+
+/* ========================================= */
+/* MOBILE RESPONSIVENESS FIXES (< 620px) */
+/* ========================================= */
+@media (max-width: 620px) {
+
+  /* 1. Stack Form Inputs (Name, Phone, etc.) */
+  .form-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
   }
   
+  .form-group {
+    width: 100% !important;
+    grid-column: span 1 !important;
+  }
+
+  /* 2. Fix Horizontal Overflow / Right Gap */
+  .cv-editor-design, 
+  .editor-main-split,
+  .editor-sidebar-forms {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box;
+  }
+
+  .editor-sidebar-forms {
+     padding: 20px 16px !important; /* Reduced padding */
+  }
+
+  /* 3. Header Adjustments */
+  .editor-global-header {
+    height: auto !important;
+    padding: 12px 16px !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+  }
+
+  .editor-global-header .header-left {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .editor-global-header .header-right {
+    width: 100%;
+    justify-content: space-between; /* Spread buttons */
+    gap: 10px;
+  }
+
+  .cv-title-display {
+     flex: 1;
+     max-width: 200px;
+  }
+  
+  .title-edit-input {
+    width: 100% !important;
+    font-size: 1rem !important;
+  }
+
+  /* Move "Design" & "PDF" buttons to second row (already done by flex-direction: column) */
+  .template-toggle-btn-top,
+  .download-btn-red {
+    flex: 1 !important;
+    justify-content: center !important;
+    padding: 10px !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .template-toggle-btn-top span,
+  .download-btn-red span {
+     white-space: nowrap;
+  }
+
+  /* 4. Fix Category Grid (Add Section) */
+  .category-grid {
+    grid-template-columns: 1fr !important; /* Stack add buttons */
+  }
+
 }
+
+
+/* ROBUST OVERRIDES FOR FORM GRID LAYOUT */
+/* Force clean 2-column grid on desktop/tablet */
+.cv-editor-design .form-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 20px !important;
+    width: 100% !important;
+}
+
+/* Ensure every input takes exactly 1 cell (50%) by default */
+.cv-editor-design .form-grid .form-group,
+.cv-editor-design .form-grid .form-group:nth-child(n) {
+    grid-column: auto !important; /* Reset any specific span overrides */
+    width: 100% !important;
+    max-width: none !important;
+    flex: none !important; /* Disable flex behaviors in grid */
+}
+
+/* Only explicit span-2 classes should span */
+.cv-editor-design .form-grid .span-2 {
+    grid-column: span 2 !important;
+    width: 100% !important;
+}
+
+/* Mobile Stack Enforcement (< 650px) */
+@media (max-width: 650px) {
+    .cv-editor-design .form-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+    
+    .cv-editor-design .form-grid .form-group {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+
 .saved-resumes-section {
   width: 100%;
   margin-top: 60px;
@@ -444,1214 +1659,3 @@
     gap: 16px;
   }
 }
-.forms-header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 40px;
-}
-
-.forms-header-top .left-actions {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-}
-
-.lang-select-compact {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
-  font-size: 0.9rem;
-  color: #475569;
-}
-
-.upload-btn-ghost {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: #6366f1;
-  color: white;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  border: none;
-  transition: opacity 0.2s;
-}
-
-.upload-btn-ghost:hover {
-  opacity: 0.9;
-}
-
-.form-section-card {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  margin-bottom: 24px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-
-.section-trigger {
-  width: 100%;
-  padding: 20px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.section-trigger:hover {
-  background: #f8fafc;
-}
-
-.section-title-box {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.section-content-inner {
-  padding: 24px;
-  border-top: 1px solid #f1f5f9;
-  background: #ffffff;
-}
-
-.add-section-wrapper {
-  margin-top: 20px;
-  padding-bottom: 40px;
-}
-
-.btn-add-section {
-  width: 100%;
-  padding: 14px;
-  background: #f1f5f9;
-  border: 2px dashed #cbd5e1;
-  border-radius: 12px;
-  color: #64748b;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.btn-add-section:hover {
-  background: #e2e8f0;
-  border-color: #94a3b8;
-  color: #475569;
-}
-
-.editor-preview-pane {
-  flex: 1;
-  background: #cbd5e1;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-}
-
-.editor-preview-pane > * {
-  scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
-}
-
-.category-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.cat-btn-add {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  color: #334155;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  justify-content: flex-start;
-  width: 100%;
-}
-
-.cat-btn-add:hover {
-  background: white;
-  border-color: #cbd5e1;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  transform: translateY(-1px);
-}
-
-.cat-btn-add:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.cat-btn-add svg {
-  color: #475569;
-  flex-shrink: 0;
-}
-
-.design-header-sidebar {
-  padding: 10px 0 20px 0;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.design-header-sidebar h3 {
-  margin: 12px 0 4px 0;
-  font-size: 1.1rem;
-  color: #1e293b;
-}
-
-.text-btn-back {
-  background: transparent;
-  color: #64748b;
-  border: none;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  padding: 0;
-  font-size: 0.9rem;
-  transition: color 0.2s;
-}
-
-.text-btn-back:hover {
-  color: #1e293b;
-}
-
-.preview-top-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 32px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
-  z-index: 1000;
-}
-
-.template-toggle-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: #4f46e5;
-  color: white;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-}
-
-.btn-edit-resume {
-  background: transparent;
-  color: white;
-  padding: 0;
-  border: none;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  transition: opacity 0.2s;
-  height: auto;
-}
-
-.btn-edit-resume:hover {
-  opacity: 0.8;
-  background: transparent;
-}
-
-.preview-right-actions {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.download-btn-red {
-  background: #ef4444;
-  color: white;
-  border: none;
-  padding: 8px 24px;
-  border-radius: 6px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-
-.exit-editor-btn {
-  background: rgba(255,255,255,0.1);
-  color: white;
-  border: none;
-  width: 28px; 
-  height: 28px;
-  border-radius: 50%;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.exit-editor-btn:hover {
-  background: rgba(239, 68, 68, 0.8);
-  transform: rotate(90deg);
-}
-
-/* FIXED: Remove all extra padding/margin that hides CV */
-.preview-scroll-area {
-  flex: 1;
-  overflow: visible !important; /* CHANGED: Don't hide overflow */
-  background: #cbd5e1;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0 !important; /* CHANGED: Remove ALL padding */
-  min-height: 0;
-}
-
-.preview-scroll-area::-webkit-scrollbar {
-  display: none;
-}
-
-/* FIXED: Proper scaling with NO clipping */
-.preview-scaler {
-  transform-origin: top center; 
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-  display: inline-block;
-  transform: scale(0.7); /* REDUCED back to fit without clipping */
-  height: 562px; /* 1123px * 0.5 */
-  position: relative;
-  margin: 0 !important; /* CHANGED: No margin at all */
-}
-
-/* FIXED: Reduce CV paper internal padding to show more content */
-.resume-paper-canvas {
-  width: 820px; /* RESTORED to original */
-  min-height: 1123px;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-  position: relative;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-/* Keep same size for all desktop and tablet views */
-@media (max-width: 1600px) { 
-  .preview-scaler { 
-    transform: scale(0.5); 
-    height: 562px; 
-  } 
-}
-
-@media (max-width: 1400px) { 
-  .preview-scaler { 
-    transform: scale(0.5); 
-    height: 562px; 
-  } 
-}
-
-@media (max-width: 1200px) { 
-  .preview-scaler { 
-    transform: scale(0.5); 
-    height: 562px;
-  } 
-}
-
-/* Breakpoint 992px: Switches to stacked */
-@media (max-width: 992px) { 
-  .preview-scaler { 
-    transform: scale(0.47); /* SMALLER on mobile */
-    height: 530px;
-    margin-top: 0 !important; /* CHANGED: No margin */
-  } 
-}
-
-@media (max-width: 800px) { 
-  .preview-scaler { 
-    transform: scale(0.4); 
-    height: 449px; 
-  } 
-}
-
-@media (max-width: 600px) { 
-  .preview-scaler { 
-    transform: scale(0.35); 
-    height: 393px; 
-  } 
-}
-
-@media (max-width: 450px) { 
-  .preview-scaler { 
-    transform: scale(0.3); 
-    height: 337px; 
-  } 
-}
-
-/* FIXED: Footer placed directly under CV with minimal space */
-.preview-footer-minimal {
-    margin: -10px auto !important; /* MINIMAL spacing */
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    justify-content: center;
-    padding: 4px 12px;
-    background: rgba(30, 41, 59, 0.85);
-    backdrop-filter: blur(4px);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    color: #cbd5e1;
-    font-weight: 500;
-    z-index: 10;
-    white-space: nowrap;
-    font-size: 0.7rem;
-    height: 28px; /* SMALLER */
-    min-width: 140px; /* SMALLER */
-    width: fit-content;
-    flex-shrink: 0;
-    position: static !important;
-    transform: none !important;
-}
-
-.preview-footer-minimal:hover {
-    background: rgba(15, 23, 42, 0.95);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
-    color: white;
-}
-
-.status-saved-text {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #10b981;
-    font-size: 0.8rem; /* SMALLER */
-}
-
-.pagination-text {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* REDUCED */
-    font-size: 0.8rem; /* SMALLER */
-}
-
-.page-link-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2rem; /* SMALLER */
-    color: #64748b;
-    padding: 0 5px;
-    transition: color 0.2s;
-}
-
-.page-link-btn:hover {
-    color: #1e293b;
-}
-
-/* Rest of the CSS remains the same... */
-
-/* Watermark Styles */
-.resume-watermark {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-45deg);
-    font-size: 120px;
-    font-weight: 900;
-    color: rgba(0, 0, 0, 0.05);
-    pointer-events: none;
-    z-index: 100;
-    text-transform: uppercase;
-    letter-spacing: 15px;
-    white-space: nowrap;
-    user-select: none;
-}
-
-.preview-footer-saved {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #10b981;
-    font-size: 0.8rem; /* SMALLER */
-    font-weight: 600;
-}
-
-.preview-page-indicator {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* REDUCED */
-    color: #475569;
-    font-size: 0.8rem; /* SMALLER */
-    font-weight: 500;
-}
-
-.page-nav-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2rem; /* SMALLER */
-    color: #64748b;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 5px;
-    transition: color 0.2s;
-}
-
-.page-nav-btn:hover {
-    color: #1e293b;
-}
-
-.card-item-wrapper {
-    position: relative;
-    margin-bottom: 24px;
-    padding: 16px 48px 16px 16px;
-    border: 1px solid #f1f5f9;
-    border-radius: 12px;
-    transition: all 0.2s;
-}
-
-.dark-mode .card-item-wrapper {
-    border-color: #334155;
-    background: #1e293b;
-}
-
-.btn-remove-item {
-    position: absolute;
-    top: 16px;
-    right: 12px;
-    color: #94a3b8;
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: color 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-remove-item:hover {
-    color: #ef4444;
-}
-
-.add-category-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    margin-top: 16px;
-}
-
-.category-toggle-btn {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 0.9rem;
-    color: #475569;
-}
-
-.category-toggle-btn.active {
-    background: #eff6ff;
-    border-color: #3b82f6;
-    color: #1e40af;
-    font-weight: 600;
-}
-
-.dark-mode .category-toggle-btn {
-    background: #1e293b;
-    border-color: #334155;
-    color: #cbd5e1;
-}
-
-.dark-mode .category-toggle-btn.active {
-    background: rgba(59, 130, 246, 0.1);
-    border-color: #6366f1;
-    color: #818cf8;
-}
-
-.category-icon-box {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f1f5f9;
-    border-radius: 8px;
-    color: #6366f1;
-}
-
-.category-toggle-btn.active .category-icon-box {
-    background: #3b82f6;
-    color: white;
-}
-
-.dark-mode .category-icon-box {
-    background: #0f172a;
-}
-
-.editor-sidebar-forms.design-mode-active {
-    background: #1e293b;
-    color: white;
-    padding: 0;
-    overflow: hidden;
-}
-
-.sidebar-design-content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.design-header-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding-top: 30px;
-    padding-left: 30px;
-    padding-right: 30px;
-    margin-bottom: 5px;
-}
-
-.design-header-sidebar h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin: 0;
-    color: white;
-}
-
-.template-toggle-btn-top {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 18px;
-    background: #6366f1;
-    color: white;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: background 0.2s;
-}
-
-.template-toggle-btn-top:hover {
-    background: #4f46e5;
-}
-
-.design-sections-scrollable {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 0 30px 40px 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-}
-
-.design-sections-scrollable::-webkit-scrollbar {
-    width: 6px;
-}
-
-.design-sections-scrollable::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-}
-
-.btn-back-to-edit {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #4338ca;
-    color: white !important;
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: none;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: 24px;
-    transition: all 0.2s;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.btn-back-to-edit:hover {
-    background: #4f46e5;
-    transform: translateX(-4px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-}
-
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    width: 100%;
-    margin-top: 10px;
-}
-
-@media (max-width: 992px) {
-    .form-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-}
-
-.section-content-inner {
-    padding: 20px 24px;
-}
-
-.form-label {
-    display: block;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #64748b;
-    margin-bottom: 8px;
-    transition: color 0.2s;
-}
-
-.form-input {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    background: #ffffff;
-    color: #1e293b;
-    font-size: 0.95rem;
-    transition: all 0.2s;
-    outline: none;
-}
-
-.form-input:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
-.dark-mode .editor-sidebar-forms {
-    background: #0f172a;
-    border-right-color: #1e293b;
-}
-
-.dark-mode .form-section-card {
-    background: #1e293b;
-    border-color: #334155;
-}
-
-.dark-mode .section-trigger:hover {
-    background: #334155;
-}
-
-.dark-mode .section-title-box {
-    color: #f1f5f9;
-}
-
-.dark-mode .section-content-inner {
-    border-top-color: #334155;
-    background: #1e293b;
-}
-
-.dark-mode .form-label {
-    color: #cbd5e1;
-}
-
-.dark-mode .form-input {
-    background: #0f172a;
-    color: #f1f5f9;
-    border-color: #334155;
-}
-
-.dark-mode .form-input:focus {
-    border-color: #818cf8;
-}
-
-.dark-mode .btn-add-section {
-    background: #1e293b;
-    border-color: #475569;
-    color: #94a3b8;
-}
-
-.dark-mode .btn-add-section:hover {
-    background: #334155;
-}
-
-.design-label-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.spacing-icons {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #94a3b8;
-    font-size: 1.2rem;
-}
-
-.tpl-thumb-sidebar {
-  width: 100%;
-  height: 210px;
-  background: white;
-  border-radius: 6px;
-  overflow: hidden;
-  position: relative;
-  border: 1px solid #334155;
-  transition: all 0.2s;
-  padding: 0;
-}
-
-.tpl-preview-container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.tpl-active-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 999;
-    pointer-events: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.03);
-}
-
-.active-check-badge {
-    background: #ef4444;
-    color: white;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 2px solid white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-    opacity: 0.85;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.active-check-badge svg {
-    display: block;
-}
-
-.color-circle-mini {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-    margin: 0;
-    outline: none;
-    box-sizing: border-box;
-}
-
-.color-circle-mini:hover {
-    transform: scale(1.1);
-}
-
-.color-circle-mini.active {
-    border: 3px solid white;
-    box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
-}
-
-.color-circle-mini svg {
-    margin: 0;
-    display: block;
-}
-
-.tpl-card-sidebar.active .tpl-thumb-sidebar {
-    border: 3.5px solid #ef4444 !important;
-}
-
-.editor-footer-info {
-  margin-top: auto;
-  padding: 20px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #64748b;
-  font-size: 0.9rem;
-  border-top: 1px solid #f1f5f9;
-}
-
-.design-group-sidebar {
-    display: flex;
-    flex-direction: column;
-}
-
-.design-group-sidebar label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.design-group-sidebar input[type="range"] {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    height: 4px;
-    background: #334155;
-    border-radius: 2px;
-    outline: none;
-    margin-top: 10px;
-}
-
-.design-group-sidebar input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    background: #6366f1;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 3px solid #1e293b;
-    box-shadow: 0 0 5px rgba(0,0,0,0.3);
-}
-
-.font-select-sidebar {
-    width: 100%;
-    padding: 12px 16px;
-    background: #334155;
-    border: 1px solid #475569;
-    color: white;
-    border-radius: 8px;
-    font-size: 1rem;
-    outline: none;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.template-grid-sidebar {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding-bottom: 40px;
-    width: 100%;
-}
-
-.tpl-card-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    cursor: pointer;
-    max-width: 100%;
-    min-width: 0;
-}
-
-.tpl-card-sidebar:hover .tpl-thumb-sidebar {
-    border: 3px solid #6366f1 !important;
-}
-
-.tpl-name-sidebar {
-    font-size: 0.8rem;
-    color: #94a3b8;
-    text-align: center;
-    text-transform: capitalize;
-    font-weight: 500;
-}
-
-.premium-badge-sidebar {
-    font-size: 0.7rem;
-    color: #6366f1;
-    font-weight: 700;
-    border: 1px solid #6366f1;
-    padding: 1px 6px;
-    border-radius: 4px;
-}
-
-.color-circles-sidebar {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 12px;
-    align-items: center;
-    margin-top: 12px;
-}
-
-.tpl-preview-container > div {
-    transform: scale(0.185); 
-    transform-origin: top center;
-    width: 210mm !important;
-    height: 297mm !important;
-    min-width: 210mm !important;
-}
-
-.custom-picker-sidebar {
-    position: relative;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: 2px dashed #475569;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: border-color 0.2s;
-}
-
-.custom-picker-sidebar:hover {
-    border-color: #6366f1;
-}
-
-.help-btn-floating {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: #2563eb;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 1000;
-}
-
-.help-btn-floating:hover {
-    transform: scale(1.1);
-    background: #1d4ed8;
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
-}
-
-.title-edit-input {
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 600;
-    outline: none;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: background 0.2s;
-    width: 200px;
-}
-
-.title-edit-input:focus {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.cv-title-display {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.ql-container {
-  font-family: 'Inter', sans-serif !important;
-  font-size: 0.9rem !important;
-  border-bottom-left-radius: 8px !important;
-  border-bottom-right-radius: 8px !important;
-}
-
-.ql-toolbar.ql-snow {
-  border-top-left-radius: 8px !important;
-  border-top-right-radius: 8px !important;
-  background-color: #f8fafc !important;
-  border-color: #e2e8f0 !important;
-}
-
-.ql-container.ql-snow {
-  border-color: #e2e8f0 !important;
-  background-color: white !important;
-}
-
-.ql-editor {
-  min-height: 120px;
-}
-
-@media (max-width: 620px) {
-  .form-grid {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 16px !important;
-  }
-  
-  .form-group {
-    width: 100% !important;
-    grid-column: span 1 !important;
-  }
-
-  .cv-editor-design, 
-  .editor-main-split,
-  .editor-sidebar-forms {
-    width: 100vw !important;
-    max-width: 100vw !important;
-    overflow-x: hidden !important;
-    box-sizing: border-box;
-  }
-
-  .editor-sidebar-forms {
-     padding: 20px 16px !important;
-  }
-
-  .editor-global-header {
-    height: auto !important;
-    padding: 12px 16px !important;
-    flex-direction: column !important;
-    gap: 12px !important;
-    align-items: stretch !important;
-  }
-
-  .editor-global-header .header-left {
-    justify-content: space-between;
-    width: 100%;
-  }
-
-  .editor-global-header .header-right {
-    width: 100%;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .cv-title-display {
-     flex: 1;
-     max-width: 200px;
-  }
-  
-  .title-edit-input {
-    width: 100% !important;
-    font-size: 1rem !important;
-  }
-
-  .template-toggle-btn-top,
-  .download-btn-red {
-    flex: 1 !important;
-    justify-content: center !important;
-    padding: 10px !important;
-    font-size: 0.85rem !important;
-  }
-  
-  .template-toggle-btn-top span,
-  .download-btn-red span {
-     white-space: nowrap;
-  }
-
-  .category-grid {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-.cv-editor-design .form-grid {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 20px !important;
-    width: 100% !important;
-}
-
-.cv-editor-design .form-grid .form-group,
-.cv-editor-design .form-grid .form-group:nth-child(n) {
-    grid-column: auto !important;
-    width: 100% !important;
-    max-width: none !important;
-    flex: none !important;
-}
-
-.cv-editor-design .form-grid .span-2 {
-    grid-column: span 2 !important;
-    width: 100% !important;
-}
-
-@media (max-width: 650px) {
-    .cv-editor-design .form-grid {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 12px !important;
-    }
-    
-    .cv-editor-design .form-grid .form-group {
-        width: 100% !important;
-        max-width: 100% !important;
-    }
-}
-
-/* Print View Styles */
-.cv-print-view {
-  background: white;
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 0;
-  margin: 0;
-}
-
-.cv-print-only {
-  width: 210mm;
-  background: white;
-  box-shadow: none;
-}
-
-.resume-template {
-  width: 100%;
-  height: auto;
-  min-height: 297mm;
-  background: white;
-  position: relative;
-}
-
-/* Ensure templates fill the print container */
-.resume-template > div {
-  width: 100% !important;
-  max-width: 100% !important;
-  height: auto !important;
-  min-height: 297mm;
-  transform: none !important; /* NO SCALING in print mode */
-  margin: 0 !important;
-  padding: 0 !important;
-  box-shadow: none !important;
-}
-@media print { .editor-sidebar-forms, .editor-global-header, .action-btn, .template-toggle-btn-top, .exit-editor-btn, .header-divider, .cv-title-display, header, footer, .notification, .help-btn-floating { display: none !important; } body, html { background: white !important; margin: 0 !important; padding: 0 !important; } .app-container, .container, main { margin: 0 !important; padding: 0 !important; max-width: none !important; width: 100% !important; } .cv-editor-design { padding: 0 !important; margin: 0 !important; background: white !important; } .editor-main-split { display: block !important; height: auto !important; } .resume-preview-container { width: 100% !important; height: auto !important; transform: none !important; position: static !important; margin: 0 !important; padding: 0 !important; } }

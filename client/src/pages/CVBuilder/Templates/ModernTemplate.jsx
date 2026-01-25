@@ -9,12 +9,19 @@ const ModernTemplate = ({ data, settings }) => {
 
   return (
     <div className="modern-template" style={{ '--theme-color': themeColor, fontFamily: settings?.font || 'Inter', lineHeight: `${settings?.lineSpacing || 100}%` }}>
-      <div className="modern-header" style={{ borderLeft: `12px solid ${themeColor}` }}>
-        <h1>{personal.firstName || 'Your Name'} <span>{personal.lastName}</span></h1>
+      <div className="modern-header" style={{ borderLeft: `12px solid ${themeColor}`, display: 'flex', alignItems: 'flex-start', gap: '24px' }}>
+        {personal.photo && (
+          <div className="modern-photo-container">
+            <img src={personal.photo} alt="Profile" style={{ width: '100px', height: '100px', borderRadius: '4px', objectFit: 'cover' }} />
+          </div>
+        )}
+        <div className="header-text">
+          <h1>{personal.firstName || 'Your Name'} <span>{personal.lastName}</span></h1>
         <p className="job-title" style={{ fontSize: '1.2rem', color: '#64748b', marginTop: '4px' }}>{personal.jobTitle || 'Professional Title'}</p>
         {(personal.summary || !personal.firstName) && (
           <div className="summary" dangerouslySetInnerHTML={{ __html: personal.summary || 'Professional summary goes here. Briefly describe your career highlights and key skills.' }} />
         )}
+        </div>
       </div>
       
       <div className="modern-content">
@@ -99,8 +106,17 @@ const ModernTemplate = ({ data, settings }) => {
             <h2 style={{ color: themeColor }}>Contact</h2>
             <p>{personal.email || 'email@example.com'}</p>
             <p>{personal.phone || '(555) 123-4567'}</p>
-            {personal.location && <p>{personal.location}</p>}
-            {!personal.location && !personal.firstName && <p>City, Country</p>}
+            {personal.address && <p>{personal.address}</p>}
+            {(personal.city || personal.location) && <p>{personal.city || personal.location}</p>}
+            {personal.country && <p>{personal.country}</p>}
+            {personal.zipCode && <p>{personal.zipCode}</p>}
+            
+            <div className="extra-details" style={{ marginTop: '16px', fontSize: '0.8rem', opacity: 0.8 }}>
+              {personal.birthDate && <p>Born: {personal.birthDate}</p>}
+              {personal.nationality && <p>Nationality: {personal.nationality}</p>}
+              {personal.idNumber && <p>ID: {personal.idNumber}</p>}
+              {personal.driversLicense && <p>License: {personal.driversLicense}</p>}
+            </div>
           </section>
 
           {data.links && data.links.length > 0 && (

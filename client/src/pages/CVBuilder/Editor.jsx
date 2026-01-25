@@ -5,7 +5,7 @@ import RichTextEditor from '../../components/RichTextEditor';
 import { 
   Bold, Italic, Underline, Link as LinkIcon, List, AlignLeft, AlignCenter, AlignRight,
   CheckCircle, Trash2, Plus, ChevronUp, ChevronDown, Layout, X, ChevronLeft, Download,
-  User, Briefcase, GraduationCap, Globe, Code, Heart, Type, ArrowLeft, Palette, Save, Eye, FileText, HelpCircle, Check
+  User, Briefcase, GraduationCap, Globe, Code, Heart, Type, ArrowLeft, Palette, Save, Eye, FileText, HelpCircle, Check, Camera, Upload
 } from 'lucide-react';
 import './CVBuilder.css';
 import api from '../../services/api';
@@ -47,7 +47,15 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
         phone: '',
         location: '',
         summary: '',
-        photo: null
+        photo: null,
+        city: '',
+        country: '',
+        address: '',
+        zipCode: '',
+        idNumber: '',
+        birthDate: '',
+        nationality: '',
+        driversLicense: ''
       },
       experience: [],
       education: [],
@@ -82,6 +90,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
     index: null,
     title: ''
   });
+  const [showMoreDetails, setShowMoreDetails] = useState(false);
 
   // Fetch CV data if editing
   useEffect(() => {
@@ -136,7 +145,24 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
       }
     };
     init();
-  }, [propCvId]);
+  }, [propCvId, activeCvId]);  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        if (showNotify) showNotify("Image size must be less than 2MB", "error");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updateNestedState('data.personal.photo', reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removePhoto = () => {
+    updateNestedState('data.personal.photo', null);
+  };
 
   useEffect(() => {
     setActiveCvId(propCvId);
@@ -232,11 +258,16 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
       });
       
       // Safety check for backend error hidden in a blob
-      if (response.data.size < 500) {
-        const text = await response.data.text();
-        if (text.includes('Error')) {
-           throw new Error(text);
-        }
+      if (response.data.type !== 'application/pdf') {
+          const text = await response.data.text();
+          let errorMsg = 'Failed to generate PDF';
+          try {
+              const error = JSON.parse(text);
+              errorMsg = error.msg || error.message || errorMsg;
+          } catch {
+              errorMsg = text || errorMsg;
+          }
+          throw new Error(errorMsg);
       }
 
       const url = window.URL.createObjectURL(response.data);
@@ -377,6 +408,53 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                 </button>
                 {activeSection === 'personal' && (
                   <div className="section-content-inner">
+                    {/* Photo Upload Row - Always visible, upload restricted to premium (Creative only) */}
+                    <div className="photo-upload-container" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '20px' }}>
+                      <div className="photo-preview-box" style={{ 
+                        width: '80px', 
+                        height: '80px', 
+                        borderRadius: '50%', 
+                        background: '#f1f5f9', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        overflow: 'hidden',
+                        border: '2px solid #e2e8f0',
+                        opacity: cvData.templateKey === 'creative' ? 1 : 0.6
+                      }}>
+                        {cvData.data.personal.photo ? (
+                          <img src={cvData.data.personal.photo} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                          <User size={40} color="#94a3b8" />
+                        )}
+                      </div>
+                      <div className="photo-actions">
+                        {cvData.templateKey === 'creative' ? (
+                          <>
+                            <label className="upload-btn-ghost" style={{ cursor: 'pointer', display: 'inline-flex' }}>
+                              <Camera size={16} />
+                              <span style={{ marginLeft: '8px' }}>{cvData.data.personal.photo ? 'Change Photo' : 'Upload Photo'}</span>
+                              <input type="file" hidden accept="image/*" onChange={handlePhotoUpload} />
+                            </label>
+                            {cvData.data.personal.photo && (
+                              <button onClick={removePhoto} style={{ marginLeft: '12px', background: 'transparent', border: 'none', color: '#ef4444', fontSize: '0.85rem', cursor: 'pointer' }}>
+                                Remove
+                              </button>
+                            )}
+                            <p style={{ margin: '8px 0 0 0', fontSize: '0.75rem', color: '#64748b' }}>JPG or PNG. Max size 2MB.</p>
+                          </>
+                        ) : (
+                          <>
+                            <button className="upload-btn-ghost" disabled style={{ cursor: 'not-allowed', display: 'inline-flex', opacity: 0.5 }}>
+                              <Camera size={16} />
+                              <span style={{ marginLeft: '8px' }}>Upload Photo</span>
+                            </button>
+                            <p style={{ margin: '8px 0 0 0', fontSize: '0.75rem', color: '#64748b' }}>This template does not support photo upload</p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
                     <div className="form-grid">
                       <div className="form-group">
                         <label className="form-label">First Name</label>
@@ -426,9 +504,113 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                           onChange={(e) => updateNestedState('data.personal.location', e.target.value)}
                         />
                       </div>
+                      
+                      {showMoreDetails && (
+                        <>
+                          <div className="form-group">
+                            <label className="form-label">City</label>
+                            <input 
+                              className="form-input" 
+                              value={cvData.data.personal.city} 
+                              onChange={(e) => updateNestedState('data.personal.city', e.target.value)}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Country</label>
+                            <input 
+                              className="form-input" 
+                              value={cvData.data.personal.country} 
+                              onChange={(e) => updateNestedState('data.personal.country', e.target.value)}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Address</label>
+                            <input 
+                              className="form-input" 
+                              value={cvData.data.personal.address} 
+                              onChange={(e) => updateNestedState('data.personal.address', e.target.value)}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Zip Code</label>
+                            <input 
+                              className="form-input" 
+                              value={cvData.data.personal.zipCode} 
+                              onChange={(e) => updateNestedState('data.personal.zipCode', e.target.value)}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">ID Number</label>
+                            <input 
+                              className="form-input" 
+                              value={cvData.data.personal.idNumber} 
+                              onChange={(e) => updateNestedState('data.personal.idNumber', e.target.value)}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Birth Date</label>
+                            <input 
+                              type="date"
+                              className="form-input" 
+                              value={cvData.data.personal.birthDate} 
+                              onChange={(e) => updateNestedState('data.personal.birthDate', e.target.value)}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Nationality</label>
+                            <input 
+                              className="form-input" 
+                              value={cvData.data.personal.nationality} 
+                              onChange={(e) => updateNestedState('data.personal.nationality', e.target.value)}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Driver's License</label>
+                            <input 
+                              className="form-input" 
+                              value={cvData.data.personal.driversLicense} 
+                              onChange={(e) => updateNestedState('data.personal.driversLicense', e.target.value)}
+                            />
+                          </div>
+                        </>
+                      )}
                     </div>
-                    <div className="form-group" style={{ marginTop: '20px' }}>
-                      <label className="form-label">Professional Summary</label>
+
+                    <button 
+                      className="text-btn-toggle" 
+                      onClick={() => setShowMoreDetails(!showMoreDetails)}
+                      style={{ 
+                        background: 'transparent', 
+                        border: 'none', 
+                        color: '#6366f1', 
+                        fontWeight: '600', 
+                        cursor: 'pointer', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '8px',
+                        marginTop: '16px',
+                        padding: '0'
+                      }}
+                    >
+                      {showMoreDetails ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                      <span>{showMoreDetails ? 'Less Details' : 'More Details'}</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Professional Summary */}
+              <div className="form-section-card">
+                <button className="section-trigger" onClick={() => toggleSection('summary')}>
+                  <div className="section-title-box">
+                    <FileText size={20} color="#6366f1" />
+                    <span>Professional Summary</span>
+                  </div>
+                  {activeSection === 'summary' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                </button>
+                {activeSection === 'summary' && (
+                  <div className="section-content-inner">
+                    <div className="form-group full-width">
                       <RichTextEditor 
                         value={cvData.data.personal.summary} 
                         onChange={(val) => updateNestedState('data.personal.summary', val)}

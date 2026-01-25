@@ -42,6 +42,24 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
                 <span className="pro-label">Location</span>
                 <span className="pro-value" style={!personal.location ? { opacity: 0.7 } : {}}>{personal.location || 'City, Country'}</span>
               </div>
+              {personal.address && (
+                <div className="pro-contact-item">
+                  <span className="pro-label">Address</span>
+                  <span className="pro-value">{personal.address}</span>
+                </div>
+              )}
+              {personal.city && personal.country && (
+                <div className="pro-contact-item">
+                  <span className="pro-label">City/Country</span>
+                  <span className="pro-value">{personal.city}, {personal.country}</span>
+                </div>
+              )}
+              <div className="pro-extra-info" style={{ marginTop: '15px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '10px' }}>
+                {personal.birthDate && <div className="pro-contact-item"><span className="pro-label">Birth Date</span><span className="pro-value">{personal.birthDate}</span></div>}
+                {personal.nationality && <div className="pro-contact-item"><span className="pro-label">Nationality</span><span className="pro-value">{personal.nationality}</span></div>}
+                {personal.idNumber && <div className="pro-contact-item"><span className="pro-label">ID Number</span><span className="pro-value">{personal.idNumber}</span></div>}
+                {personal.driversLicense && <div className="pro-contact-item"><span className="pro-label">Driver's License</span><span className="pro-value">{personal.driversLicense}</span></div>}
+              </div>
           </div>
         </section>
 

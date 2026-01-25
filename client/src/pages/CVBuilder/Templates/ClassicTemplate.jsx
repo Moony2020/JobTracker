@@ -8,10 +8,30 @@ const ClassicTemplate = ({ data, settings }) => {
 
   return (
     <div className="classic-template" style={{ '--theme-color': themeColor, fontFamily: settings?.font || 'Serif' }}>
-      <div className="classic-header">
-        <h1 style={{ color: themeColor }}>{personal.firstName || 'First Name'} {personal.lastName || 'Last Name'}</h1>
-        <div className="contact-info">
-          {personal.email || 'email@example.com'} {personal.phone ? `• ${personal.phone}` : '• (555) 123-4567'} {personal.location && `• ${personal.location}`}
+      <div className="classic-header" style={{ display: 'flex', gap: '30px', alignItems: 'flex-start' }}>
+        {personal.photo && (
+          <div className="classic-photo-container">
+            <img src={personal.photo} alt="Profile" style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '4px' }} />
+          </div>
+        )}
+        <div style={{ flex: 1 }}>
+          <h1 style={{ color: themeColor, marginTop: 0 }}>{personal.firstName || 'First Name'} {personal.lastName || 'Last Name'}</h1>
+          <div className="job-title" style={{ fontSize: '1.2rem', color: '#64748b', marginBottom: '8px' }}>{personal.jobTitle}</div>
+          <div className="contact-info" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', fontSize: '0.9rem' }}>
+            {personal.email && <span>{personal.email}</span>}
+            {personal.phone && <span>• {personal.phone}</span>}
+            {personal.location && <span>• {personal.location}</span>}
+            {personal.address && <span>• {personal.address}</span>}
+            {personal.city && <span>• {personal.city}</span>}
+            {personal.country && <span>• {personal.country}</span>}
+            {personal.zipCode && <span>• {personal.zipCode}</span>}
+          </div>
+          <div className="contact-details-extra" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', fontSize: '0.8rem', color: '#64748b', marginTop: '4px' }}>
+            {personal.birthDate && <span>Birth: {personal.birthDate}</span>}
+            {personal.nationality && <span>• Nationality: {personal.nationality}</span>}
+            {personal.idNumber && <span>• ID: {personal.idNumber}</span>}
+            {personal.driversLicense && <span>• DL: {personal.driversLicense}</span>}
+          </div>
         </div>
       </div>
 

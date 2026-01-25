@@ -2,6 +2,7 @@ import React from 'react';
 import ModernTemplate from './ModernTemplate';
 import ClassicTemplate from './ClassicTemplate';
 import ProfessionalBlueTemplate from './ProfessionalBlueTemplate';
+import TimelineTemplate from './TimelineTemplate';
 import './Templates.css';
 
 const TemplateRenderer = ({ templateKey, data, settings }) => {
@@ -12,7 +13,6 @@ const TemplateRenderer = ({ templateKey, data, settings }) => {
   const renderTemplate = () => {
     switch (key) {
       case 'modern':
-      case 'minimalist':
         return <ModernTemplate data={data} settings={settings} />;
       case 'classic':
         return <ClassicTemplate data={data} settings={settings} />;
@@ -21,6 +21,8 @@ const TemplateRenderer = ({ templateKey, data, settings }) => {
       case 'professional-blue':
       case 'professional blue': 
         return <ProfessionalBlueTemplate data={data} settings={settings} />;
+      case 'timeline':
+        return <TimelineTemplate data={data} settings={settings} />;
       default:
         return <ModernTemplate data={data} settings={settings} />;
     }

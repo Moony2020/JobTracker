@@ -55,8 +55,21 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
         api.get('/cv'),
         api.get('/cv/templates')
       ]);
-      setResumes(resumesRes.data);
-      setTemplates(templatesRes.data);
+      // Filter out Minimalist (duplicate of Modern) and inject Timeline at the START
+      const filteredTemplates = templatesRes.data.filter(t => t.key !== 'minimalist');
+      const hasTimeline = filteredTemplates.some(t => t.key === 'timeline');
+      
+      if (!hasTimeline) {
+        filteredTemplates.unshift({ // Add to START of list
+          _id: 'timeline-temp-id',
+          name: 'Timeline', // Shorter name as requested
+          key: 'timeline',
+          category: 'Free',
+          price: 0, // Essential for the "FREE" badge
+          isActive: true
+        });
+      }
+      setTemplates(filteredTemplates);
     } catch (err) {
       console.error("Error fetching CV data:", err);
     } finally {
@@ -96,11 +109,17 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
       });
       
       // Safety check for backend error hidden in a blob
-      if (response.data.size < 500) {
-        const text = await response.data.text();
-        if (text.includes('Error')) {
-           throw new Error(text);
-        }
+      // If it's not a PDF, it's probably a JSON or text error
+      if (response.data.type !== 'application/pdf') {
+          const text = await response.data.text();
+          let errorMsg = 'Failed to generate PDF';
+          try {
+              const error = JSON.parse(text);
+              errorMsg = error.msg || error.message || errorMsg;
+          } catch {
+              errorMsg = text || errorMsg;
+          }
+          throw new Error(errorMsg);
       }
 
       // Create a blob URL and trigger download
