@@ -150,7 +150,7 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
                 <div className="resume-details">
                   <h3>{cv.title}</h3>
                   <span className="template-name">{cv.templateId?.name || 'Custom Template'}</span>
-                  <span className="last-updated">Updated {new Date(cv.updatedAt).toLocaleDateString()}</span>
+                  <span className="last-updated">Updated {new Date(cv.updatedAt).toLocaleString(language === 'Arabic' ? 'ar-EG' : 'en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
                 <div className="resume-actions">
                   <button className="action-btn edit" title="Edit" onClick={() => onEdit(cv)}>

@@ -320,7 +320,130 @@
   }
   
 }
+.saved-resumes-section {
+  width: 100%;
+  margin-top: 60px;
+  padding-top: 40px;
+  border-top: 2px dashed #f1f5f9;
+}
 
+.saved-resumes-section h2 {
+  text-align: center;
+  margin-bottom: 32px;
+  font-size: 2rem;
+  color: #1e293b;
+}
+
+.resume-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+  justify-content: center;
+  width: 100%;
+}
+
+.resume-item-card {
+  background: white;
+  border: 1px solid #f1f5f9;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.resume-item-card:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.resume-icon {
+  width: 52px;
+  height: 52px;
+  background: #f0f4ff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6366f1;
+  flex-shrink: 0;
+}
+
+.resume-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.resume-details h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.resume-details .template-name {
+  font-size: 0.85rem;
+  color: #6366f1;
+  font-weight: 600;
+}
+
+.resume-details .last-updated {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.resume-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #f1f5f9;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #64748b;
+}
+
+.action-btn:hover {
+  background: #f8fafc;
+}
+
+.action-btn.edit:hover {
+  color: #6366f1;
+  border-color: #6366f1;
+  background: #f0f4ff;
+}
+
+.action-btn.download:hover {
+  color: #10b981;
+  border-color: #10b981;
+  background: #ecfdf5;
+}
+
+.action-btn.delete:hover {
+  color: #ef4444;
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+@media (max-width: 900px) {
+  .resume-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
 .forms-header-top {
   display: flex;
   justify-content: space-between;
