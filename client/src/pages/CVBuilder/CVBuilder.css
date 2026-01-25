@@ -30,31 +30,38 @@
 
 .template-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 358px); /* Fixed width column based on 0.45 scale */
-  gap: 24px;
-  justify-content: center; /* CENTER the set of columns */
+  grid-template-columns: repeat(auto-fill, 358px); 
+  gap: 12px 24px; 
+  justify-content: center; 
   margin-bottom: 60px;
   width: 100%;
 }
 
+@media (max-width: 900px) {
+  .template-grid {
+    gap: 8px 16px; /* Even tighter gaps on tablet/mobile */
+  }
+}
+
 .template-card {
-  background: transparent;
-  border-radius: 0;
-  overflow: visible;
+  background: white; /* Ensure solid background to prevent "holes" */
+  border-radius: 12px;
+  overflow: hidden;
   box-shadow: none;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #f1f5f9; /* Soft border for definition */
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center CV and info */
+  align-items: center; 
   padding: 0;
   width: 100%;
-  margin-bottom: 24px;
 }
 
 .template-card:hover {
-  transform: translateY(-4px);
+  transform: none !important; 
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15); /* Stronger, more elegant shadow */
+  border-color: rgba(99, 102, 241, 0.3); 
 }
 
 .section-title-wrapper {
@@ -63,7 +70,7 @@
 
 .template-preview-live {
   position: relative;
-  height: 505px; /* Matched to 0.45 scale */
+  height: 460px; /* Reduced further to tighten vertical gap */
   background: transparent;
   overflow: hidden; 
   border-bottom: none;
@@ -75,15 +82,15 @@
 }
 
 .template-preview-wrapper {
-  transform: scale(0.45); /* 794px * 0.45 = 357.3px. Matches 358px column perfectly. */
+  transform: scale(0.45); 
   transform-origin: top center;
   width: 794px;
   min-width: 794px;
   height: 1123px;
   pointer-events: none;
   background: white;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
-  margin-top: 5px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
+  margin-top: 0; /* REMOVED margin to fix top corner gap */
 }
 
 .template-overlay {
@@ -109,40 +116,74 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  background: #f59e0b;
+  background: #f59e0b; /* Amber/Gold for PRO */
   color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   gap: 4px;
-  z-index: 15;
+  z-index: 5;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  animation: badgePulse 2s infinite ease-in-out;
 }
 
 .free-badge {
   position: absolute;
   top: 12px;
   right: 12px;
-  background: #10b981;
+  background: #10b981; /* Emerald for FREE */
   color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
   font-weight: 700;
-  z-index: 15;
+  z-index: 5;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+@keyframes badgePulse {
+  0% { transform: scale(1); box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+  50% { transform: scale(1.05); box-shadow: 0 6px 16px rgba(245, 158, 11, 0.5); }
+  100% { transform: scale(1); box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
 }
 
 .template-info {
-  padding: 12px;
+  padding: 14px;
   text-align: center;
-  background: white;
-  border-top: 1px solid #f1f5f9; /* The "border under the page" you requested */
+  border-top: 1px solid #f1f5f9; 
   width: 100%;
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+/* Unique subtle colors for each template label */
+.template-card:nth-child(1) .template-info {
+  background: #f0f4ff; /* Light Indigo */
+  color: #4338ca;
+}
+
+.template-card:nth-child(2) .template-info {
+  background: #f0fdf4; /* Light Green */
+  color: #15803d;
+}
+
+.template-card:nth-child(3) .template-info {
+  background: #fff7ed; /* Light Orange */
+  color: #c2410c;
+}
+
+.template-card:nth-child(4) .template-info {
+  background: #faf5ff; /* Light Purple */
+  color: #7e22ce;
+}
+
+.template-card:nth-child(5) .template-info {
+  background: #fef2f2; /* Light Red */
+  color: #b91c1c;
 }
 
 .template-info h3 {
