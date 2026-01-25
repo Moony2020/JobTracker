@@ -2,49 +2,59 @@
 
 /* Resume List Page */
 .resume-list-container {
-  padding: 0 24px 40px 24px;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 10px 4px 60px 4px !important; 
+  width: 100% !important; 
+  max-width: 1400px !important; 
+  margin: 0 auto !important; 
+  display: block; /* Use block to allow child width to behave naturally */
 }
 
-.resume-list-header {
+/* Base styles cover all sizes now, individual media query overrides removed */
+
+.list-header {
   margin-bottom: 40px;
   text-align: center;
+  width: 100%;
 }
 
-.resume-list-header h1 {
+.list-header h1 {
   font-size: 2.5rem;
   color: #1e293b;
   margin-bottom: 12px;
 }
 
-.resume-list-header p {
+.list-header p {
   color: #64748b;
   font-size: 1.1rem;
 }
 
 .template-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 32px;
+  grid-template-columns: repeat(auto-fill, 358px); /* Fixed width column based on 0.45 scale */
+  gap: 24px;
+  justify-content: center; /* CENTER the set of columns */
   margin-bottom: 60px;
+  width: 100%;
 }
 
 .template-card {
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid #e2e8f0;
+  border: none;
   display: flex;
   flex-direction: column;
+  align-items: center; /* Center CV and info */
+  padding: 0;
+  width: 100%;
+  margin-bottom: 24px;
 }
 
 .template-card:hover {
-  border-color: #3b82f6;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
 }
 
 .section-title-wrapper {
@@ -53,26 +63,27 @@
 
 .template-preview-live {
   position: relative;
-  height: 420px;
-  background: white;
-  overflow: hidden;
-  border-bottom: 1px solid #f1f5f9;
+  height: 505px; /* Matched to 0.45 scale */
+  background: transparent;
+  overflow: hidden; 
+  border-bottom: none;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-top: 0;
+  padding: 0;
+  width: 100%;
 }
 
 .template-preview-wrapper {
-  transform: scale(0.45);
+  transform: scale(0.45); /* 794px * 0.45 = 357.3px. Matches 358px column perfectly. */
   transform-origin: top center;
   width: 794px;
   min-width: 794px;
   height: 1123px;
   pointer-events: none;
   background: white;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  margin-top: 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
+  margin-top: 5px;
 }
 
 .template-overlay {
@@ -124,10 +135,14 @@
 }
 
 .template-info {
-  padding: 16px;
+  padding: 12px;
   text-align: center;
-  background: #f8fafc;
-  border-top: 1px solid #e2e8f0;
+  background: white;
+  border-top: 1px solid #f1f5f9; /* The "border under the page" you requested */
+  width: 100%;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .template-info h3 {
@@ -262,6 +277,7 @@
     transform-origin: top center !important;
     margin-top: 5px !important; /* REDUCED from 20px */
   }
+  
 }
 
 .forms-header-top {
