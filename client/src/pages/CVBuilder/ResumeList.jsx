@@ -147,7 +147,16 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
     }
   };
 
-  if (loading) return <div className="cv-loading">Loading CV Builder...</div>;
+  if (loading) {
+    return (
+      <div className="cv-loading-container">
+        <div className="cv-loading-spinner"></div>
+        <p className="cv-loading-text">
+          {language === 'Arabic' ? 'جاري تحميل منشئ السيرة الذاتية...' : 'Loading CV Builder...'}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="resume-list-container">
