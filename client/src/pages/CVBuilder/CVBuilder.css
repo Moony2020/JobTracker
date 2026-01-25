@@ -74,61 +74,6 @@
   width: 100%;
 }
 
-@media (max-width: 992px) {
-  .template-grid {
-    grid-template-columns: repeat(2, 340px); /* Slightly bigger as requested */
-  }
-}
-
-@media (max-width: 768px) {
-  .template-grid {
-    grid-template-columns: repeat(2, 300px);
-  }
-}
-
-@media (max-width: 650px) {
-  .template-grid {
-    grid-template-columns: 1fr;
-    max-width: 340px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
-@media (max-width: 420px) {
-.template-grid {
-    max-width: none !important; /* REMOVE max-width restriction */
-    width: 100% !important; /* Take full width of container */
-  }
-  
-  
-  /* Optionally make cards slightly narrower to fit better */
-  .template-card {
-    width: 100%; /* Cards take full grid cell width */
-    max-width: 100%;
-  }
-  
-  /* Keep original scaling for the preview */
-  .template-preview-wrapper {
-    transform: scale(0.6) !important; /* Keep original scale */
-  }
-  
-  .template-preview-live {
-    height: 340px !important; /* Keep original height */
-  }
-  /* Slightly reduce the scale to ensure content fits */
-
-  
-
-}
-/* Even smaller screens for more aggressive padding reduction */
-@media (max-width: 380px) {
-  .resume-list-container {
-    padding-left: 8px !important; /* Even less padding */
-    padding-right: 8px !important;
-  }
-}
-
 .template-card {
   background: white;
   border-radius: 12px;
@@ -148,7 +93,7 @@
 
 /* Spacing below "Available Templates" */
 .section-title-wrapper {
-  margin-bottom: 24px; /* Added spacing below title */
+  margin-bottom: 24px;
 }
 
 /* Template Preview in List */
@@ -163,32 +108,8 @@
   align-items: flex-start !important;
 }
 
-@media (max-width: 992px) {
-  .template-preview-live {
-    height: 410px; /* Taller for 340px width */
-  }
-}
-
-@media (max-width: 768px) {
-  .template-preview-live {
-    height: 360px;
-  }
-}
-
-@media (max-width: 650px) {
-  .template-preview-live {
-    height: 410px;
-  }
-}
-
-@media (max-width: 420px) {
-  .template-preview-live {
-    height: 360px;
-  }
-}
-
 .template-preview-wrapper {
-  transform: scale(0.38) !important; /* Slightly overflow 300px to remove gaps */
+  transform: scale(0.38) !important;
   transform-origin: top center !important;
   width: 794px !important;
   min-width: 794px !important;
@@ -198,29 +119,6 @@
   margin-top: 0;
 }
 
-@media (max-width: 992px) {
-  .template-preview-wrapper {
-    transform: scale(0.43) !important; /* Slightly overflow 340px */
-  }
-}
-
-@media (max-width: 768px) {
-  .template-preview-wrapper {
-    transform: scale(0.38) !important;
-  }
-}
-
-@media (max-width: 650px) {
-  .template-preview-wrapper {
-    transform: scale(0.43) !important;
-  }
-}
-
-@media (max-width: 420px) {
-  .template-preview-wrapper {
-    transform: scale(0.38) !important;
-  }
-}
 
 
 /* Overlay and Badge for List */
@@ -374,59 +272,6 @@
   padding: 20px; /* Reduced padding */
 }
 
-/* Responsive: Stack layout on smaller screens */
-@media (max-width: 992px) {
-  .cv-editor-design {
-    height: 100vh !important; /* Fixed height for the screen */
-    overflow-y: auto !important; /* Allow the root container to scroll */
-    position: fixed;
-    scroll-behavior: smooth;
-  }
-
-  .editor-main-split {
-    flex-direction: column;
-    height: auto;
-    min-height: 100%;
-    overflow: visible !important;
-  }
-  
-  .editor-sidebar-forms,
-  .mode-content .editor-sidebar-forms {
-    flex: none;
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: 100%;
-    border-right: none;
-    height: auto;
-    overflow: visible !important; /* Let parent scroll */
-  }
-  
-  .editor-preview-pane {
-    flex: none;
-    width: 100% !important;
-    height: auto;
-    min-height: auto;
-    overflow: visible !important; /* Let parent scroll */
-    background: #cbd5e1;
-    padding-bottom: 50px;
-  }
-
-  .preview-scroll-area {
-    height: auto;
-    min-height: auto;
-    overflow: visible !important;
-    justify-content: flex-start !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    padding: 2px 0 10px 0 !important; /* Just 2px top padding */
-  }
-
-  .preview-scaler {
-    transform-origin: top center !important;
-    margin-top: 20px;
-  }
-}
 
 .forms-header-top {
   display: flex;
@@ -749,56 +594,12 @@
 }
 
 /* Keep same size for all desktop and tablet views */
-@media (max-width: 1600px) { 
-  .preview-scaler { 
-    transform: scale(0.55); 
-    height: 584px; 
-  } 
-}
 
-@media (max-width: 1400px) { 
-  .preview-scaler { 
-    transform: scale(0.52); 
-    height: 584px; 
-  } 
-}
 
-@media (max-width: 1200px) { 
-  .preview-scaler { 
-    transform: scale(0.52); 
-    height: 584px;
-  } 
-}
 
-/* Breakpoint 992px: Switches to stacked. Resume gets full container width */
-@media (max-width: 992px) { 
-  .preview-scaler { 
-    transform: scale(0.65); 
-    height: 730px;
-    margin-top: 20px;
-  } 
-}
 
-@media (max-width: 800px) { 
-  .preview-scaler { 
-    transform: scale(0.55); 
-    height: 618px; 
-  } 
-}
 
-@media (max-width: 600px) { 
-  .preview-scaler { 
-    transform: scale(0.45); 
-    height: 506px; 
-  } 
-}
 
-@media (max-width: 450px) { 
-  .preview-scaler { 
-    transform: scale(0.35); 
-    height: 394px; 
-  } 
-}
 
 .resume-paper-canvas {
   width: 806px !important; /* Internal A4 size remains constant */
@@ -1128,12 +929,6 @@
     padding: 0 !important;
 }
 
-@media (max-width: 992px) {
-    .form-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-}
 
 .section-content-inner {
     padding: 20px 24px; /* Tighter padding for wider inputs */
@@ -1538,86 +1333,6 @@
 }
 
 /* ========================================= */
-/* MOBILE RESPONSIVENESS FIXES (< 620px) */
-/* ========================================= */
-@media (max-width: 620px) {
-
-  /* 1. Stack Form Inputs (Name, Phone, etc.) */
-  .form-grid {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 16px !important;
-  }
-  
-  .form-group {
-    width: 100% !important;
-    grid-column: span 1 !important;
-  }
-
-  /* 2. Fix Horizontal Overflow / Right Gap */
-  .cv-editor-design, 
-  .editor-main-split,
-  .editor-sidebar-forms {
-    width: 100vw !important;
-    max-width: 100vw !important;
-    overflow-x: hidden !important;
-    box-sizing: border-box;
-  }
-
-  .editor-sidebar-forms {
-     padding: 20px 16px !important; /* Reduced padding */
-  }
-
-  /* 3. Header Adjustments */
-  .editor-global-header {
-    height: auto !important;
-    padding: 12px 16px !important;
-    flex-direction: column !important;
-    gap: 12px !important;
-    align-items: stretch !important;
-  }
-
-  .editor-global-header .header-left {
-    justify-content: space-between;
-    width: 100%;
-  }
-
-  .editor-global-header .header-right {
-    width: 100%;
-    justify-content: space-between; /* Spread buttons */
-    gap: 10px;
-  }
-
-  .cv-title-display {
-     flex: 1;
-     max-width: 200px;
-  }
-  
-  .title-edit-input {
-    width: 100% !important;
-    font-size: 1rem !important;
-  }
-
-  /* Move "Design" & "PDF" buttons to second row (already done by flex-direction: column) */
-  .template-toggle-btn-top,
-  .download-btn-red {
-    flex: 1 !important;
-    justify-content: center !important;
-    padding: 10px !important;
-    font-size: 0.85rem !important;
-  }
-  
-  .template-toggle-btn-top span,
-  .download-btn-red span {
-     white-space: nowrap;
-  }
-
-  /* 4. Fix Category Grid (Add Section) */
-  .category-grid {
-    grid-template-columns: 1fr !important; /* Stack add buttons */
-  }
-
-}
 
 
 /* ROBUST OVERRIDES FOR FORM GRID LAYOUT */
@@ -1644,19 +1359,6 @@
     width: 100% !important;
 }
 
-/* Mobile Stack Enforcement (< 650px) */
-@media (max-width: 650px) {
-    .cv-editor-design .form-grid {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 12px !important;
-    }
-    
-    .cv-editor-design .form-grid .form-group {
-        width: 100% !important;
-        max-width: 100% !important;
-    }
-}
 
 .saved-resumes-section {
   width: 100%;
@@ -1776,9 +1478,125 @@
   background: #fef2f2;
 }
 
-@media (max-width: 900px) {
-  .resume-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+/* ========================================= */
+/* GRAND CONSOLIDATED RESPONSIVE OVERRIDES   */
+/* (Sorted Descending & Grouped for Quality) */
+/* ========================================= */
+
+@media (max-width: 1600px) { .preview-scaler { transform: scale(0.55); height: 584px; } }
+@media (max-width: 1400px) { .preview-scaler { transform: scale(0.52); height: 584px; } }
+@media (max-width: 1200px) { .preview-scaler { transform: scale(0.52); height: 584px; } }
+
+@media (max-width: 992px) {
+  /* Template Grid */
+  .template-grid { grid-template-columns: repeat(2, 340px); }
+  .template-preview-live { height: 410px; }
+  .template-preview-wrapper { transform: scale(0.43) !important; }
+  
+  /* CV Editor Layout (Fluid stack instead of fixed overlay) */
+  .cv-editor-design { 
+    height: auto !important; 
+    min-height: 100vh;
+    overflow-y: visible !important; 
+    position: relative !important; 
+    scroll-behavior: smooth; 
+  }
+  .editor-main-split { 
+    display: flex !important;
+    flex-direction: column !important; 
+    height: auto !important; 
+    min-height: 100%; 
+    overflow: visible !important; 
+  }
+  .editor-sidebar-forms { 
+    flex: none !important; 
+    width: 100% !important; 
+    min-width: 0 !important; 
+    max-width: 100% !important; 
+    border-right: none; 
+    height: auto !important; 
+    overflow: visible !important; 
+    padding: 30px 20px !important;
+  }
+  .editor-preview-pane { 
+    flex: none !important; 
+    width: 100% !important; 
+    height: auto !important; 
+    min-height: auto !important; 
+    overflow: visible !important; 
+    background: #cbd5e1; 
+    padding-bottom: 80px !important; 
+  }
+  .preview-scroll-area { 
+    height: auto !important; 
+    min-height: auto !important; 
+    overflow: visible !important; 
+    justify-content: flex-start !important; 
+    display: flex !important; 
+    flex-direction: column !important; 
+    align-items: center !important; 
+    padding: 20px 0 !important; 
+  }
+  .preview-scaler { 
+    transform-origin: top center !important; 
+    margin-top: 20px; 
+    transform: scale(0.6) !important; 
+    height: 680px !important; 
   }
 }
+
+@media (max-width: 900px) {
+  .resume-grid { grid-template-columns: 1fr; gap: 16px; }
+}
+
+@media (max-width: 850px) {
+  .preview-scaler { transform: scale(0.55) !important; height: 620px !important; }
+}
+
+@media (max-width: 800px) { .preview-scaler { transform: scale(0.55); height: 618px; } }
+
+@media (max-width: 786px) {
+  /* FORM STACKING (Critical User Request: Only < 786px) */
+  .cv-editor-design .form-grid { display: flex !important; flex-direction: column !important; gap: 12px !important; }
+  .cv-editor-design .form-grid .form-group { width: 100% !important; max-width: 100% !important; }
+  
+  /* Template Logic for Narrow Tablets */
+  .template-grid { grid-template-columns: repeat(2, 300px); }
+  .template-preview-live { height: 360px; }
+  .template-preview-wrapper { transform: scale(0.38) !important; }
+  .preview-scaler { transform: scale(0.5) !important; height: 565px !important; }
+}
+
+@media (max-width: 650px) {
+  .template-grid { grid-template-columns: 1fr; max-width: 340px; margin-left: auto; margin-right: auto; }
+  .template-preview-live { height: 410px; }
+  .template-preview-wrapper { transform: scale(0.43) !important; }
+}
+
+@media (max-width: 620px) {
+  /* Fix Horizontal Overflow / Right Gap */
+  .cv-editor-design, .editor-main-split, .editor-sidebar-forms { width: 100vw !important; max-width: 100vw !important; overflow-x: hidden !important; box-sizing: border-box; }
+  .editor-sidebar-forms { padding: 20px 16px !important; }
+  .editor-global-header { height: auto !important; padding: 12px 16px !important; flex-direction: column !important; gap: 12px !important; align-items: stretch !important; }
+  .editor-global-header .header-left { justify-content: space-between; width: 100%; }
+  .editor-global-header .header-right { width: 100%; justify-content: space-between; gap: 10px; }
+  .cv-title-display { flex: 1; max-width: 200px; }
+  .title-edit-input { width: 100% !important; font-size: 1rem !important; }
+  .template-toggle-btn-top, .download-btn-red { flex: 1 !important; justify-content: center !important; padding: 10px !important; font-size: 0.85rem !important; }
+  .category-grid { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 600px) { .preview-scaler { transform: scale(0.45); height: 506px; } }
+@media (max-width: 550px) { .preview-scaler { transform: scale(0.42) !important; height: 475px !important; } }
+@media (max-width: 480px) { .preview-scaler { transform: scale(0.38) !important; height: 430px !important; } }
+@media (max-width: 450px) { .preview-scaler { transform: scale(0.35); height: 394px; } }
+
+@media (max-width: 420px) {
+  .template-grid { max-width: none !important; width: 100% !important; }
+  .template-card { width: 100%; max-width: 100%; }
+  .template-preview-live { height: 340px !important; }
+  .template-preview-wrapper { transform: scale(0.6) !important; }
+  .preview-scaler { transform: scale(0.34) !important; height: 385px !important; }
+}
+
+@media (max-width: 380px) { .resume-list-container { padding-left: 8px !important; padding-right: 8px !important; } }
