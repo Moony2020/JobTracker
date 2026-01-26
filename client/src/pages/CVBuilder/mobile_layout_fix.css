@@ -1,0 +1,37 @@
+
+/* 
+   MOBILE DRAWER FIX:
+   When in 'design' mode on mobile (<768px), we must:
+   1. HIDE the sidebar-forms completely so they don't take up space.
+   2. SHOW the preview pane full width/height.
+   3. Allow the drawer to simply overlay on top.
+*/
+
+@media (max-width: 768px) {
+  /* HIDE Sidebar when in Design Mode (Drawer is open) */
+  .cv-editor-design.mode-design .editor-sidebar-forms {
+     display: none !important;
+  }
+
+  /* FORCE Preview to be visible and full width in Design Mode */
+  .cv-editor-design.mode-design .editor-main-split {
+      display: flex !important;
+      height: 100% !important;
+      flex-direction: column !important;
+  }
+  
+  .cv-editor-design.mode-design .editor-preview-pane {
+     display: block !important;
+     width: 100% !important;
+     flex: 1 !important;
+     height: auto !important;
+     padding-bottom: 300px !important; /* Extra padding so content isn't hidden behind drawer */
+  }
+
+  /* Fix the preview scaler so it doesn't shrink to 0 */
+  .cv-editor-design.mode-design .preview-scaler {
+      display: flex !important;
+      justify-content: center;
+      /* Keep the transforms defined in other media queries active, just ensure visibility */
+  }
+}

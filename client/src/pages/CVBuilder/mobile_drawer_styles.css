@@ -1,0 +1,157 @@
+/* MOBILE DRAWER STYLES */
+.mobile-design-drawer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #1e293b;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  z-index: 2000;
+  transform: translateY(105%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+  color: white;
+}
+
+.mobile-design-drawer.open {
+  transform: translateY(0);
+}
+
+.drawer-header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 1px solid #334155;
+  color: #94a3b8;
+}
+
+.drawer-header:hover {
+  color: white;
+}
+
+.drawer-content {
+  padding: 24px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.drawer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-bottom: 1px dashed #334155;
+  padding-bottom: 24px;
+}
+
+.drawer-section.no-border {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.drawer-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.drawer-label-row label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+/* Range Input styling */
+.drawer-range-input {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: #475569;
+    border-radius: 2px;
+    outline: none;
+}
+.drawer-range-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #6366f1;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid #1e293b;
+}
+
+/* Color Row */
+.drawer-color-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: nowrap; /* No wrapping in drawer */
+  overflow-x: auto; /* Allow scroll if needed on tiny screens */
+  padding-bottom: 4px;
+}
+
+/* Template Horizontal List */
+.drawer-template-list {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 4px 4px 20px 4px;
+  scroll-snap-type: x mandatory;
+}
+
+.drawer-tpl-card {
+  flex: 0 0 140px; /* Fixed width for cards */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  scroll-snap-align: start;
+}
+
+.drawer-tpl-thumb {
+  width: 100%;
+  aspect-ratio: 210/297;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.drawer-tpl-card.active .drawer-tpl-thumb {
+  border-color: #ef4444;
+}
+
+.drawer-tpl-name {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  text-align: center;
+}
+
+/* Hide drawer on desktop */
+@media (min-width: 769px) {
+  .mobile-design-drawer {
+    display: none !important;
+  }
+}
+
+/* Mobile Specific Details */
+@media (max-width: 768px) {
+  /* HIDE the sidebar form when in design mode, because we show the drawer instead */
+  .cv-editor-design.mode-design .editor-sidebar-forms {
+     display: none !important;
+  }
+}
