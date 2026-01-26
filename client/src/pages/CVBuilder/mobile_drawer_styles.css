@@ -234,11 +234,15 @@
 }
 
 .drawer-preview-scaler > div {
-  transform: scale(0.202); /* Adjusted to fit exactly 160px (160/794) */
-  transform-origin: top left;
+  transform: scale(0.202) !important;
+  transform-origin: top left !important;
   width: 210mm !important;
   height: 297mm !important;
-  pointer-events: none;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: white !important;
+  pointer-events: none !important;
+  display: block !important;
 }
 
 /* Mobile Specific Details */
