@@ -106,45 +106,39 @@
 /* Template Horizontal List */
 .drawer-template-list {
   display: flex;
-  gap: 20px;
+  gap: 12px;
   overflow-x: auto;
-  padding: 15px 0 25px 0;
+  padding: 10px 0 5px 0;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
 }
 
 .drawer-tpl-card {
-  flex: 0 0 160px !important;
-  min-width: 160px !important;
-  max-width: 160px !important;
+  flex: 0 0 180px !important;
+  min-width: 180px !important;
+  max-width: 180px !important;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   cursor: pointer;
   scroll-snap-align: start;
 }
 
 .drawer-tpl-thumb {
   width: 100%;
-  height: 226px; /* 160 * (297/210) */
-  background: white;
-  border-radius: 8px;
+  height: 254px; /* 180 * (297/210) */
+  background: transparent !important;
+  border-radius: 4px;
   overflow: hidden;
   position: relative;
-  border: 4px solid #334155;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  transition: all 0.25s ease;
+  border: none !important; /* No border for inactive */
 }
 
 .drawer-tpl-card.active .drawer-tpl-thumb {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25);
+  border: 4px solid #ff4d4d !important; /* Thick red border */
+  box-shadow: 0 0 20px rgba(255, 77, 77, 0.3);
 }
-
-.drawer-tpl-card:hover .drawer-tpl-thumb {
-  border-color: #475569;
-}
-
 
 .drawer-tpl-name {
   font-size: 0.85rem;
@@ -228,14 +222,14 @@
 .drawer-preview-scaler {
   width: 100%;
   height: 100%;
-  display: block !important;
-  overflow: hidden !important;
-  background: white !important;
+  display: block;
+  overflow: hidden;
   position: relative;
+  background: transparent !important;
 }
 
 .drawer-preview-scaler > div {
-  transform: scale(0.191) !important;
+  transform: scale(0.2268) !important;
   transform-origin: 0 0 !important;
   width: 210mm !important;
   height: 297mm !important;
