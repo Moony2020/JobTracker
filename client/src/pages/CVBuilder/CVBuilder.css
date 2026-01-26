@@ -1696,3 +1696,19 @@
 }
 
 @media (max-width: 380px) { .resume-list-container { padding-left: 8px !important; padding-right: 8px !important; } }
+
+/* Responsive Utility Classes */
+@media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+  
+  .show-on-mobile-inline {
+    display: inline !important;
+  }
+  
+  /* Hide desktop template toggle button on mobile */
+  .template-toggle-btn-top {
+    display: none !important;
+  }
+}

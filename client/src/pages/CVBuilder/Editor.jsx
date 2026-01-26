@@ -4,10 +4,12 @@ import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
 import RichTextEditor from '../../components/RichTextEditor';
 import { 
   Bold, Italic, Underline, Link as LinkIcon, List, AlignLeft, AlignCenter, AlignRight,
-  CheckCircle, Trash2, Plus, ChevronUp, ChevronDown, Layout, X, ChevronLeft, Download,
+  CheckCircle, Trash2, Plus, Minus, ChevronUp, ChevronDown, Layout, X, ChevronLeft, Download,
   User, Briefcase, GraduationCap, Globe, Code, Heart, Type, ArrowLeft, Palette, Save, Eye, FileText, HelpCircle, Check, Camera, Upload
 } from 'lucide-react';
 import './CVBuilder.css';
+import './mobile_drawer_styles.css';
+import './mobile_layout_fix.css';
 import api from '../../services/api';
 
 const SAMPLE_DATA = {
@@ -35,7 +37,10 @@ const SAMPLE_DATA = {
 const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
   const [activeCvId, setActiveCvId] = useState(propCvId);
   const [loading, setLoading] = useState(activeCvId ? true : false);
-  const [viewMode, setViewMode] = useState('content'); // 'content' or 'design'
+  const [viewMode, setViewMode] = useState(() => {
+    // Lazy initializer - runs once before first render
+    return 'content'; // Always start with drawer closed
+  });
   const [cvData, setCvData] = useState({
     title: 'Untitled CV',
     data: {
@@ -145,7 +150,16 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
       }
     };
     init();
-  }, [propCvId, activeCvId]);  const handlePhotoUpload = (e) => {
+  }, [propCvId, activeCvId]);
+  
+  // Force drawer closed ONLY on initial mount if on mobile
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+      setViewMode('content');
+    }
+  }, []); 
+
+  const handlePhotoUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
@@ -1103,6 +1117,112 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
         itemType="category"
         message={`Are you sure you want to delete this ${deleteModal.title}?`}
       />
+      
+      {/* MOBILE DESIGN DRAWER */}
+      <div className={`mobile-design-drawer ${viewMode === 'design' ? 'open' : ''}`}>
+        <div className="drawer-header" onClick={() => setViewMode('content')}>
+          <ChevronDown size={22} />
+          <span>Templates</span>
+        </div>
+        
+        <div className="drawer-content">
+           {/* 1. Spacing */}
+           <div className="drawer-section">
+              <div className="drawer-label-row">
+                 <label>Line Spacing ({cvData.settings.lineSpacing}%)</label>
+                 <div className="compact-spacing-controls">
+                    <button 
+                      onClick={() => updateNestedState('settings.lineSpacing', Math.max(80, cvData.settings.lineSpacing - 10))}
+                      className="spacing-btn"
+                    >
+                      <Minus size={18} />
+                    </button>
+                    <Type size={20} color="#94a3b8" />
+                    <button 
+                      onClick={() => updateNestedState('settings.lineSpacing', Math.min(200, cvData.settings.lineSpacing + 10))}
+                      className="spacing-btn"
+                    >
+                      <Plus size={18} />
+                    </button>
+                 </div>
+              </div>
+           </div>
+
+           {/* 2. Colors */}
+           <div className="drawer-section">
+             <div className="drawer-label-row">
+               <label>Accent Color</label>
+             </div>
+             <div className="drawer-color-row">
+                {PRESET_COLORS.map(color => (
+                   <button
+                     key={color}
+                     className={`color-circle-mini ${cvData.settings.themeColor === color ? 'active' : ''}`}
+                     style={{backgroundColor: color}}
+                     onClick={() => updateNestedState('settings.themeColor', color)}
+                   >
+                      {cvData.settings.themeColor === color && <Check size={14} color="white" />}
+                   </button>
+                ))}
+                <div className="custom-picker-sidebar">
+                  <input 
+                    type="color" 
+                    value={cvData.settings.themeColor}
+                    onChange={(e) => updateNestedState('settings.themeColor', e.target.value)}
+                    style={{opacity: 0, position: 'absolute', width: '100%', height: '100%', cursor: 'pointer'}}
+                  />
+                  <Palette size={14} color="#64748b" />
+                </div>
+             </div>
+           </div>
+
+           {/* 3. Templates (Horizontal Scroll) */}
+           <div className="drawer-section no-border">
+             <div className="drawer-label-row">
+                <label>Select Template</label>
+             </div>
+             <div className="drawer-template-list">
+                {availableTemplates.map(tpl => (
+                   <div 
+                      key={tpl._id} 
+                      className={`drawer-tpl-card ${cvData.templateKey === tpl.key ? 'active' : ''}`}
+                      onClick={() => updateNestedState('templateKey', tpl.key)}
+                   >
+                      <div className="drawer-tpl-thumb">
+                          <div className="drawer-preview-scaler">
+                              <TemplateRenderer 
+                                templateKey={tpl.key}
+                                data={SAMPLE_DATA}
+                                settings={cvData.settings}
+                              />
+                          </div>
+                          {cvData.templateKey === tpl.key && (
+                            <div className="tpl-active-overlay">
+                              <div className="active-check-badge">
+                                <Check size={16} strokeWidth={3} />
+                              </div>
+                            </div>
+                          )}
+                      </div>
+                      <span className="drawer-tpl-name">{tpl.name}</span>
+                   </div>
+                ))}
+             </div>
+           </div>
+        </div>
+      </div>
+
+      {/* MOBILE FLOATING BUTTON */}
+      {viewMode === 'content' && (
+        <button 
+          className="mobile-floating-templates-btn"
+          onClick={() => setViewMode('design')}
+        >
+          <ChevronUp size={18} />
+          <span>Templates</span>
+        </button>
+      )}
+
     </div>
   );
 };
