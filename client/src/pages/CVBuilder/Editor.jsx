@@ -38,9 +38,46 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
   const [activeCvId, setActiveCvId] = useState(propCvId);
   const [loading, setLoading] = useState(activeCvId ? true : false);
   const [viewMode, setViewMode] = useState(() => {
-    // Lazy initializer - runs once before first render
-    return 'content'; // Always start with drawer closed
+    const savedMode = localStorage.getItem('cv_editor_view_mode');
+    if (savedMode) return savedMode;
+    return 'content';
   });
+
+  // Track viewport state for smooth transitions
+  const prevWidthRef = React.useRef(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const lastDesktopModeRef = React.useRef(viewMode);
+
+  useEffect(() => {
+    localStorage.setItem('cv_editor_view_mode', viewMode);
+    // Update the ref whenever viewMode changes while on desktop
+    if (window.innerWidth > 768) {
+      lastDesktopModeRef.current = viewMode;
+    }
+  }, [viewMode]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const currentWidth = window.innerWidth;
+      const wasDesktop = prevWidthRef.current > 768;
+      const isMobile = currentWidth <= 768;
+
+      if (wasDesktop && isMobile) {
+        // Desktop -> Mobile: Close drawer by default so user sees CV
+        // Save current desktop mode first
+        lastDesktopModeRef.current = viewMode; 
+        setViewMode('content');
+      } else if (!wasDesktop && !isMobile) {
+        // Mobile -> Desktop: Restore the desktop view they were using
+        setViewMode(lastDesktopModeRef.current);
+      }
+      
+      prevWidthRef.current = currentWidth;
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [viewMode]); 
+
   const [cvData, setCvData] = useState({
     title: 'Untitled CV',
     data: {
@@ -152,12 +189,6 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
     init();
   }, [propCvId, activeCvId]);
   
-  // Force drawer closed ONLY on initial mount if on mobile
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-      setViewMode('content');
-    }
-  }, []); 
 
   const handlePhotoUpload = (e) => {
     const file = e.target.files[0];
