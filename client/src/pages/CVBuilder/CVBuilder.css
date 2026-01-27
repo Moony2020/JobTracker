@@ -938,7 +938,7 @@
     padding: 0 30px 40px 30px; /* Default top padding zero for mobile stack */
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Reduced gap from 32px to 20px for more compact look */
+    gap: 16px; /* Further reduced from 20px to 16px as requested */
 }
 
 @media (min-width: 993px) {
@@ -1185,7 +1185,7 @@
 /* Sticky Bottom Bar for Sidebar Content Mode */
 .editor-footer-info {
   margin-top: auto;
-  padding: 20px 0;
+  padding: 20px 30px; /* Pushed right to align with sidebar content */
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1201,7 +1201,7 @@
 }
 
 .design-group-sidebar label {
-    font-size: 0.85rem;
+    font-size: 0.75rem; /* Smaller labels for cleaner hierarchy */
     font-weight: 600;
     color: #94a3b8;
     text-transform: uppercase;
@@ -1217,6 +1217,49 @@
     border-radius: 2px;
     outline: none;
     margin-top: 10px;
+}
+
+/* Wrapper for precise arrow control */
+.font-select-wrapper-sidebar {
+  position: relative;
+  width: fit-content;
+  align-self: flex-start !important;
+  margin-top: 8px;
+}
+
+.font-select-sidebar {
+  width: 220px !important;
+  max-width: 100% !important;
+  padding: 6px 35px 6px 12px; /* Extra padding for the absolute icon */
+  background: #334155;
+  border: 1px solid #475569;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.85rem;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: all 0.2s;
+  display: block;
+}
+
+.select-arrow-sidebar {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none; /* Crucial: clicks go through to the select */
+}
+
+.font-select-sidebar:hover {
+  border-color: #6366f1;
+}
+
+.font-select-sidebar:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
 
 .design-group-sidebar input[type="range"]::-webkit-slider-thumb {
@@ -1247,7 +1290,7 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px; /* Reduced from 12px */
-    padding-bottom: 40px;
+    padding-bottom: 10px; /* Reduced from 40px to pull footer closer */
     width: 100%;
 }
 

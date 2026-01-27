@@ -1066,16 +1066,19 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                   <div className="design-label-row">
                     <label>Typography</label>
                   </div>
-                  <select 
-                     className="font-select-sidebar"
-                     value={cvData.settings.font}
-                     onChange={(e) => updateNestedState('settings.font', e.target.value)}
-                  >
-                     <option value="Inter">Inter (clean)</option>
-                     <option value="Roboto">Roboto (Modern)</option>
-                     <option value="Merriweather">Merriweather (Serif)</option>
-                     <option value="Poppins">Poppins (Geometric)</option>
-                  </select>
+                  <div className="font-select-wrapper-sidebar">
+                    <select 
+                       className="font-select-sidebar"
+                       value={cvData.settings.font}
+                       onChange={(e) => updateNestedState('settings.font', e.target.value)}
+                    >
+                       <option value="Inter">Inter (clean)</option>
+                       <option value="Roboto">Roboto (Modern)</option>
+                       <option value="Merriweather">Merriweather (Serif)</option>
+                       <option value="Poppins">Poppins (Geometric)</option>
+                    </select>
+                    <ChevronDown className="select-arrow-sidebar" size={14} />
+                  </div>
                 </div>
 
                 {/* 4. Templates */}
