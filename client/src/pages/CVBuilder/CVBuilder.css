@@ -119,8 +119,6 @@
   margin-top: 0;
 }
 
-
-
 /* Overlay and Badge for List */
 .template-overlay {
   position: absolute;
@@ -328,7 +326,7 @@
   flex: 0 0 450px !important;
   min-width: 450px !important;
   max-width: 450px !important;
-  padding: 12px 15px; /* Restored original padding */
+  padding: 12px 15px;
   flex-shrink: 0 !important;
 }
 
@@ -1649,17 +1647,19 @@
     flex-direction: column !important;
   }
 
-  .preview-scroll-area {
-    flex: 1 !important;
-    overflow-y: auto !important;
-    padding: 20px 0 !important; /* SAFETY PADDING: Prevent cutting */
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    scrollbar-width: none;
-    background: #cbd5e1 !important; /* RESTORED SILVER BACKGROUND */
-  }
+/* Remove all extra padding/margin that hides CV */
+.preview-scroll-area {
+  flex: 1;
+  overflow: visible !important; /* CHANGED: Don't hide overflow */
+  background: #cbd5e1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 !important; /* CHANGED: Remove ALL padding */
+  min-height: 0;
+}
 
   .preview-scaler {
     margin: 0 auto !important; 
