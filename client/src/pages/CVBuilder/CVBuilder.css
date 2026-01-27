@@ -644,16 +644,16 @@
 
 
 
-/* Scaling container - Perfectly Calibrated Visibility */
+/* Scaling container - Perfectly Calibrated per User Fixes */
 .preview-scaler {
-  margin: 0 auto !important; 
+  margin: -16px auto 0 auto !important; /* LOWERED BY 4PX */
   transform-origin: top center !important; 
   transition: all 0.3s ease;
   flex-shrink: 0;
   display: block !important;
-  transform: scale(0.54) !important; /* CALIBRATED: Slightly bigger than 0.48 */
-  height: 606px !important;  /* 1123 * 0.54 */
-  width: 435px !important;   /* 806 * 0.54 */
+  transform: scale(0.52) !important; /* CALIBRATED: Wide but compact height */
+  height: 584px !important;  /* 1123 * 0.52 */
+  width: 419px !important;   /* 806 * 0.52 */
   position: relative;
   overflow: visible !important; 
 }
@@ -1662,11 +1662,11 @@
 }
 
   .preview-scaler {
-    margin: 0 auto !important; 
+    margin: -16px auto 0 auto !important; /* LOWERED BY 4PX */
     transform-origin: top center !important;
-    transform: scale(0.54) !important;
-    height: 606px !important; 
-    width: 435px !important; 
+    transform: scale(0.52) !important; 
+    height: 584px !important; 
+    width: 419px !important; 
     position: relative;
     flex-shrink: 0;
   }
@@ -1711,7 +1711,7 @@
     transform: scale(0.52) !important; 
     height: 584px !important;
     width: 419px !important; 
-    margin: -25px auto 0 auto !important; 
+    margin: -11px auto 0 auto !important; /* PUSHED UP BY 3PX FOR TABLET */
   }
 
   /* Compact Spacing Controls for Tablet */
@@ -1774,7 +1774,9 @@
     flex-direction: column !important;
     align-items: center !important;
     justify-content: flex-start !important;
-  }
+    overflow: visible !important; /* CHANGED: Don't hide overflow */
+}
+
   .preview-scaler {
     margin: -20px auto 0 auto !important; /* PINNED HIGHER */
     transform-origin: top center !important;
