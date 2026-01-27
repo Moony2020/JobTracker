@@ -1768,7 +1768,6 @@
   .preview-scroll-area {
     width: 100% !important;
     height: auto !important;
-    overflow-y: auto !important; /* RE-ENABLED SCROLLING */
     padding: 0 !important;       /* PIN TO TOP HEADER */
     display: flex !important;
     flex-direction: column !important;
