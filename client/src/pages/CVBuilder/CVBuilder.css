@@ -67,7 +67,7 @@
 
 .template-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 302px); /* Fixed width matching scaled CV */
+  grid-template-columns: repeat(auto-fill, 302px); /* Matches scale(0.38) * 794px */
   gap: 20px;
   width: 100%;
   justify-content: center;
@@ -83,8 +83,7 @@
   border: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
-  max-width: 302px; /* Lock to scaled CV width to remove side gaps */
-  margin: 0 auto;
+  width: 302px; /* Exact match for preview */
 }
 
 .template-card:hover {
@@ -936,10 +935,16 @@
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden; /* Prevent horizontal scroll */
-    padding: 0 30px 40px 30px;
+    padding: 0 30px 40px 30px; /* Default top padding zero for mobile stack */
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 20px; /* Reduced gap from 32px to 20px for more compact look */
+}
+
+@media (min-width: 993px) {
+  .design-sections-scrollable {
+    padding-top: 30px; /* Top padding ONLY for desktop as requested */
+  }
 }
 
 .design-sections-scrollable::-webkit-scrollbar {
@@ -1084,8 +1089,8 @@
 
 /* Active Overlays for Templates & Colors */
 .tpl-thumb-sidebar {
-  width: 100%;
-  height: 265px; /* Proportional for 0.23 scale */
+  width: 185px; /* Exact match */
+  height: 258px; /* Proportional */
   background: white;
   border-radius: 6px;
   overflow: hidden;
@@ -1545,10 +1550,11 @@
 @media (max-width: 1200px) { .preview-scaler { transform: scale(0.52); height: 584px; } }
 
 @media (max-width: 992px) {
-  /* Template Grid */
-  .template-grid { grid-template-columns: repeat(2, 340px); }
-  .template-preview-live { height: 410px; }
-  .template-preview-wrapper { transform: scale(0.43) !important; }
+  /* Template Grid - Synced with scale(0.4) */
+  .template-grid { grid-template-columns: repeat(auto-fill, 318px); }
+  .template-card { width: 318px; }
+  .template-preview-live { height: 380px; }
+  .template-preview-wrapper { transform: scale(0.4) !important; }
   
   /* CV Editor Layout (Fluid stack instead of fixed overlay) */
   .cv-editor-design { 
@@ -1573,7 +1579,7 @@
     border-right: none; 
     height: auto !important; 
     overflow: visible !important; 
-    padding: 30px 20px !important;
+    padding: 30px 20px !important; /* Reverted to original horizontal 20px */
   }
   .editor-preview-pane { 
     flex: none !important; 
@@ -1617,15 +1623,22 @@
   .cv-editor-design .form-grid { display: flex !important; flex-direction: column !important; gap: 12px !important; }
   .cv-editor-design .form-grid .form-group { width: 100% !important; max-width: 100% !important; }
   
-  /* Template Logic for Narrow Tablets */
-  .template-grid { grid-template-columns: repeat(2, 300px); }
-  .template-preview-live { height: 360px; }
-  .template-preview-wrapper { transform: scale(0.38) !important; }
+  /* Template Logic for Narrow Tablets - Synced with scale(0.36) */
+  .template-grid { grid-template-columns: repeat(auto-fill, 286px); }
+  .template-card { width: 286px; }
+  .template-preview-live { height: 340px; }
+  .template-preview-wrapper { transform: scale(0.36) !important; }
   .preview-scaler { transform: scale(0.5) !important; height: 565px !important; }
 }
 
 @media (max-width: 650px) {
-  .template-grid { grid-template-columns: 1fr; max-width: 340px; margin-left: auto; margin-right: auto; }
+  .template-grid { 
+    grid-template-columns: 342px; /* Synced with scale(0.43) * 794px */
+    max-width: 342px; 
+    margin-left: auto; 
+    margin-right: auto; 
+  }
+  .template-card { width: 342px; }
   .template-preview-live { height: 410px; }
   .template-preview-wrapper { transform: scale(0.43) !important; }
 }
