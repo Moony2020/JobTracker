@@ -999,7 +999,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
               <div className="design-sections-scrollable">
                 
                 <div className="design-group-sidebar">
-                   <div className="design-label-row">
+                   <div className="design-label-row line-spacing-row">
                       <label>
                         Line Spacing ({(() => {
                           const val = parseInt(cvData.settings?.lineSpacing);

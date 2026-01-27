@@ -1079,6 +1079,11 @@
     margin-bottom: 12px;
 }
 
+.design-label-row.line-spacing-row {
+    justify-content: flex-start !important;
+    gap: 16px;
+}
+
 .spacing-icons {
     display: flex;
     align-items: center;
@@ -1662,7 +1667,7 @@
 @media (max-width: 800px) { .preview-scaler { transform: scale(0.55); height: 618px; } }
 
 @media (max-width: 600px) {
-  /* FORM STACKING (Keep two columns on tablets > 600px) */
+  /* FORM STACKING (Corrected: Only < 600px to maintain two columns on tablets) */
   .cv-editor-design .form-grid { display: flex !important; flex-direction: column !important; gap: 12px !important; }
   .cv-editor-design .form-grid .form-group { width: 100% !important; max-width: 100% !important; }
   
