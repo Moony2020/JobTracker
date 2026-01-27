@@ -67,14 +67,15 @@
 
 .template-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Fluid grid */
+  grid-template-columns: repeat(auto-fill, 302px); /* Fixed width matching scaled CV */
   gap: 20px;
   width: 100%;
+  justify-content: center;
 }
 
 .template-card {
   background: white;
-  border-radius: 12px;
+  border-radius: 0 0 12px 12px; /* Top corners sharp as requested */
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   cursor: pointer;
@@ -82,6 +83,8 @@
   border: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
+  max-width: 302px; /* Lock to scaled CV width to remove side gaps */
+  margin: 0 auto;
 }
 
 .template-card:hover {

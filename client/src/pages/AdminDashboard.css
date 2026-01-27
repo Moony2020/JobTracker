@@ -1309,6 +1309,32 @@
     flex: 1;
     min-width: 0;
   }
+
+  /* Horizontal Scroller for Recent Payments */
+  .admin-table-wrapper {
+    overflow-x: auto;
+    padding-bottom: 20px !important;
+    margin-bottom: -10px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--blue) transparent;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-table {
+    min-width: 550px !important; /* Force width to trigger scroll */
+  }
+
+  .admin-table-wrapper::-webkit-scrollbar {
+    height: 4px;
+  }
+  .admin-table-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .admin-table-wrapper::-webkit-scrollbar-thumb {
+    background: var(--blue);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(91, 124, 255, 0.3);
+  }
 }
 
 /* ===== Admin Login Page ===== */
