@@ -24,6 +24,7 @@
 /* ===== Background like the image (nebula + stars) ===== */
 .admin-dashboard-container{
   min-height:100vh;
+  min-width: 350px; /* Enforced as requested */
   display:flex;
   position:relative;
   overflow:hidden;
@@ -1251,7 +1252,8 @@
 }
 
 /* Force two columns on stats for as long as possible */
-@media (max-width: 1100px){
+@
+ (max-width: 1100px){
   .admin-dashboard-container .admin-stats-grid{ grid-template-columns: repeat(2, 1fr) !important; gap: 12px; }
   .admin-dashboard-container .stats-card{ padding: 15px; }
   .admin-dashboard-container .stats-value{ font-size: 24px; }
