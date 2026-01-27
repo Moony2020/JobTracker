@@ -935,7 +935,7 @@
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden; /* Prevent horizontal scroll */
-    padding: 0 30px 40px 30px; /* Default top padding zero for mobile stack */
+    padding: 0 30px 0 30px; /* Reduced bottom padding to 0 to eliminate gap */
     display: flex;
     flex-direction: column;
     gap: 16px; /* Further reduced from 20px to 16px as requested */
@@ -982,7 +982,7 @@
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Two columns side-by-side */
-    gap: 0 20px; /* No vertical gap */
+    gap: 12px 20px; /* Added 12px vertical gap for when stacked or tightly packed */
     width: 100%;
     margin-top: 10px;
 }
@@ -994,7 +994,7 @@
 
 
 .section-content-inner {
-    padding: 20px 24px; /* Tighter padding for wider inputs */
+    padding: 12px 24px; /* Reduced vertical padding from 20px for high density */
 }
 
 /* Form Styling - New */
@@ -1184,8 +1184,8 @@
 
 /* Sticky Bottom Bar for Sidebar Content Mode */
 .editor-footer-info {
-  margin-top: auto;
-  padding: 20px 30px; /* Pushed right to align with sidebar content */
+  margin-top: 0 !important; /* Force connection to templates */
+  padding: 12px 30px; 
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1661,8 +1661,8 @@
 
 @media (max-width: 800px) { .preview-scaler { transform: scale(0.55); height: 618px; } }
 
-@media (max-width: 786px) {
-  /* FORM STACKING (Critical User Request: Only < 786px) */
+@media (max-width: 600px) {
+  /* FORM STACKING (Keep two columns on tablets > 600px) */
   .cv-editor-design .form-grid { display: flex !important; flex-direction: column !important; gap: 12px !important; }
   .cv-editor-design .form-grid .form-group { width: 100% !important; max-width: 100% !important; }
   
