@@ -5,6 +5,8 @@ import Applications from './pages/Applications';
 import Statistics from './pages/Statistics';
 import JobFinder from './pages/JobFinder';
 import CVBuilder from './pages/CVBuilder/CVBuilder';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminLogin from './components/AdminLogin';
 import Login from './components/Login';
 import Register from './components/Register';
 import api from './services/api';
@@ -25,8 +27,12 @@ const AppContent = () => {
   const [language, setLanguage] = useState(localStorage.getItem('jt_language') || 'English');
   // Persist current page
   const [currentPage, setCurrentPage] = useState(() => {
-    // Check if we are in print mode first
-    if (window.location.pathname.startsWith('/cv-builder/print/')) {
+    const path = window.location.pathname;
+    // Check if we are in admin or print mode first
+    if (path.startsWith('/admin')) {
+      return 'admin';
+    }
+    if (path.startsWith('/cv-builder/print/')) {
       return 'cv-builder';
     }
     return localStorage.getItem('jt_currentPage') || 'dashboard';
@@ -37,7 +43,7 @@ const AppContent = () => {
   }, []); // Stable across the session
 
   useEffect(() => {
-    if (isPrinting) return; // Don't persist print page as last page
+    if (isPrinting || currentPage === 'admin') return; // Don't persist print or admin page
     localStorage.setItem('jt_currentPage', currentPage);
   }, [currentPage, isPrinting]);
   
@@ -235,19 +241,25 @@ const AppContent = () => {
   }, [applications]);
 
   /* Full Screen Mode for detailed editors */
-  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(() => {
+    return window.location.pathname.startsWith('/admin') || window.location.pathname.startsWith('/cv-builder/print/');
+  });
 
-  // Reset full screen on page change
+  // Automatically set full screen for admin, reset for others (except cv-builder which handles it)
   useEffect(() => {
-    setIsFullScreen(false);
-  }, [currentPage]);
+    if (currentPage === 'admin' || isPrinting) {
+      setIsFullScreen(true);
+    } else if (currentPage !== 'cv-builder') {
+      setIsFullScreen(false);
+    }
+  }, [currentPage, isPrinting]);
 
   if (authLoading && !resetToken) return <div className="loading-overlay"><div className="loading-spinner"></div><p>Loading...</p></div>;
 
   return (
     <div className="app-container">
       {/* Hide Header only if isFullScreen is true. Otherwise show it for all pages including cv-builder list view */}
-      {!isFullScreen && !isPrinting && (
+      {!isFullScreen && !isPrinting && !window.location.pathname.startsWith('/admin') && (
         <Header 
           darkMode={darkMode} 
           toggleTheme={() => setDarkMode(!darkMode)} 
@@ -297,6 +309,13 @@ const AppContent = () => {
         )}
         {currentPage === 'jobs' && (
           <JobFinder language={language} user={user} />
+        )}
+        {currentPage === 'admin' && (
+          user?.role === 'admin' ? (
+            <AdminDashboard />
+          ) : (
+            <AdminLogin />
+          )
         )}
         {currentPage === 'cv-builder' && (
           <CVBuilder 

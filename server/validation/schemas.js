@@ -46,6 +46,7 @@ const ForgotPasswordSchema = z.object({
 // --- Profile Schemas ---
 const ProfileSchema = z.object({
   profile: z.string().optional().or(z.literal('')),
+  name: z.string().trim().min(2, 'Name must be at least 2 characters').optional(),
 });
 
 module.exports = {

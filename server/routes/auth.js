@@ -84,7 +84,8 @@ router.post('/register', validate(RegisterSchema), async (req, res) => {
             user: {
                 id: user._id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                role: user.role
             }
         });
     } catch (error) {
@@ -132,7 +133,8 @@ router.post('/login', validate(LoginSchema), async (req, res) => {
             user: {
                 id: user._id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                role: user.role
             }
         });
     } catch (error) {
@@ -317,13 +319,19 @@ router.get('/profile', auth, async (req, res) => {
 // Update User Profile
 router.put('/profile', [auth, validate(ProfileSchema)], async (req, res) => {
     try {
-        const { profile } = req.body;
+        const { profile, name } = req.body;
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
         
-        user.profile = profile;
+        if (profile !== undefined) user.profile = profile;
+        if (name !== undefined) user.name = name;
+        
         await user.save();
-        res.json({ message: 'Profile updated successfully', profile: user.profile });
+        res.json({ 
+            message: 'Profile updated successfully', 
+            profile: user.profile,
+            name: user.name 
+        });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
     }

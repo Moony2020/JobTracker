@@ -998,22 +998,38 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
 
               <div className="design-sections-scrollable">
                 
-                {/* 1. Spacing */}
                 <div className="design-group-sidebar">
                    <div className="design-label-row">
-                      <label>Line Spacing</label>
+                      <label>
+                        Line Spacing ({(() => {
+                          const val = parseInt(cvData.settings?.lineSpacing);
+                          return isNaN(val) ? 100 : val;
+                        })()}%)
+                      </label>
                       <div className="spacing-icons">
-                         <Type size={14} />
+                         <button 
+                           onClick={() => {
+                             const current = parseInt(cvData.settings?.lineSpacing) || 100;
+                             updateNestedState('settings.lineSpacing', Math.max(80, current - 10));
+                           }}
+                           className="spacing-btn"
+                           type="button"
+                         >
+                           <Minus size={18} />
+                         </button>
+                         <Type size={20} color="#94a3b8" />
+                         <button 
+                           onClick={() => {
+                             const current = parseInt(cvData.settings?.lineSpacing) || 100;
+                             updateNestedState('settings.lineSpacing', Math.min(200, current + 10));
+                           }}
+                           className="spacing-btn"
+                           type="button"
+                         >
+                           <Plus size={18} />
+                         </button>
                       </div>
                    </div>
-                   <input 
-                      type="range" 
-                      min="80" 
-                      max="180" 
-                      step="10" 
-                      value={cvData.settings.lineSpacing}
-                      onChange={(e) => updateNestedState('settings.lineSpacing', parseInt(e.target.value))}
-                   />
                 </div>
 
                 {/* 2. Colors */}
@@ -1158,31 +1174,43 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
         
         <div className="drawer-content">
            {/* 1. Spacing */}
-           <div className="drawer-section">
-              <div className="drawer-label-row">
-                 <label>Line Spacing ({cvData.settings.lineSpacing}%)</label>
-                 <div className="compact-spacing-controls">
-                    <button 
-                      onClick={() => updateNestedState('settings.lineSpacing', Math.max(80, cvData.settings.lineSpacing - 10))}
-                      className="spacing-btn"
-                    >
-                      <Minus size={18} />
-                    </button>
-                    <Type size={20} color="#94a3b8" />
-                    <button 
-                      onClick={() => updateNestedState('settings.lineSpacing', Math.min(200, cvData.settings.lineSpacing + 10))}
-                      className="spacing-btn"
-                    >
-                      <Plus size={18} />
-                    </button>
-                 </div>
-              </div>
-           </div>
+            <div className="drawer-section">
+               <div className="drawer-label-row">
+                  <label>
+                    Line Spacing ({(() => {
+                      const val = parseInt(cvData.settings?.lineSpacing);
+                      return isNaN(val) ? 100 : val;
+                    })()}%)
+                  </label>
+                  <div className="compact-spacing-controls">
+                     <button 
+                       onClick={() => {
+                         const current = parseInt(cvData.settings?.lineSpacing) || 100;
+                         updateNestedState('settings.lineSpacing', Math.max(80, current - 10));
+                       }}
+                       className="spacing-btn"
+                     >
+                       <Minus size={18} />
+                     </button>
+                     <Type size={20} color="#94a3b8" />
+                     <button 
+                       onClick={() => {
+                         const current = parseInt(cvData.settings?.lineSpacing) || 100;
+                         updateNestedState('settings.lineSpacing', Math.min(200, current + 10));
+                       }}
+                       className="spacing-btn"
+                     >
+                       <Plus size={18} />
+                     </button>
+                  </div>
+               </div>
+            </div>
 
            {/* 2. Colors */}
            <div className="drawer-section">
              <div className="drawer-label-row">
                <label>Accent Color</label>
+               <span style={{fontSize: '0.75rem', color: '#6366f1', fontWeight: '600'}}>{cvData.settings.themeColor}</span>
              </div>
              <div className="drawer-color-row">
                 {PRESET_COLORS.map(color => (
