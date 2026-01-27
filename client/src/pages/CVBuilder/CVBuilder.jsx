@@ -5,7 +5,12 @@ import './CVBuilder.css';
 
 const CVBuilder = ({ language, onExit, setFullScreen, showNotify, isPrinting }) => {
   // Default to list view to prevent getting stuck
-  const [view, setView] = useState(isPrinting ? 'print' : 'list');
+  // Default to hash-based view to prevent refresh-glitches
+  const [view, setView] = useState(() => {
+    if (isPrinting) return 'print';
+    if (window.location.hash === '#editor') return 'editor';
+    return 'list';
+  });
   
   // Persist selected CV ID (optional, but let's keep it safe or reset it)
   const [selectedCV, setSelectedCV] = useState(() => {
@@ -21,10 +26,13 @@ const CVBuilder = ({ language, onExit, setFullScreen, showNotify, isPrinting }) 
   useEffect(() => {
     if (isPrinting) return; // Skip history logic when printing
     
-    if (setFullScreen) setFullScreen(false);
+    const isEditor = window.location.hash === '#editor';
+    if (setFullScreen) setFullScreen(isEditor);
     
-    // Replace current state with 'list' so we have a base to go back to
-    window.history.replaceState({ view: 'list' }, '', '');
+    // Set initial state based on current URL
+    if (!isEditor) {
+      window.history.replaceState({ view: 'list' }, '', '');
+    }
 
     return () => {
       if (setFullScreen) setFullScreen(false); // Cleanup on unmount

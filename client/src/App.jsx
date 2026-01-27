@@ -274,12 +274,12 @@ const AppContent = () => {
         />
       )}
       <main 
-        className={isFullScreen ? '' : 'container'} 
+        className={(isFullScreen || currentPage === 'cv-builder') ? '' : 'container'} 
         style={{ 
-          marginTop: isFullScreen ? '0' : '1.5rem',
-          width: isFullScreen ? '100%' : undefined,
-          maxWidth: isFullScreen ? '100%' : undefined,
-          padding: isFullScreen ? '0' : undefined 
+          marginTop: (isFullScreen || currentPage === 'cv-builder') ? '0' : '1.5rem',
+          width: (isFullScreen || currentPage === 'cv-builder') ? '100%' : undefined,
+          maxWidth: (isFullScreen || currentPage === 'cv-builder') ? '100%' : undefined,
+          padding: (isFullScreen || currentPage === 'cv-builder') ? '0' : undefined 
         }}
       >
         {currentPage === 'dashboard' && (

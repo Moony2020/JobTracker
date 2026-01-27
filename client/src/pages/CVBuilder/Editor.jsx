@@ -1140,20 +1140,21 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
               </div>
             </div>
           </div>
-          {/* Centered Footer Pill - Moved inside preview pane for correct absolute positioning */}
-          <div className="preview-footer-minimal" style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)' }}>
+
+          {/* Premium Pill - Restored to absolute bottom for discretion */}
+          <div className="preview-footer-minimal">
              {isSaved ? (
-               <div className="status-saved-text">
-                 <CheckCircle size={14} />
+               <div className="status-saved-text" style={{ display: 'flex', alignItems: 'center', color: '#10b981', gap: '8px' }}>
+                 <CheckCircle size={14} strokeWidth={3} />
                  <span>Saved</span>
                </div>
              ) : (
-               <div className="status-saved-text" style={{ color: '#64748b' }}>
+               <div className="status-saved-text" style={{ color: '#cbd5e1' }}>
                  <span>Saving...</span>
                </div>
              )}
-             <div className="pagination-text" style={{ marginLeft: '12px', paddingLeft: '12px', borderLeft: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ color: '#cbd5e1', fontSize: '0.8rem' }}>Page 1 / 1</span>
+             <div className="pagination-text" style={{ marginLeft: '8px', paddingLeft: '8px', borderLeft: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center' }}>
+                <span style={{ color: '#cbd5e1', fontWeight: 500 }}>Page 1 / 1</span>
              </div>
           </div>
         </main>

@@ -191,13 +191,23 @@
   color: #1e293b;
 }
 
+/* CV Builder - Main Page Wrapper */
+.cv-builder-page {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 /* CV Editor - Content-First Split Layout */
 .cv-editor-design {
   display: flex;
   flex-direction: column;
   height: 100vh;
   background: #f8fafc;
-  width: 100%;
+  width: 100vw !important; /* BREAKER: Force full width */
+  margin-left: calc(-50vw + 50%); /* BREAKER: Centering breakout if containerized */
+  position: relative;
 }
 
 /* Custom Thin Scrollbar for the whole editor context */
@@ -318,7 +328,7 @@
   flex: 0 0 450px !important;
   min-width: 450px !important;
   max-width: 450px !important;
-  padding: 12px 9px; /* Reduced side padding */
+  padding: 12px 15px; /* Restored original padding */
   flex-shrink: 0 !important;
 }
 
@@ -617,20 +627,18 @@
 
 .preview-scroll-area {
   flex: 1;
-  overflow: visible !important; /* CHANGED from hidden */
-  background: #cbd5e1;
+  overflow-y: auto !important; /* ALLOW SCROLLING */
+  background: #cbd5e1 !important;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0 !important; /* CHANGED from 20px 10px */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important; /* PIN TO TOP HEADER */
+  padding: 0 !important; /* ZERO GAPS GLOBALLY */
   scrollbar-width: none;
   -ms-overflow-style: none;
-  height: auto !important; /* ADDED */
-  min-height: 0;
+  height: 100%;
 }
-
 /* Hide scrollbar for Chrome/Safari/Opera */
 .preview-scroll-area::-webkit-scrollbar {
   display: none;
@@ -638,16 +646,18 @@
 
 
 
-/* Scaling container - uses transform without fixed dimensions */
+/* Scaling container - Perfectly Calibrated Visibility */
 .preview-scaler {
-  margin: -15px 0 0 0 !important;
-  transform-origin: top center; 
+  margin: 0 auto !important; 
+  transform-origin: top center !important; 
   transition: all 0.3s ease;
   flex-shrink: 0;
-  display: inline-block;
-  transform: scale(0.53) !important; /* Reduced to fit viewport height */
-  height: 574px !important; /* 1123px * 0.52 */
+  display: block !important;
+  transform: scale(0.54) !important; /* CALIBRATED: Slightly bigger than 0.48 */
+  height: 606px !important;  /* 1123 * 0.54 */
+  width: 435px !important;   /* 806 * 0.54 */
   position: relative;
+  overflow: visible !important; 
 }
 
 /* Keep same size for all desktop and tablet views */
@@ -670,30 +680,39 @@
   flex-shrink: 0;
 }
 
-/* Tiny Floating Footer Pill - Positioned statically under CV */
+/* Medium-Small Floating Footer Pill */
 .preview-footer-minimal {
-    margin: -20px auto!important; /* Pushes it DOWN */
+    position: absolute !important;
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     display: flex;
-    gap: 12px;
+    gap: 10px;
     align-items: center;
     justify-content: center;
-    padding: 6px 14px;
-    background: rgba(30, 41, 59, 0.85);
+    padding: 6px 16px; /* RESTORED PADDING */
+    background: rgba(30, 41, 59, 0.95);
     backdrop-filter: blur(4px);
-    border-radius: 20px;
+    border-radius: 25px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
     color: #cbd5e1;
     font-weight: 500;
-    z-index: 10;
+    z-index: 1005;
     white-space: nowrap;
-    font-size: 0.7rem;
-    height: 32px;
-    min-width: 150px;
     width: fit-content;
     flex-shrink: 0;
-    position: static !important;
-    transform: none !important;
+}
+
+.preview-footer-minimal .status-saved-text span,
+.preview-footer-minimal .pagination-text span {
+  font-size: 0.8rem !important; /* RE-ENLARGED PILL FONT */
+  line-height: normal;
+}
+
+.preview-footer-minimal .status-saved-text svg {
+  width: 15px !important; /* SLIGHTLY BIGGER ICON */
+  height: 15px !important;
 }
 
 .preview-footer-minimal:hover {
@@ -1590,196 +1609,220 @@
 
 /* ========================================= */
 /* GRAND CONSOLIDATED RESPONSIVE OVERRIDES   */
-/* (Sorted Descending & Grouped for Quality) */
+/* (Clean State Restoration)                 */
 /* ========================================= */
 
-@media (max-width: 1600px) { .preview-scaler { transform: scale(0.55); height: 584px; } }
-@media (max-width: 1400px) { .preview-scaler { transform: scale(0.52); height: 584px; } }
-@media (max-width: 1200px) { .preview-scaler { transform: scale(0.52); height: 584px; } }
+/* Viewport Foundation - Fixed Height, No Body Scroll */
+.cv-editor-design {
+  height: 100vh !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
 
-@media (max-width: 992px) {
-  /* Template Grid - Synced with scale(0.4) */
-  .template-grid { grid-template-columns: repeat(auto-fill, 318px); }
-  .template-card { width: 318px; }
-  .template-preview-live { height: 380px; }
-  .template-preview-wrapper { transform: scale(0.4) !important; }
-  
-  /* CV Editor Layout (Fluid stack instead of fixed overlay) */
-  .cv-editor-design { 
-    height: auto !important; 
-    min-height: 100vh;
-    overflow-y: visible !important; 
-    position: relative !important; 
-    scroll-behavior: smooth; 
+.editor-main-split {
+  flex: 1 !important;
+  display: flex !important;
+  height: calc(100vh - 60px) !important;
+  overflow: hidden !important;
+}
+
+/* Side-by-Side Behaviors (>768px) */
+@media (min-width: 768px) {
+  .editor-main-split {
+    flex-direction: row !important;
   }
-  .editor-main-split { 
+  
+  .editor-sidebar-forms {
+    height: 100% !important;
+    overflow-y: auto !important;
+    border-right: 1px solid #e2e8f0;
+  }
+
+  .editor-preview-pane {
+    flex: 1 !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    background: #cbd5e1; /* RESTORED SILVER BACKGROUND */
+    position: relative;
     display: flex !important;
-    flex-direction: column !important; 
-    height: auto !important; 
-    min-height: 100%; 
-    overflow: visible !important; 
+    flex-direction: column !important;
   }
-  .editor-sidebar-forms { 
-    flex: none !important; 
-    width: 100% !important; 
-    min-width: 0 !important; 
-    max-width: 100% !important; 
-    border-right: none; 
-    height: auto !important; 
-    overflow: visible !important; 
-    padding: 30px 20px !important; /* Reverted to original horizontal 20px */
-  }
-  .editor-preview-pane { 
-    flex: none !important; 
-    width: 100% !important; 
-    height: auto !important; 
-    min-height: auto !important; 
-    overflow: visible !important; 
-    background: #cbd5e1; 
-    padding-bottom: 80px !important; 
-  }
-  .preview-scroll-area { 
-    height: auto !important; 
-    min-height: auto !important; 
-    overflow: visible !important; 
-    justify-content: flex-start !important; 
-    display: flex !important; 
-    flex-direction: column !important; 
-    align-items: center !important; 
-    padding: 20px 0 !important; 
-  }
-  .preview-scaler { 
-    transform-origin: top center !important; 
-    margin-top: 20px; 
-    transform: scale(0.6) !important; 
-    height: 680px !important; 
-  }
-}
 
-@media (max-width: 900px) {
-  .resume-grid { grid-template-columns: 1fr; gap: 16px; }
-}
-
-@media (max-width: 850px) {
-  .preview-scaler { transform: scale(0.55) !important; height: 620px !important; }
-}
-
-@media (max-width: 800px) { .preview-scaler { transform: scale(0.55); height: 618px; } }
-
-@media (max-width: 600px) {
-  /* FORM STACKING (Corrected: Only < 600px to maintain two columns on tablets) */
-  .cv-editor-design .form-grid { display: flex !important; flex-direction: column !important; gap: 12px !important; }
-  .cv-editor-design .form-grid .form-group { width: 100% !important; max-width: 100% !important; }
-  
-  /* Template Logic for Narrow Tablets - Synced with scale(0.36) */
-  .template-grid { grid-template-columns: repeat(auto-fill, 286px); }
-  .template-card { width: 286px; }
-  .template-preview-live { height: 340px; }
-  .template-preview-wrapper { transform: scale(0.36) !important; }
-  .preview-scaler { transform: scale(0.5) !important; height: 565px !important; }
-}
-
-@media (max-width: 650px) {
-  .template-grid { 
-    grid-template-columns: 342px; /* Synced with scale(0.43) * 794px */
-    max-width: 342px; 
-    margin-left: auto; 
-    margin-right: auto; 
-  }
-  .template-card { width: 342px; }
-  .template-preview-live { height: 410px; }
-  .template-preview-wrapper { transform: scale(0.43) !important; }
-}
-
-@media (max-width: 620px) {
-  /* Fix Horizontal Overflow / Right Gap (Correction: Use % instead of vw) */
-  .cv-editor-design, .editor-main-split, .editor-sidebar-forms { 
-    width: 100% !important; 
-    max-width: 100% !important; 
-    overflow-x: hidden !important; 
-    box-sizing: border-box !important; 
-  }
-  .editor-sidebar-forms { padding: 20px 16px !important; }
-  .editor-global-header { 
-    height: auto !important; 
-    padding: 10px 14px !important; 
-    display: grid !important;
-    grid-template-columns: 1fr auto auto !important;
-    grid-template-areas: "title actions close" !important;
-    gap: 8px !important;
+  .preview-scroll-area {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    padding: 20px 0 !important; /* SAFETY PADDING: Prevent cutting */
+    display: flex !important;
+    flex-direction: column !important;
     align-items: center !important;
+    justify-content: flex-start !important;
+    scrollbar-width: none;
+    background: #cbd5e1 !important; /* RESTORED SILVER BACKGROUND */
+  }
+
+  .preview-scaler {
+    margin: 0 auto !important; 
+    transform-origin: top center !important;
+    transform: scale(0.54) !important;
+    height: 606px !important; 
+    width: 435px !important; 
+    position: relative;
+    flex-shrink: 0;
   }
   
-  .header-left { 
-    grid-area: title;
-    width: auto !important;
-    min-width: 0;
+  /* Ensure the canvas itself stays 806px inside the scaler */
+  .preview-scaler .resume-paper-canvas {
+    width: 806px !important;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
   }
-  
-  .header-center-actions {
-    grid-area: actions;
+}
+
+/* Specific Desktop Range (>992px) */
+@media (min-width: 993px) {
+  .mode-design .editor-sidebar-forms {
+    flex: 0 0 450px !important;
+    min-width: 450px !important;
+  }
+  .template-grid-sidebar {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 15px !important;
+  }
+}
+
+/* Specific Tablet Range (768px - 992px) */
+@media (min-width: 768px) and (max-width: 992px) {
+  .mode-design .editor-sidebar-forms {
+    flex: 0 0 300px !important;
+    min-width: 300px !important;
+    padding: 30px 20px !important; /* TABLET PADDING */
+  }
+  .template-grid-sidebar {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+  .tpl-card-sidebar {
+    width: 185px !important;
+    margin: 0 auto !important;
+  }
+  .preview-scaler {
+    transform: scale(0.52) !important; 
+    height: 584px !important;
+    width: 419px !important; 
+    margin: -25px auto 0 auto !important; 
+  }
+
+  /* Compact Spacing Controls for Tablet */
+  .line-spacing-row {
+    gap: 8px !important;
+  }
+  .line-spacing-row label {
+    font-size: 0.65rem !important;
+    white-space: nowrap !important;
+  }
+  .spacing-btn {
+    width: 24px !important;
+    height: 24px !important;
+    padding: 0 !important;
     display: flex !important;
-    justify-content: flex-end !important;
-    gap: 6px !important;
-    width: auto !important;
-    margin-right: 2px !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
-  
-  .header-right {
-    grid-area: close;
+  .spacing-btn svg {
+    width: 14px !important;
+    height: 14px !important;
   }
-
-  .template-toggle-btn-top, .download-btn-red { 
-    flex: none !important; 
-    justify-content: center !important; 
-    padding: 6px 18px !important; 
-    font-size: 0.75rem !important;
-    height: 32px !important;
-    width: auto !important;
-    min-width: 0 !important;
-    gap: 4px !important;
-  }
-
-  .cv-title-display { flex: 1; max-width: none !important; }
-  .title-edit-input { width: 100% !important; font-size: 1rem !important; }
-  .category-grid { grid-template-columns: 1fr !important; }
-}
-
-@media (max-width: 600px) { .preview-scaler { transform: scale(0.45); height: 506px; } }
-@media (max-width: 550px) { .preview-scaler { transform: scale(0.42) !important; height: 475px !important; } }
-@media (max-width: 480px) { .preview-scaler { transform: scale(0.38) !important; height: 430px !important; } }
-@media (max-width: 450px) { .preview-scaler { transform: scale(0.35); height: 394px; } }
-
-@media (max-width: 420px) {
-   .template-grid {
-    max-width: none !important; /* REMOVE max-width restriction */
-    width: 100% !important; /* Take full width of container */
-  }
-  
-  /* Keep original scaling for the preview */
-  .template-preview-wrapper {
-    transform: scale(0.38) !important; /* Keep original scale */
-  }
-  
-  .template-preview-live {
-    height: 320px !important; /* Keep original height */
+  .spacing-icons svg {
+    width: 16px !important;
+    height: 16px !important;
   }
 }
 
-@media (max-width: 380px) { .resume-list-container { padding-left: 8px !important; padding-right: 8px !important; } }
+/* Mobile Range (<767px) */
+@media (max-width: 767px) {
+  .editor-main-split {
+    flex-direction: column !important;
+    height: auto !important;
+    overflow-y: auto !important;
+  }
+  .editor-sidebar-forms {
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 30px 20px !important;
+    flex: none !important;
+  }
+  .editor-preview-pane {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 600px;
+    padding-bottom: 80px !important;
+    flex: none !important;
+    background: #cbd5e1;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important; /* TOTAL CENTERING */
+  }
+  .preview-scroll-area {
+    width: 100% !important;
+    height: auto !important;
+    overflow-y: auto !important; /* RE-ENABLED SCROLLING */
+    padding: 0 !important;       /* PIN TO TOP HEADER */
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+  }
+  .preview-scaler {
+    margin: -20px auto 0 auto !important; /* PINNED HIGHER */
+    transform-origin: top center !important;
+    transform: scale(0.48) !important;   /* ENLARGED AGAIN */
+    height: 540px !important;            /* 1123 * 0.48 */
+    width: 387px !important;             /* 806 * 0.48 */
+    position: relative;
+    display: block !important;
+    flex-shrink: 0;
+  }
+  
+  /* Ensure the paper canvas centers within the mobile footprint */
+  .preview-scaler .resume-paper-canvas {
+    width: 806px !important;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 
-/* Responsive Utility Classes */
+  .template-grid-sidebar {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  /* Reposition floating pill UNDER the CV in the scroll flow - COMPACT VERSION */
+  .preview-footer-minimal {
+    position: static !important; /* MOVED DOWN (NOT FIXED) */
+    transform: none !important;
+    margin: 20px auto 100px auto !important; /* PUSHED UP 20PX */
+    width: fit-content !important;
+    padding: 4px 12px !important; /* TINY PADDING */
+    gap: 8px !important;           /* COMPACT GAP */
+    display: flex !important;
+  }
+
+  .preview-footer-minimal .status-saved-text span,
+  .preview-footer-minimal .pagination-text span {
+    font-size: 0.7rem !important; /* TINY FONTS */
+  }
+
+  .preview-footer-minimal .status-saved-text svg {
+    width: 12px !important; /* TINY ICON */
+    height: 12px !important;
+  }
+}
+
+/* Utility Classes */
 @media (max-width: 768px) {
-  .hide-on-mobile {
-    display: none !important;
-  }
-  
-  .show-on-mobile-inline {
-    display: inline !important;
-  }
-  
-  /* Hide desktop template toggle button on mobile */
-  .template-toggle-btn-top {
-    display: none !important;
-  }
+  .hide-on-mobile { display: none !important; }
+  .template-toggle-btn-top { display: none !important; }
 }
