@@ -1252,14 +1252,13 @@
 }
 
 /* Force two columns on stats for as long as possible */
-@
- (max-width: 1100px){
+@media (max-width: 1100px){
   .admin-dashboard-container .admin-stats-grid{ grid-template-columns: repeat(2, 1fr) !important; gap: 12px; }
   .admin-dashboard-container .stats-card{ padding: 15px; }
   .admin-dashboard-container .stats-value{ font-size: 24px; }
 }
 
-@media (max-width: 500px){
+@media (max-width: 600px){
   .admin-dashboard-container .admin-sidebar{ 
     width: 250px; 
     transform: translateX(-100%);
