@@ -1738,35 +1738,81 @@
     width: 16px !important;
     height: 16px !important;
   }
-  .editor-main-split {
+/* Target EDIT mode (not design mode) */
+  .mode-content .editor-main-split {
     flex-direction: column !important;
     height: auto !important;
     overflow-y: auto !important;
   }
-   .editor-sidebar-forms {
+  
+  .mode-content .editor-sidebar-forms {
     width: 100% !important;
     height: auto !important;
     min-width: 100% !important;
     max-width: 100% !important;
-    padding: 20px !important;
+    padding: 30px 20px !important;
     border-right: none !important;
     border-bottom: 1px solid #e2e8f0;
   }
   
-  .editor-preview-pane {
+  .mode-content .editor-preview-pane {
     width: 100% !important;
     height: auto !important;
     min-height: 700px;
     flex: none !important;
   }
-
-
+  
+  .mode-content .preview-scroll-area {
+    padding: 20px 0 !important;
+    overflow-y: visible !important;
+  }
+  
+  .mode-content .preview-scaler {
+    margin: 0 auto !important;
+    transform: scale(0.6) !important;
+    height: 674px !important;
+    width: 484px !important;
+  }
+  
   /* Move footer to flow normally in the column */
-  .preview-footer-minimal {
+  .mode-content .preview-footer-minimal {
     position: static !important;
     transform: none !important;
     margin: 20px auto !important;
     width: fit-content !important;
+  }
+  
+  /* KEEP DESIGN MODE as two columns */
+  .mode-design .editor-main-split {
+    flex-direction: row !important; /* Keep side by side */
+    height: calc(100vh - 60px) !important;
+  }
+  
+  .mode-design .editor-sidebar-forms {
+    flex: 0 0 300px !important; /* Keep fixed width */
+    min-width: 300px !important;
+    max-width: 300px !important;
+    padding: 12px 15px !important;
+    overflow-y: auto !important;
+  }
+  
+  .mode-design .editor-preview-pane {
+    flex: 1 !important;
+    height: 100% !important;
+  }
+  
+  .mode-design .preview-scaler {
+    margin: -11px auto 0 auto !important;
+    transform: scale(0.52) !important;
+    height: 584px !important;
+    width: 419px !important;
+  }
+  
+  .mode-design .preview-footer-minimal {
+    position: absolute !important;
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
   }
 }
 
@@ -1785,11 +1831,11 @@
     flex: none !important;
   }
   .editor-preview-pane {
-    width: 100% !important;
+    padding-bottom: 80px !important;
     height: auto !important;
     min-height: 600px;
     padding-bottom: 80px !important;
-    flex: none !important;
+ !important;
     background: #cbd5e1;
     display: flex !important;
     flex-direction: column !important;
