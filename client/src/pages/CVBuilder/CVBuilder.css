@@ -1831,11 +1831,9 @@
     flex: none !important;
   }
   .editor-preview-pane {
-    padding-bottom: 80px !important;
     height: auto !important;
     min-height: 600px;
     padding-bottom: 80px !important;
- !important;
     background: #cbd5e1;
     display: flex !important;
     flex-direction: column !important;
