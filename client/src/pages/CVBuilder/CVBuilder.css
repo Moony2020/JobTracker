@@ -1745,7 +1745,7 @@
   .editor-main-split {
     flex-direction: column !important;
     height: auto !important;
-    overflow-y: auto !important;
+    overflow: visible !important; /* FIXED: Prevent internal scrollbar */
   }
   .editor-sidebar-forms {
     width: 100% !important;
@@ -1764,6 +1764,7 @@
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important; /* TOTAL CENTERING */
+    overflow: visible !important; /* FIXED: Prevent internal scrollbar */
   }
   .preview-scroll-area {
     width: 100% !important;
@@ -1773,11 +1774,11 @@
     flex-direction: column !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    overflow: visible !important; /* CHANGED: Don't hide overflow */
-}
+    overflow: visible !important; /* NO SCROLLING */
+  }
 
   .preview-scaler {
-    margin: -20px auto 0 auto !important; /* PINNED HIGHER */
+    margin: -16px auto 0 auto !important; /* PUSHED UP 2PX MORE PER USER */
     transform-origin: top center !important;
     transform: scale(0.48) !important;   /* ENLARGED AGAIN */
     height: 540px !important;            /* 1123 * 0.48 */
