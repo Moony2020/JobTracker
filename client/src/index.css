@@ -2122,44 +2122,46 @@ main {
     flex: 1 1 200px;
 }
 
-/* Row 1: First four fields - All in one row until space runs out */
-.form-grid .form-group:nth-child(1) {
-    flex: 1 1 250px; /* Job Title - Flexible growth */
-}
-.form-grid .form-group:nth-child(2) {
-    flex: 1 1 200px; /* Company - Flexible growth */
-}
-.form-grid .form-group:nth-child(3) {
-    flex: 0 0 200px; /* Location - STRICTLY COMPACT */
-    max-width: 200px; /* Never allow to stretch */
-}
-.form-grid .form-group:nth-child(4) {
-    flex: 0 0 160px; /* Date - STRICTLY COMPACT */
-    max-width: 160px; /* Never allow to stretch */
-}
+/* Dashboard Desktop/Tablet Grid Rules (> 480px) */
+@media (min-width: 481px) {
+    /* Row 1: First four fields - All in one row until space runs out */
+    .form-grid .form-group:nth-child(1) {
+        flex: 1 1 250px;
+    }
+    .form-grid .form-group:nth-child(2) {
+        flex: 1 1 200px;
+    }
+    .form-grid .form-group:nth-child(3) {
+        flex: 0 0 200px;
+        max-width: 200px;
+    }
+    .form-grid .form-group:nth-child(4) {
+        flex: 0 0 160px;
+        max-width: 160px;
+    }
 
-/* Row 4: Professional Info - URL, Expected, Offered */
-.form-grid .form-group:nth-child(7) { /* Job Posting URL */
-    flex: 2 1 300px;
-    min-width: 200px;
-}
+    /* Row 4: Professional Info - URL, Expected, Offered */
+    .form-grid .form-group:nth-child(7) {
+        flex: 2 1 300px;
+        min-width: 200px;
+    }
+    .form-grid .form-group:nth-child(8),
+    .form-grid .form-group:nth-child(9) {
+        flex: 1 1 150px;
+        min-width: 120px;
+    }
 
-.form-grid .form-group:nth-child(8), /* Expected Salary */
-.form-grid .form-group:nth-child(9) { /* Offered Salary */
-    flex: 1 1 150px;
-    min-width: 120px;
-}
-
-/* Recruiter Row - Name, Email */
-.form-grid .form-group:nth-child(10),
-.form-grid .form-group:nth-child(11) {
-    flex: 0 1 280px; /* Do not grow, just fit naturally */
-    min-width: 200px;
-    max-width: 280px;
+    /* Recruiter Row - Name, Email */
+    .form-grid .form-group:nth-child(10),
+    .form-grid .form-group:nth-child(11) {
+        flex: 0 1 280px;
+        min-width: 200px;
+        max-width: 280px;
+    }
 }
 
 /* Ensure recruiter fields don't stretch on wide screens */
-@media (min-width: 769px) {
+@media (min-width: 481px) {
     .form-grid .form-group:nth-child(10),
     .form-grid .form-group:nth-child(11) {
         max-width: 280px;
@@ -2167,32 +2169,35 @@ main {
     }
 }
 
-/* On small mobile, allow full width */
+/* Stacking for small mobile (480px and below) */
 @media (max-width: 480px) {
-    .form-grid .form-group:nth-child(10),
-    .form-grid .form-group:nth-child(11) {
+    /* FORCE all Dashboard form fields into a single column vertical list */
+    #application-form .form-grid {
+        display: block !important;
+    }
+    
+    #application-form .form-group,
+    #application-form .form-group:nth-child(n) {
+        width: 100% !important;
         max-width: 100% !important;
-        flex: 1 1 100% !important;
+        flex: none !important;
+        margin-bottom: 1.2rem !important;
+    }
+    
+    #application-form .select-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
     }
 }
 
-/* Stacking for small mobile only */
-@media (max-width: 480px) {
-    /* Force all form groups to full width on mobile */
-    .form-grid .form-group {
-        flex: 1 1 100% !important;
-        max-width: 100% !important;
+/* Row 2: Status - Default behavior for screens > 480px */
+@media (min-width: 481px) {
+    .form-grid .form-group.select-group {
+        flex: 1 1 100%; /* Force new row on desktop/tablet */
     }
-}
-
-/* Row 2: Status - Force it to its own line as requested */
-.form-grid .form-group.select-group {
-    flex: 1 1 100%; /* Force new row */
-}
-
-/* Keep the Status dropdown itself compact */
-.form-grid .form-group.select-group .select-wrapper {
-    max-width: 200px;
+    .form-grid .form-group.select-group .select-wrapper {
+        max-width: 200px;
+    }
 }
 
 .form-group {
