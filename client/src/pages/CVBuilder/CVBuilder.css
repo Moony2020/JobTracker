@@ -1310,9 +1310,10 @@
 
 .template-grid-sidebar {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px; /* Reduced from 12px */
-    padding-bottom: 10px; /* Reduced from 40px to pull footer closer */
+    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+    justify-content: center;
+    gap: 15px; 
+    padding-bottom: 20px; 
     width: 100%;
 }
 
@@ -1610,10 +1611,20 @@
 /* (Clean State Restoration)                 */
 /* ========================================= */
 
-/* Viewport Foundation - Fixed Height, No Body Scroll */
+/* Viewport Foundation - FIXED HEIGHT ONLY FOR DESKTOP (>992px) */
+@media (min-width: 993px) {
+  .cv-editor-design {
+    height: 100vh !important;
+    overflow: hidden !important;
+  }
+
+  .editor-main-split {
+    height: calc(100vh - 60px) !important;
+    overflow: hidden !important;
+  }
+}
+
 .cv-editor-design {
-  height: 100vh !important;
-  overflow: hidden !important;
   display: flex !important;
   flex-direction: column !important;
 }
@@ -1621,8 +1632,6 @@
 .editor-main-split {
   flex: 1 !important;
   display: flex !important;
-  height: calc(100vh - 60px) !important;
-  overflow: hidden !important;
 }
 
 /* Side-by-Side Behaviors (>768px) */
@@ -1738,11 +1747,11 @@
     width: 16px !important;
     height: 16px !important;
   }
-/* Target EDIT mode (not design mode) */
+/* Target EDIT mode (not design mode) - FIXED FOR GLOBAL SCROLL */
   .mode-content .editor-main-split {
     flex-direction: column !important;
     height: auto !important;
-    overflow-y: auto !important;
+    overflow: visible !important;
   }
   
   .mode-content .editor-sidebar-forms {
@@ -1750,9 +1759,10 @@
     height: auto !important;
     min-width: 100% !important;
     max-width: 100% !important;
-    padding: 30px 20px !important;
+    padding: 30px 80px !important; /* REFINED PADDING TO DECREASE CONTENT WIDTH SUBTLY */
     border-right: none !important;
     border-bottom: 1px solid #e2e8f0;
+    overflow: visible !important;
   }
   
   .mode-content .editor-preview-pane {
@@ -1760,11 +1770,12 @@
     height: auto !important;
     min-height: 700px;
     flex: none !important;
+    overflow: visible !important;
   }
   
   .mode-content .preview-scroll-area {
     padding: 20px 0 !important;
-    overflow-y: visible !important;
+    overflow: visible !important;
   }
   
   .mode-content .preview-scaler {
@@ -1786,6 +1797,7 @@
   .mode-design .editor-main-split {
     flex-direction: row !important; /* Keep side by side */
     height: calc(100vh - 60px) !important;
+    overflow: hidden !important;
   }
   
   .mode-design .editor-sidebar-forms {
@@ -1799,6 +1811,7 @@
   .mode-design .editor-preview-pane {
     flex: 1 !important;
     height: 100% !important;
+    overflow: hidden !important;
   }
   
   .mode-design .preview-scaler {
@@ -1871,7 +1884,7 @@
   }
 
   .template-grid-sidebar {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: 1fr !important; /* SURGICAL FIX: 1 Column on Mobile */
     gap: 12px !important;
   }
 
