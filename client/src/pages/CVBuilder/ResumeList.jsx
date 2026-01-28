@@ -51,7 +51,7 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
 
   const fetchData = async () => {
     try {
-      const [resumesRes, templatesRes] = await Promise.all([
+      const [, templatesRes] = await Promise.all([
         api.get('/cv'),
         api.get('/cv/templates')
       ]);
