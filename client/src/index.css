@@ -1016,7 +1016,7 @@ main {
 /* Stats Cards */
 .stats-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
     gap: 1rem;
     margin: 1.2rem 0;
 }
@@ -4231,6 +4231,14 @@ footer {
 
 @media (max-width: 575px) {
     .analytics-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .charts-container {
+        grid-template-columns: 1fr !important;
+    }
+}
+
 /* Glassmorphism 2.0 Enhancements */
 .page, .card, .form-section, .stat-card, .table-container {
     backdrop-filter: blur(12px) saturate(180%);
@@ -4246,11 +4254,4 @@ footer {
 .stat-card:hover {
     box-shadow: 0 15px 35px rgba(99, 102, 241, 0.2);
     border-color: var(--primary-color);
-}
-        grid-template-columns: 1fr !important;
-    }
-    
-    .charts-container {
-        grid-template-columns: 1fr !important;
-    }
 }
