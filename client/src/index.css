@@ -1,4 +1,4 @@
-﻿:root {
+:root {
     /* Modern Color Palette */
     --primary-color: #6366f1;
     --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
@@ -84,14 +84,14 @@ body::before {
 .loading-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.35);
+    background: rgba(15, 23, 42, 0.8) !important; /* Force dark overlay */
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    z-index: 2000;
+    z-index: 9999; /* Max z-index */
 }
 
 .loading-spinner {
@@ -1020,6 +1020,8 @@ main {
     gap: 1rem;
     margin: 1.2rem 0;
 }
+
+
 
 .stat-card {
     background: var(--card-bg);
@@ -4240,7 +4242,7 @@ footer {
 }
 
 /* Glassmorphism 2.0 Enhancements */
-.page, .card, .form-section, .stat-card, .table-container {
+.card, .form-section, .stat-card, .table-container {
     backdrop-filter: blur(12px) saturate(180%);
     -webkit-backdrop-filter: blur(12px) saturate(180%);
     border: 1px solid var(--glass-border);
@@ -4255,3 +4257,5 @@ footer {
     box-shadow: 0 15px 35px rgba(99, 102, 241, 0.2);
     border-color: var(--primary-color);
 }
+
+

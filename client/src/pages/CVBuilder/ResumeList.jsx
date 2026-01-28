@@ -207,7 +207,7 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
       </section>
 
       <section className="saved-resumes-section">
-        <h2>{language === 'Arabic' ? 'سيري الذاتية المحفوظة' : 'My Saved Resumes'}</h2>
+        <h2 style={{ color: 'var(--text-color)' }}>{language === 'Arabic' ? 'سيري الذاتية المحفوظة' : 'My Saved Resumes'}</h2>
         {resumes.length > 0 ? (
           <div className="resume-grid">
             {resumes.map(cv => (
@@ -235,8 +235,8 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
             ))}
           </div>
         ) : (
-          <div style={{ textAlign: 'center', padding: '40px', background: '#f8fafc', borderRadius: '12px', border: '2px dashed #e2e8f0' }}>
-             <p style={{ color: '#64748b' }}>{language === 'Arabic' ? 'لا توجد سير ذاتية محفوظة حاليا' : 'No saved resumes found. Start by selecting a template above!'}</p>
+          <div style={{ textAlign: 'center', padding: '40px', background: 'transparent', borderRadius: '12px', border: '2px dashed var(--light-border)' }}>
+             <p style={{ color: 'var(--text-muted)' }}>{language === 'Arabic' ? 'لا توجد سير ذاتية محفوظة حاليا' : 'No saved resumes found. Start by selecting a template above!'}</p>
           </div>
         )}
       </section>

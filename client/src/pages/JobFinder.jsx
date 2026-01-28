@@ -94,7 +94,7 @@ const JobFinder = ({ language, user }) => {
             </div>
 
             {/* Discover Engine */}
-            <div className="form-section discovery-engine" style={{ marginBottom: '2rem' }}>
+            <div className="discovery-engine" style={{ marginBottom: '2rem' }}>
                 <div className="section-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.2rem' }}>
                     <Globe size={20} color="var(--primary-color)" />
                     <h2 style={{ fontSize: '1.2rem', margin: 0 }}>Discover Engine</h2>
@@ -137,7 +137,7 @@ const JobFinder = ({ language, user }) => {
             </div>
 
             {/* Recommendations Section */}
-            <div className="form-section ai-recommendations" style={{ marginBottom: '2rem' }}>
+            <div className="ai-recommendations" style={{ marginBottom: '2rem' }}>
                 <div className="section-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
                     <Sparkles size={20} color="var(--primary-color)" />
                     <h2 style={{ fontSize: '1.2rem', margin: 0 }}>Tailored Recommendations</h2>
@@ -182,7 +182,7 @@ const JobFinder = ({ language, user }) => {
             </div>
 
             {/* Search Bar */}
-            <form onSubmit={(e) => { setPage(1); handleSearch(e, null, 1); }} className="form-section" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
+            <form onSubmit={(e) => { setPage(1); handleSearch(e, null, 1); }} style={{ padding: '0', marginBottom: '2rem' }}>
                 <div className="job-search-grid">
                     <div className="form-group">
                         <div className="input-with-icon">

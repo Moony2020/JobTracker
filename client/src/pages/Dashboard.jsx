@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Sparkles, Edit2, Trash2, CheckCircle2, LayoutGrid, List, ChevronDown } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import PrepModal from '../components/PrepModal';
 import KanbanBoard from '../components/KanbanBoard';
 import api from '../services/api';
 import translations from '../utils/translations';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 
 const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, onStatusChange, loading, language }) => {
@@ -105,16 +106,17 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, on
   return (
     <motion.div 
       id="dashboard-page" 
-      className="page"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
+      style={{ background: 'transparent', border: 'none', backdropFilter: 'none', boxShadow: 'none', padding: 0 }}
     >
       <motion.div id="dashboard-header" className="dashboard-intro" variants={itemVariants}>
         <h1>{t.dashboard_title}</h1>
         <p>{t.welcome_message}</p>
       </motion.div>
 
+      {/* 1. Activity Section: "This Week", "This Month", "Active Interviews" */}
       <motion.div className="stats-cards" variants={itemVariants}>
         {loading && applications.length === 0 ? (
           <>
@@ -128,7 +130,7 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, on
           <>
             <StatCard label={t.this_week} value={stats.thisWeek} />
             <StatCard label={t.this_month} value={stats.thisMonth} />
-            <StatCard label={t.interviews} value={stats.interviews} />
+            <StatCard label={t.active_interviews || t.interviews} value={stats.interviews} />
             <StatCard label={t.total_apps} value={stats.total} />
             <StatCard label={t.success_rate} value={`${stats.successRate}%`} />
           </>
@@ -177,7 +179,7 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, on
       </motion.div>
 
       {/* Manual Form (Unchanged) */}
-      <motion.div className="form-section" variants={itemVariants}>
+      <motion.div className="form-section" variants={itemVariants} style={{ background: 'transparent', border: 'none', backdropFilter: 'none', boxShadow: 'none', padding: '0' }}>
         <h2>{t.add_application}</h2>
         <form id="application-form" onSubmit={handleSubmit}>
           {/* ... (form fields unchanged) ... */}
