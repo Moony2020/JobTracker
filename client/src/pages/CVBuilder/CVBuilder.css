@@ -2094,11 +2094,11 @@
 }
 
 .drawer-content {
-  padding: 20px 16px;
+  padding: 16px; /* Reduced from 20px 16px */
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 8px; /* Reduced from 20px */
 }
 
 .drawer-section {
@@ -2106,7 +2106,7 @@
   flex-direction: column;
   gap: 12px;
   border-bottom: 1px dashed #334155;
-  padding-bottom: 24px;
+  padding-bottom: 12px; /* Reduced from 24px */
   visibility: visible !important;
 }
 
@@ -2170,9 +2170,9 @@
 }
 
 .drawer-tpl-card {
-  flex: 0 0 200px !important; /* INCREASED from 180px */
-  min-width: 200px !important;
-  max-width: 200px !important;
+  flex: 0 0 165px !important; /* Refined from 140px/200px */
+  min-width: 165px !important;
+  max-width: 165px !important;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -2182,7 +2182,7 @@
 
 .drawer-tpl-thumb {
   width: 100%;
-  height: 280px; /* INCREASED from 260px */
+  height: 230px; /* Refined from 196px/280px */
   background: transparent !important;
   border-radius: 4px;
   overflow: hidden;
@@ -2201,7 +2201,7 @@
 .drawer-tpl-thumb .tpl-preview-container > div,
 .drawer-preview-scaler > div,
 .drawer-preview-scaler .resume-template {
-    transform: scale(0.25) !important; /* INCREASED from 0.22 */
+    transform: scale(0.204) !important; /* Refined from 0.173/0.25 */
     transform-origin: top center !important; 
     width: 210mm !important;
     height: 297mm !important;
@@ -2295,7 +2295,7 @@
 /* Top spacing only on small screens (<992px) */
 @media (max-width: 992px) {
   .drawer-label-row label {
-    margin-top: 16px;
+    margin-top: 4px; /* Reduced from 16px */
   }
 }
 
@@ -2362,27 +2362,27 @@
   .preview-footer-minimal {
       position: static !important; 
       transform: none !important;
-      margin: 20px auto 30px auto !important; /* Reduced space as requested */
-      padding-top: 12px !important; /* DESKTOP PADDING */
-      padding-bottom: 12px !important;
+      margin: 15px auto 25px auto !important; /* Reduced margin */
+      padding-top: 7px !important; /* Slightly more height as requested */
+      padding-bottom: 7px !important;
       background: rgba(30, 41, 59, 0.95) !important;
       backdrop-filter: blur(4px);
       border: 1px solid rgba(255,255,255,0.1) !important;
-      padding-left: 20px !important;
-      padding-right: 20px !important;
+      padding-left: 12px !important;
+      padding-right: 12px !important;
       border-radius: 20px !important;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
       z-index: 1000 !important;
       display: flex !important;
       align-items: center !important;
-      gap: 12px !important;
+      gap: 8px !important; /* Reduced from 12px */
       width: fit-content !important;
   }
   
   .preview-footer-minimal .status-saved-text span, 
   .preview-footer-minimal .pagination-text span {
       color: #cbd5e1 !important;
-      font-size: 0.85rem !important;
+      font-size: 0.75rem !important; /* Reduced for tiny look */
       font-weight: 500 !important;
   }
   
