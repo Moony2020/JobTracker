@@ -10,6 +10,15 @@
     max-width: 100% !important;
 }
 
+/* Force Desktop Width in Thumbnail Mode */
+.thumbnail-mode .modern-template, 
+.thumbnail-mode .classic-template, 
+.thumbnail-mode .professional-blue-template, 
+.thumbnail-mode .timeline-template {
+    width: 210mm !important;
+    min-width: 210mm !important;
+}
+
 /* Modern Template */
 .modern-template {
     width: 100%; /* Match parent 794px exactly */

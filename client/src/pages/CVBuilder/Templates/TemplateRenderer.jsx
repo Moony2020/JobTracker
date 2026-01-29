@@ -28,8 +28,9 @@ const TemplateRenderer = ({ templateKey, data, settings }) => {
     }
   };
 
+
   return (
-    <div className="resume-template">
+    <div className={`resume-template ${settings?.isThumbnail ? 'thumbnail-mode' : ''}`}>
       {renderTemplate()}
     </div>
   );

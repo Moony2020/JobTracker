@@ -203,9 +203,29 @@
   flex-direction: column;
   height: 100vh;
   background: #f8fafc;
-  width: 100vw !important; /* BREAKER: Force full width */
-  margin-left: calc(-50vw + 50%); /* BREAKER: Centering breakout if containerized */
+  width: 100% !important; /* Safer than 100vw on mobile */
   position: relative;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+@media (min-width: 1024px) {
+  .cv-editor-design {
+    width: 100vw !important; /* Full width for desktop if needed */
+    margin-left: calc(-50vw + 50%);
+  }
+}
+
+@media (max-width: 786px) {
+  .cv-editor-design {
+    background: #cbd5e1 !important; /* FORCED GREY BACK TO MATCH PREVIEW */
+  }
+}
+
+.cv-editor-design *, 
+.cv-editor-design *::before, 
+.cv-editor-design *::after {
+  box-sizing: border-box !important;
 }
 
 /* Custom Thin Scrollbar for the whole editor context */
@@ -315,19 +335,22 @@
 }
 
 /* Edit Mode: Wide Sidebar */
-.mode-content .editor-sidebar-forms {
-  flex: 0 0 55%;
-  min-width: 500px;
+@media (min-width: 787px) {
+  .mode-content .editor-sidebar-forms {
+    flex: 0 0 55%;
+    min-width: 500px;
+  }
 }
 
-/* Design Mode: Narrow Sidebar */
 /* Design Mode: Wide Fixed Sidebar */
-.mode-design .editor-sidebar-forms {
-  flex: 0 0 450px !important;
-  min-width: 450px !important;
-  max-width: 450px !important;
-  padding: 12px 15px;
-  flex-shrink: 0 !important;
+@media (min-width: 787px) {
+  .mode-design .editor-sidebar-forms {
+    flex: 0 0 450px !important;
+    min-width: 450px !important;
+    max-width: 450px !important;
+    padding: 12px 15px;
+    flex-shrink: 0 !important;
+  }
 }
 
 .design-label-row {
@@ -471,6 +494,12 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .category-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 .cat-btn-add {
@@ -844,6 +873,12 @@
     margin-top: 16px;
 }
 
+@media (max-width: 480px) {
+    .add-category-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
 .category-toggle-btn {
     display: flex;
     align-items: center;
@@ -1002,6 +1037,13 @@
     gap: 12px 20px; /* Added 12px vertical gap for when stacked or tightly packed */
     width: 100%;
     margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+    .form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
 }
 
 .form-group {
@@ -1360,7 +1402,7 @@
 
 /* Precise Thumbnail Scaling - Applied only to the container */
 .tpl-preview-container > div {
-    transform: scale(0.23); /* Lowered to add "tiny space" on sides */
+    transform: scale(0.23); /* Reduced globally to matching mobile fix */
     transform-origin: top center;
     width: 210mm !important;
     height: 297mm !important;
@@ -1463,28 +1505,38 @@
 /* ========================================= */
 
 
-/* ROBUST OVERRIDES FOR FORM GRID LAYOUT */
-/* Force clean 2-column grid on desktop/tablet */
-.cv-editor-design .form-grid {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 20px !important;
-    width: 100% !important;
+/* ROBUST OVERRIDES FOR FORM GRID LAYOUT - DESKTOP ONLY */
+@media (min-width: 787px) {
+  .cv-editor-design .form-grid {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 20px !important;
+      width: 100% !important;
+  }
+
+  /* Ensure every input takes exactly 1 cell (50%) by default */
+  .cv-editor-design .form-grid .form-group,
+  .cv-editor-design .form-grid .form-group:nth-child(n) {
+      grid-column: auto !important; /* Reset any specific span overrides */
+      width: 100% !important;
+      max-width: none !important;
+      flex: none !important; /* Disable flex behaviors in grid */
+  }
+
+  /* Only explicit span-2 classes should span */
+  .cv-editor-design .form-grid .span-2 {
+      grid-column: span 2 !important;
+      width: 100% !important;
+  }
 }
 
-/* Ensure every input takes exactly 1 cell (50%) by default */
-.cv-editor-design .form-grid .form-group,
-.cv-editor-design .form-grid .form-group:nth-child(n) {
-    grid-column: auto !important; /* Reset any specific span overrides */
-    width: 100% !important;
-    max-width: none !important;
-    flex: none !important; /* Disable flex behaviors in grid */
-}
-
-/* Only explicit span-2 classes should span */
-.cv-editor-design .form-grid .span-2 {
-    grid-column: span 2 !important;
-    width: 100% !important;
+/* MOBILE FIX: STACK FORMS REGARDLESS OF NESTING */
+@media (max-width: 786px) {
+    .cv-editor-design .form-grid,
+    .form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
 }
 
 
@@ -1635,7 +1687,7 @@
 }
 
 /* Side-by-Side Behaviors (>768px) */
-@media (min-width: 768px) {
+@media (min-width: 787px) {
   .editor-main-split {
     flex-direction: row !important;
   }
@@ -1702,11 +1754,13 @@
 }
 
 /* Specific Tablet Range (768px - 992px) */
-@media (min-width: 768px) and (max-width: 992px) {
+@media (min-width: 787px) and (max-width: 992px) {
   .mode-design .editor-sidebar-forms {
     flex: 0 0 300px !important;
     min-width: 300px !important;
     padding: 30px 20px !important; /* TABLET PADDING */
+    background: #1e293b !important; /* RESTORED DARK THEME */
+    color: white !important;
   }
   .template-grid-sidebar {
     grid-template-columns: 1fr !important;
@@ -1746,6 +1800,15 @@
   .spacing-icons svg {
     width: 16px !important;
     height: 16px !important;
+  }
+
+  /* Status Pill - MATCHING REDUCED MARGIN FOR TABLET */
+  .preview-footer-minimal {
+      position: static !important; 
+      transform: none !important;
+      margin: 20px auto 30px auto !important; /* PUSHED UP */
+      padding-top: 16px !important;
+      padding-bottom: 16px !important;
   }
 /* Target EDIT mode (not design mode) - FIXED FOR GLOBAL SCROLL */
   .mode-content .editor-main-split {
@@ -1823,56 +1886,122 @@
   
   .mode-design .preview-footer-minimal {
     position: absolute !important;
-    bottom: 20px !important;
+    bottom: -40px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
   }
 }
 
-/* Mobile Range (<767px) */
-@media (max-width: 767px) {
+@media (max-width: 786px) {
   .editor-main-split {
-    flex-direction: column !important;
-    height: auto !important;
-    overflow: visible !important; /* FIXED: Prevent internal scrollbar */
+    flex-direction: column !important; /* FORCE VERTICAL STACKING */
+    height: calc(100vh - 60px) !important; /* FIXED HEIGHT FOR INTERNAL SCROLL */
+    overflow-y: auto !important; /* Allow scrolling the whole stacked view */
+    overflow-x: hidden !important; /* PREVENT CLIPPING OVERFLOW */
+    width: 100% !important;
+    background: #cbd5e1 !important; /* FORCED GREY BACK */
   }
   .editor-sidebar-forms {
     width: 100% !important;
     height: auto !important;
     overflow: visible !important;
-    padding: 30px 20px !important;
+    padding: 30px 20px !important; /* Restored bottom padding */
     flex: none !important;
+    background: white !important;
+    border-bottom: 2px solid #e2e8f0;
   }
+
+  /* NEW: Hide Duplicate Sidebar in Design Mode on Mobile */
+  .mode-design .editor-sidebar-forms {
+    display: none !important;
+  }
+
+  /* SCALE DOWN FORMS ON MOBILE */
+  .editor-sidebar-forms .form-section-card,
+  .editor-sidebar-forms .add-category-section {
+    max-width: 450px !important; /* Narrowed further from 500px */
+    margin: 0 auto 20px auto !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .editor-sidebar-forms .add-category-section {
+    padding-bottom: 60px !important; /* Extra bottom breathing room */
+  }
+
+  .editor-sidebar-forms .add-category-section h4 {
+    padding-left: 2px !important; /* Slight nudge for perfect vertical alignment with labels */
+  }
+
+
+  .editor-sidebar-forms .section-trigger {
+    padding: 12px 16px !important;
+  }
+
+  .editor-sidebar-forms .section-title-box {
+    font-size: 0.95rem !important;
+  }
+
+  .editor-sidebar-forms .section-content-inner {
+    padding: 16px !important;
+  }
+
+  .editor-sidebar-forms .form-label {
+    font-size: 0.8rem !important;
+  }
+
+  .editor-sidebar-forms .form-input {
+    padding: 6px 10px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .editor-sidebar-forms .ql-editor {
+    min-height: 100px !important;
+    font-size: 0.9rem !important;
+  }
+
   .editor-preview-pane {
     height: auto !important;
-    min-height: 600px;
-    padding-bottom: 80px !important;
-    background: #cbd5e1;
+    min-height: 500px;
+    padding: 0 !important; 
+    background: #cbd5e1 !important; /* FORCED GREY BACK */
     display: flex !important;
     flex-direction: column !important;
-    align-items: center !important; /* TOTAL CENTERING */
-    overflow: visible !important; /* FIXED: Prevent internal scrollbar */
+    align-items: center !important;
+    overflow: visible !important; /* LET PARENT HANDLE SCROLL */
+    width: 100% !important;
   }
   .preview-scroll-area {
     width: 100% !important;
     height: auto !important;
-    padding: 0 !important;       /* PIN TO TOP HEADER */
+    padding: 40px 10px 60px 10px !important; /* PUSHED CV UP (40px top), PILL SPACE (60px bottom) */
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    justify-content: flex-start !important;
-    overflow: visible !important; /* NO SCROLLING */
+    justify-content: flex-start !important; /* CHANGED TO FLEX-START FOR STABLE TOP SPACING */
+    overflow: visible !important;
+    background: #cbd5e1 !important; /* FORCED GREY BACK */
+    box-sizing: border-box !important;
   }
 
   .preview-scaler {
-    margin: -16px auto 0 auto !important; /* PUSHED UP 2PX MORE PER USER */
+    margin: 0 auto !important; /* REVERTED NEGATIVE MARGIN */
     transform-origin: top center !important;
-    transform: scale(0.48) !important;   /* ENLARGED AGAIN */
-    height: 540px !important;            /* 1123 * 0.48 */
+    transform: scale(0.48) !important;   /* REVERTED TO STABLE SCALE */
+    height: 539px !important;            /* 1123 * 0.48 = EXACT FIT, NO GAP */
     width: 387px !important;             /* 806 * 0.48 */
     position: relative;
     display: block !important;
     flex-shrink: 0;
+  }
+
+  /* Extra scaling for very narrow devices to prevent clipping */
+  @media (max-width: 420px) {
+    .preview-scaler {
+      transform: scale(0.40) !important; /* Slightly smaller for safer fit */
+      height: 450px !important; 
+      width: 322px !important;  
+    }
   }
   
   /* Ensure the paper canvas centers within the mobile footprint */
@@ -1890,13 +2019,25 @@
 
   /* Reposition floating pill UNDER the CV in the scroll flow - COMPACT VERSION */
   .preview-footer-minimal {
-    position: static !important; /* MOVED DOWN (NOT FIXED) */
+    position: static !important;
     transform: none !important;
-    margin: 20px auto 100px auto !important; /* PUSHED UP 20PX */
+    margin: 15px auto 30px auto !important; /* PUSHED DOWN TO CLEAR CV EDGE */
+    
+    padding-top: 14px !important; /* MOBILE SPECIFIC PADDING */
+    padding-bottom: 14px !important;
+
+    background: rgba(30, 41, 59, 0.95) !important;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.1) !important;
     width: fit-content !important;
-    padding: 4px 12px !important; /* TINY PADDING */
-    gap: 8px !important;           /* COMPACT GAP */
+    padding: 6px 16px !important;
+    border-radius: 20px !important;
+    pointer-events: auto !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2) !important;
+    z-index: 10 !important;
     display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
   }
 
   .preview-footer-minimal .status-saved-text span,
@@ -1911,7 +2052,348 @@
 }
 
 /* Utility Classes */
-@media (max-width: 768px) {
+/* --- CONSOLIDATED MOBILE & DRAWER STYLES --- */
+
+/* 1. DRAWER STYLES (Moved from mobile_drawer_styles.css) */
+.mobile-design-drawer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #1e293b;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  z-index: 2000;
+  transform: translateY(105%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+  color: white;
+}
+
+.mobile-design-drawer.open {
+  transform: translateY(0);
+}
+
+.drawer-header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 1px solid #334155;
+  color: #94a3b8;
+}
+
+.drawer-header:hover {
+  color: white;
+}
+
+.drawer-content {
+  padding: 20px 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.drawer-section {
+  display: flex !important;
+  flex-direction: column;
+  gap: 12px;
+  border-bottom: 1px dashed #334155;
+  padding-bottom: 24px;
+  visibility: visible !important;
+}
+
+.drawer-section.no-border {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.drawer-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.drawer-label-row label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+/* Range Input styling */
+.drawer-range-input {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: #475569;
+    border-radius: 2px;
+    outline: none;
+}
+.drawer-range-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #6366f1;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid #1e293b;
+}
+
+/* Color Row */
+.drawer-color-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+/* Template Horizontal List */
+.drawer-template-list {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 10px 0 5px 0;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.drawer-tpl-card {
+  flex: 0 0 200px !important; /* INCREASED from 180px */
+  min-width: 200px !important;
+  max-width: 200px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  scroll-snap-align: start;
+}
+
+.drawer-tpl-thumb {
+  width: 100%;
+  height: 280px; /* INCREASED from 260px */
+  background: transparent !important;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.25s ease;
+  border: none !important; 
+}
+
+.drawer-tpl-card.active .drawer-tpl-thumb {
+  border: 4px solid #ff4d4d !important; 
+  box-shadow: 0 0 20px rgba(255, 77, 77, 0.3);
+}
+
+/* EXPLICT DRAWER THUMBNAIL SCALING */
+/* Targeting BOTH potential containers to be safe */
+.drawer-tpl-thumb .tpl-preview-container > div,
+.drawer-preview-scaler > div,
+.drawer-preview-scaler .resume-template {
+    transform: scale(0.25) !important; /* INCREASED from 0.22 */
+    transform-origin: top center !important; 
+    width: 210mm !important;
+    height: 297mm !important;
+    min-width: 210mm !important;
+}
+
+.drawer-preview-scaler {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    padding-left: 0 !important; 
+    display: flex; /* Restore Flex Center */
+    justify-content: center;
+}
+
+/* Ensure scaler container doesn't overflow */
+.drawer-preview-scaler {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+
+.drawer-tpl-name {
+  font-size: 0.85rem;
+  color: #fff;
+  text-align: center;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+/* Floating Button (Sticky Footer Style) */
+.mobile-floating-templates-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #6366f1;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  z-index: 1900;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  transition: all 0.2s;
+}
+
+.drawer-label-row.tight {
+  justify-content: flex-start !important;
+  align-items: center !important; /* VERTICAL ALIGNMENT FIX */
+  gap: 10px;
+}
+
+.compact-spacing-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* Reduced from 12px */
+  transform: translateY(2px); /* NUDGE DOWN PER USER */
+}
+
+.spacing-btn {
+  background: #334155;
+  border: none;
+  width: 26px; /* Reduced from 32px */
+  height: 26px; /* Reduced from 32px */
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #94a3b8;
+  transition: all 0.2s;
+}
+
+/* Hide Drawer/Button on Desktop */
+@media (min-width: 787px) {
+  .mobile-design-drawer,
+  .mobile-floating-templates-btn {
+    display: none !important;
+  }
+}
+
+/* Top spacing only on small screens (<992px) */
+@media (max-width: 992px) {
+  .drawer-label-row label {
+    margin-top: 16px;
+  }
+}
+
+/* 2. MAIN MOBILE LAYOUT FIXES (Targeting max-width: 786px) */
+@media (max-width: 786px) {
   .hide-on-mobile { display: none !important; }
   .template-toggle-btn-top { display: none !important; }
+
+  /* REMOVED GLOBAL LOCK - Handled via JS in Editor to allow scrolling on List Page */
+
+  /* Consolidated above */
+
+  /* NEW: DECOUPLED STICKY FOOTER ELEMENTS (Mobile) */
+  /* 1. Container - Just a wrapper for logic, styles handled individually */
+  .mobile-sticky-footer-controls {
+      display: contents !important;
+      pointer-events: none !important;
+  }
+
+  /* 2. THE BUTTON - Fixed Bottom Center Flush */
+  .mobile-floating-templates-btn {
+      position: fixed !important;
+      bottom: 0 !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      right: auto !important;
+      margin: 0 !important;
+      direction: ltr !important; /* Force LTR to prevent Arabic mirroring issues */
+      text-align: center !important;
+      
+      width: fit-content !important; 
+      max-width: 250px !important;
+      
+      background: #6366f1 !important;
+      color: white !important;
+      border: none !important;
+      padding: 12px 24px !important;
+      
+      /* Rounded Top Corners only? Or Pill? User likes Pill but wants flush? */
+      /* If flush, bottom corners 0? Let's try Pill with 0 margin. */
+      border-radius: 30px !important; 
+      border-bottom-left-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+      
+      font-weight: 600 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      box-shadow: 0 -2px 10px rgba(99, 102, 241, 0.3) !important;
+      z-index: 200000 !important;
+      pointer-events: auto !important;
+      margin: 0 !important;
+  }
+  
+}
+
+/* 3. DESKTOP FOOTER PILL (Outside the mobile query) */
+@media (min-width: 787px) {
+  .mobile-sticky-footer-controls {
+      display: contents !important;
+      pointer-events: none !important;
+  }
+
+  .preview-footer-minimal {
+      position: static !important; 
+      transform: none !important;
+      margin: 20px auto 30px auto !important; /* Reduced space as requested */
+      padding-top: 12px !important; /* DESKTOP PADDING */
+      padding-bottom: 12px !important;
+      background: rgba(30, 41, 59, 0.95) !important;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.1) !important;
+      padding-left: 20px !important;
+      padding-right: 20px !important;
+      border-radius: 20px !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+      z-index: 1000 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      width: fit-content !important;
+  }
+  
+  .preview-footer-minimal .status-saved-text span, 
+  .preview-footer-minimal .pagination-text span {
+      color: #cbd5e1 !important;
+      font-size: 0.85rem !important;
+      font-weight: 500 !important;
+  }
+  
+  .preview-footer-minimal .pagination-text {
+      border-left: 1px solid rgba(255,255,255,0.2) !important;
+      margin-left: 8px !important;
+      padding-left: 8px !important;
+  }
+  
+  /* Ensure padding on desktop scroll area if needed */
+  .preview-scroll-area {
+      padding-bottom: 60px !important;
+  }
 }

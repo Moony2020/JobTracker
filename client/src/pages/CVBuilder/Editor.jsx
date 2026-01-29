@@ -8,8 +8,6 @@ import {
   User, Briefcase, GraduationCap, Globe, Code, Heart, Type, ArrowLeft, Palette, Save, Eye, FileText, HelpCircle, Check, Camera, Upload
 } from 'lucide-react';
 import './CVBuilder.css';
-import './mobile_drawer_styles.css';
-import './mobile_layout_fix.css';
 import api from '../../services/api';
 
 const SAMPLE_DATA = {
@@ -50,32 +48,49 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
   useEffect(() => {
     localStorage.setItem('cv_editor_view_mode', viewMode);
     // Update the ref whenever viewMode changes while on desktop
-    if (window.innerWidth > 768) {
+    if (window.innerWidth > 786) {
       lastDesktopModeRef.current = viewMode;
     }
   }, [viewMode]);
 
   useEffect(() => {
     const handleResize = () => {
-      const currentWidth = window.innerWidth;
-      const wasDesktop = prevWidthRef.current > 768;
-      const isMobile = currentWidth <= 768;
+      const isMobile = window.innerWidth <= 786;
+      
+      // Dynamic Scroll Lock for Mobile Editor
+      if (isMobile) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
 
-      if (wasDesktop && isMobile) {
-        // Desktop -> Mobile: Close drawer by default so user sees CV
-        // Save current desktop mode first
+      const prevWidth = prevWidthRef.current;
+      const crossedToMobile = prevWidth > 786 && isMobile;
+      const crossedToDesktop = prevWidth <= 786 && !isMobile;
+
+      if (crossedToMobile) {
+        // Desktop -> Mobile: Switch to content view
         lastDesktopModeRef.current = viewMode; 
         setViewMode('content');
-      } else if (!wasDesktop && !isMobile) {
-        // Mobile -> Desktop: Restore the desktop view they were using
+      } else if (crossedToDesktop) {
+        // Mobile -> Desktop: Restore
         setViewMode(lastDesktopModeRef.current);
       }
       
-      prevWidthRef.current = currentWidth;
+      prevWidthRef.current = window.innerWidth;
     };
 
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    
+    // Initial check on mount
+    if (window.matchMedia('(max-width: 786px)').matches) {
+       document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      document.body.style.overflow = ''; // CLEANUP: Restore scrolling when leaving Editor
+    };
   }, [viewMode]); 
 
   const [cvData, setCvData] = useState({
@@ -943,7 +958,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
 
 
               {/* Add Category Section */}
-              <div className="add-category-section" style={{ marginTop: '24px', padding: '0 10px 40px 10px' }}>
+              <div className="add-category-section" style={{ marginTop: '24px' }}>
                 <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: '#334155', marginBottom: '12px' }}>Add Category</h4>
                 <div className="category-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                    
@@ -1139,23 +1154,23 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                 />
               </div>
             </div>
-          </div>
 
-          {/* Premium Pill - Restored to absolute bottom for discretion */}
-          <div className="preview-footer-minimal">
-             {isSaved ? (
-               <div className="status-saved-text" style={{ display: 'flex', alignItems: 'center', color: '#10b981', gap: '8px' }}>
-                 <CheckCircle size={14} strokeWidth={3} />
-                 <span>Saved</span>
+            {/* Premium Pill - Inside scroll area to stay under CV */}
+            <div className="preview-footer-minimal">
+               {isSaved ? (
+                 <div className="status-saved-text" style={{ display: 'flex', alignItems: 'center', color: '#10b981', gap: '8px' }}>
+                   <CheckCircle size={14} strokeWidth={3} />
+                   <span>Saved</span>
+                 </div>
+               ) : (
+                 <div className="status-saved-text" style={{ color: '#cbd5e1' }}>
+                   <span>Saving...</span>
+                 </div>
+               )}
+               <div className="pagination-text" style={{ marginLeft: '8px', paddingLeft: '8px', borderLeft: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center' }}>
+                  <span style={{ color: '#cbd5e1', fontWeight: 500 }}>Page 1 / 1</span>
                </div>
-             ) : (
-               <div className="status-saved-text" style={{ color: '#cbd5e1' }}>
-                 <span>Saving...</span>
-               </div>
-             )}
-             <div className="pagination-text" style={{ marginLeft: '8px', paddingLeft: '8px', borderLeft: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center' }}>
-                <span style={{ color: '#cbd5e1', fontWeight: 500 }}>Page 1 / 1</span>
-             </div>
+            </div>
           </div>
         </main>
       </div>
@@ -1179,35 +1194,35 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
         <div className="drawer-content">
            {/* 1. Spacing */}
             <div className="drawer-section">
-               <div className="drawer-label-row">
-                  <label>
-                    Line Spacing ({(() => {
-                      const val = parseInt(cvData.settings?.lineSpacing);
-                      return isNaN(val) ? 100 : val;
-                    })()}%)
-                  </label>
-                  <div className="compact-spacing-controls">
-                     <button 
-                       onClick={() => {
-                         const current = parseInt(cvData.settings?.lineSpacing) || 100;
-                         updateNestedState('settings.lineSpacing', Math.max(80, current - 10));
-                       }}
-                       className="spacing-btn"
-                     >
-                       <Minus size={18} />
-                     </button>
-                     <Type size={20} color="#94a3b8" />
-                     <button 
-                       onClick={() => {
-                         const current = parseInt(cvData.settings?.lineSpacing) || 100;
-                         updateNestedState('settings.lineSpacing', Math.min(200, current + 10));
-                       }}
-                       className="spacing-btn"
-                     >
-                       <Plus size={18} />
-                     </button>
-                  </div>
-               </div>
+                <div className="drawer-label-row tight">
+                   <label>
+                     Line Spacing ({(() => {
+                       const val = parseInt(cvData.settings?.lineSpacing);
+                       return isNaN(val) ? 100 : val;
+                     })()}%)
+                   </label>
+                   <div className="compact-spacing-controls">
+                      <button 
+                        onClick={() => {
+                          const current = parseInt(cvData.settings?.lineSpacing) || 100;
+                          updateNestedState('settings.lineSpacing', Math.max(80, current - 10));
+                        }}
+                        className="spacing-btn"
+                      >
+                        <Minus size={14} />
+                      </button>
+                      <Type size={16} color="#94a3b8" />
+                      <button 
+                        onClick={() => {
+                          const current = parseInt(cvData.settings?.lineSpacing) || 100;
+                          updateNestedState('settings.lineSpacing', Math.min(200, current + 10));
+                        }}
+                        className="spacing-btn"
+                      >
+                        <Plus size={14} />
+                      </button>
+                   </div>
+                </div>
             </div>
 
            {/* 2. Colors */}
@@ -1256,7 +1271,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                               <TemplateRenderer 
                                 templateKey={tpl.key}
                                 data={SAMPLE_DATA}
-                                settings={cvData.settings}
+                                settings={{ ...cvData.settings, isThumbnail: true }}
                               />
                           </div>
                           {cvData.templateKey === tpl.key && (

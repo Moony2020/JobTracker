@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ResumeList from './ResumeList';
 import Editor from './Editor';
-import './CVBuilder.css';
 
 const CVBuilder = ({ language, onExit, setFullScreen, showNotify, isPrinting }) => {
   // Default to list view to prevent getting stuck
