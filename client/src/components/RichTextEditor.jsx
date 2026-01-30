@@ -21,8 +21,8 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
   const formats = [
     'header',
     'bold', 'italic', 'underline', 'strike',
-    'list', 'bullet',
-    'link'
+    'list', 'indent',
+    'link', 'align'
   ];
 
   return (

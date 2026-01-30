@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatDate } from '../../../utils/formatters';
 
 const ClassicTemplate = ({ data, settings }) => {
   const { personal, experience, education } = data;
@@ -27,10 +28,10 @@ const ClassicTemplate = ({ data, settings }) => {
             {personal.zipCode && <span>• {personal.zipCode}</span>}
           </div>
           <div className="contact-details-extra" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', fontSize: '0.8rem', color: '#64748b', marginTop: '4px' }}>
-            {personal.birthDate && <span>Birth: {personal.birthDate}</span>}
+            {personal.birthDate && <span>Birth: {formatDate(personal.birthDate)}</span>}
             {personal.nationality && <span>• Nationality: {personal.nationality}</span>}
             {personal.idNumber && <span>• ID: {personal.idNumber}</span>}
-            {personal.driversLicense && <span>• DL: {personal.driversLicense}</span>}
+            {personal.driversLicense && <span>• DL: {formatDate(personal.driversLicense)}</span>}
           </div>
         </div>
       </div>
@@ -38,7 +39,7 @@ const ClassicTemplate = ({ data, settings }) => {
       {(personal.summary || !personal.firstName) && (
         <section>
           <h2 style={{ color: themeColor }}>Professional Summary</h2>
-          <p>{personal.summary || 'A brief professional summary highlighting your career goals and key achievements.'}</p>
+          <div className="summary" dangerouslySetInnerHTML={{ __html: personal.summary || 'Professional summary goes here.' }} />
         </section>
       )}
 
@@ -49,10 +50,10 @@ const ClassicTemplate = ({ data, settings }) => {
             <div key={i} className="classic-item">
               <div className="item-header">
                 <strong>{exp.title}</strong>
-                <span>{exp.startDate} - {exp.current ? 'Present' : exp.endDate}</span>
+                <span>{formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}</span>
               </div>
               <div className="item-sub">{exp.company}{exp.location ? `, ${exp.location}` : ''}</div>
-              <p>{exp.description}</p>
+              {exp.description && <div className="description" dangerouslySetInnerHTML={{ __html: exp.description }} />}
             </div>
           )) : (
             <div className="classic-item">
@@ -74,10 +75,10 @@ const ClassicTemplate = ({ data, settings }) => {
             <div key={i} className="classic-item">
               <div className="item-header">
                 <strong>{edu.degree}</strong>
-                <span>{edu.startDate} - {edu.endDate}</span>
+                <span>{formatDate(edu.startDate)} - {formatDate(edu.endDate)}</span>
               </div>
-              <div className="item-sub">{edu.school}</div>
-              {edu.description && <p>{edu.description}</p>}
+              <div className="item-sub">{edu.school}{edu.location ? `, ${edu.location}` : ''}</div>
+              {edu.description && <div className="description" dangerouslySetInnerHTML={{ __html: edu.description }} />}
             </div>
           )) : (
             <div className="classic-item">
@@ -100,7 +101,7 @@ const ClassicTemplate = ({ data, settings }) => {
                 <strong>{item.role}</strong>
               </div>
               <div className="item-sub">{item.organization}</div>
-              {item.description && <p>{item.description}</p>}
+              {item.description && <div className="description" dangerouslySetInnerHTML={{ __html: item.description }} />}
             </div>
           ))}
         </section>
@@ -160,6 +161,20 @@ const ClassicTemplate = ({ data, settings }) => {
               <strong>{ref.name}</strong> • {ref.contact}
             </div>
           ))}
+        </section>
+      )}
+
+      {data.languages && data.languages.length > 0 && (
+        <section>
+          <h2 style={{ color: themeColor }}>Languages</h2>
+          <div className="classic-item" style={{ display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
+            {data.languages.map((lang, i) => (
+              <div key={i}>
+                 <strong>{lang.name}</strong> 
+                 {lang.level && <span style={{ color: '#64748b', marginLeft: '6px' }}>— {lang.level}</span>}
+              </div>
+            ))}
+          </div>
         </section>
       )}
     </div>

@@ -1,102 +1,53 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ResumeList from './ResumeList';
 import Editor from './Editor';
+import SuccessPage from './SuccessPage';
 
 const CVBuilder = ({ language, onExit, setFullScreen, showNotify, isPrinting }) => {
-  // Default to list view to prevent getting stuck
-  // Default to hash-based view to prevent refresh-glitches
-  const [view, setView] = useState(() => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // 1. Derive View from URL
+  const view = useMemo(() => {
     if (isPrinting) return 'print';
-    if (window.location.hash === '#editor') return 'editor';
+    if (location.hash === '#editor') return 'editor';
+    if (location.pathname.includes('/success')) return 'success';
     return 'list';
-  });
-  
-  // Persist selected CV ID (optional, but let's keep it safe or reset it)
-  const [selectedCV, setSelectedCV] = useState(() => {
+  }, [location, isPrinting]);
+
+  // 2. Derive Selected CV from URL/Storage
+  const selectedCV = useMemo(() => {
     if (isPrinting) {
-      const parts = window.location.pathname.split('/');
+      const parts = location.pathname.split('/');
       const id = parts[parts.length - 1];
       return { _id: id };
     }
-    return null;
-  });
-
-  // Ensure full screen is disabled on mount (list view) and set initial history state
-  useEffect(() => {
-    if (isPrinting) return; // Skip history logic when printing
-    
-    const isEditor = window.location.hash === '#editor';
-    if (setFullScreen) setFullScreen(isEditor);
-    
-    // Set initial state based on current URL
-    if (!isEditor) {
-      window.history.replaceState({ view: 'list' }, '', '');
+    if (view === 'editor') {
+        const activeId = localStorage.getItem('cv_activeId');
+        return activeId ? { _id: activeId } : null;
     }
+    return null;
+  }, [view, location.pathname, isPrinting]);
 
-    return () => {
-      if (setFullScreen) setFullScreen(false); // Cleanup on unmount
-    };
-  }, [setFullScreen, isPrinting]);
-
+  // Handle full screen based on view
   useEffect(() => {
-    if (isPrinting) return; // Skip history logic when printing
-    
-    const handlePopState = (event) => {
-      // If we go back and there's no state, or state says list, go to list
-      if (!event.state || event.state.view === 'list') {
-        setView('list');
-        if (setFullScreen) setFullScreen(false);
-        localStorage.setItem('cv_view', 'list');
-        localStorage.removeItem('cv_activeId');
-        setSelectedCV(null);
-      } else if (event.state.view === 'editor') {
-        // If forward to editor (preserving state)
-        setView('editor');
-        if (setFullScreen) setFullScreen(true);
-        if (event.state.cvId) {
-           setSelectedCV({ _id: event.state.cvId });
-           localStorage.setItem('cv_activeId', event.state.cvId);
-        }
-      }
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [setFullScreen, isPrinting]);
+    if (isPrinting) return;
+    if (setFullScreen) setFullScreen(view === 'editor');
+  }, [view, setFullScreen, isPrinting]);
 
   const handleEdit = (cv) => {
-    setSelectedCV(cv);
-    setView('editor');
-    if (setFullScreen) setFullScreen(true);
-    
-    // Update local storage
-    localStorage.setItem('cv_view', 'editor');
     localStorage.setItem('cv_activeId', cv._id);
-    
-    // Push editor state to history so "Back" works
-    window.history.pushState({ view: 'editor', cvId: cv._id }, '', '#editor');
+    navigate('#editor');
   };
 
   const handleCreateNew = (template) => {
-    setSelectedCV(null);
-    setView('editor');
-    if (setFullScreen) setFullScreen(true);
-    
-    localStorage.setItem('cv_view', 'editor');
     localStorage.removeItem('cv_activeId');
-    
-    // Push editor state with selected template info
-    window.history.pushState({ 
-      view: 'editor', 
-      cvId: null,
-      templateKey: template?.key || 'modern' // Pass selected template key
-    }, '', '#editor');
+    navigate('#editor', { state: { templateKey: template?.key } });
   };
 
   const handleBackToList = () => {
-    // If the user clicks the "X" button inside the editor, we should just go back in history
-    // This simulates hitting the browser back button
-    window.history.back();
+    navigate('/cv-builder');
   };
 
   if (view === 'print') {
@@ -107,6 +58,12 @@ const CVBuilder = ({ language, onExit, setFullScreen, showNotify, isPrinting }) 
           isPrintMode={true}
         />
       </div>
+    );
+  }
+
+  if (view === 'success') {
+    return (
+        <SuccessPage showNotify={showNotify} />
     );
   }
 

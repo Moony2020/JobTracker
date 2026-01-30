@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatDate } from '../../../utils/formatters';
 
 const ModernTemplate = ({ data, settings }) => {
   const { personal, experience, education, skills } = data;
@@ -17,9 +18,9 @@ const ModernTemplate = ({ data, settings }) => {
         )}
         <div className="header-text">
           <h1>{personal.firstName || 'Your Name'} <span>{personal.lastName}</span></h1>
-        <p className="job-title" style={{ fontSize: '1.2rem', color: '#64748b', marginTop: '4px' }}>{personal.jobTitle || 'Professional Title'}</p>
+          <p className="job-title" style={{ fontSize: '1.2rem', color: '#64748b', marginTop: '4px' }}>{personal.jobTitle || ''}</p>
         {(personal.summary || !personal.firstName) && (
-          <div className="summary" dangerouslySetInnerHTML={{ __html: personal.summary || 'Professional summary goes here. Briefly describe your career highlights and key skills.' }} />
+          <div className="summary" dangerouslySetInnerHTML={{ __html: personal.summary || 'Professional summary goes here.' }} />
         )}
         </div>
       </div>
@@ -32,7 +33,9 @@ const ModernTemplate = ({ data, settings }) => {
               {hasItems(experience) ? experience.map((exp, i) => (
                 <div key={i} className="exp-item">
                   <h3>{exp.title}</h3>
-                  <div className="meta">{exp.company} | {exp.startDate} - {exp.current ? 'Present' : exp.endDate}</div>
+                  <div className="meta">
+                    {exp.company}{exp.location && ` | ${exp.location}`} | {formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}
+                  </div>
                   {exp.description && <div className="description" dangerouslySetInnerHTML={{ __html: exp.description }} />}
                 </div>
               )) : (
@@ -51,7 +54,9 @@ const ModernTemplate = ({ data, settings }) => {
               {hasItems(education) ? education.map((edu, i) => (
                 <div key={i} className="exp-item">
                   <h3>{edu.degree}</h3>
-                  <div className="meta">{edu.school} | {edu.startDate} - {edu.endDate}</div>
+                  <div className="meta">
+                    {edu.school}{edu.location && ` | ${edu.location}`} | {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
+                  </div>
                   {edu.description && <div className="description" dangerouslySetInnerHTML={{ __html: edu.description }} />}
                 </div>
               )) : (
@@ -112,7 +117,7 @@ const ModernTemplate = ({ data, settings }) => {
             {personal.zipCode && <p>{personal.zipCode}</p>}
             
             <div className="extra-details" style={{ marginTop: '16px', fontSize: '0.8rem', opacity: 0.8 }}>
-              {personal.birthDate && <p>Born: {personal.birthDate}</p>}
+              {personal.birthDate && <p>Born: {formatDate(personal.birthDate)}</p>}
               {personal.nationality && <p>Nationality: {personal.nationality}</p>}
               {personal.idNumber && <p>ID: {personal.idNumber}</p>}
               {personal.driversLicense && <p>License: {personal.driversLicense}</p>}
@@ -141,6 +146,20 @@ const ModernTemplate = ({ data, settings }) => {
                     <span className="skill-tag">Skill 3</span>
                   </>
                 )}
+              </div>
+            </section>
+          )}
+
+          {data.languages && data.languages.length > 0 && (
+            <section className="languages-section">
+              <h2 style={{ color: themeColor }}>Languages</h2>
+              <div className="language-list">
+                {data.languages.map((lang, i) => (
+                    <div key={i} className="language-item" style={{ marginBottom: '4px' }}>
+                        <span style={{ fontWeight: 600 }}>{lang.name}</span>
+                        {lang.level && <span style={{ opacity: 0.8, fontSize: '0.9em' }}> — {lang.level}</span>}
+                    </div>
+                ))}
               </div>
             </section>
           )}

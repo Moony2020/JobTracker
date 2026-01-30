@@ -39,8 +39,8 @@ router.post("/stripe/create-session", auth, async (req, res) => {
         },
       ],
       mode: "payment",
-      success_url: `${process.env.CLIENT_URL || "http://localhost:5174"}/cv-builder/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL || "http://localhost:5174"}/cv-builder/cancel`,
+      success_url: `${process.env.CLIENT_URL || "http://localhost:5173"}/cv-builder/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.CLIENT_URL || "http://localhost:5173"}/cv-builder/cancel`,
       metadata: {
         userId: req.user.id,
         cvId,
@@ -48,7 +48,7 @@ router.post("/stripe/create-session", auth, async (req, res) => {
       },
     });
 
-    res.json({ id: session.id });
+    res.json({ id: session.id, url: session.url });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server Error");
@@ -56,41 +56,63 @@ router.post("/stripe/create-session", auth, async (req, res) => {
 });
 
 // @route   POST api/payment/stripe/webhook
-// @desc    Stripe webhook to handle payment success
-// @access  Public
-router.post("/stripe/webhook", express.raw({ type: "application/json" }), async (req, res) => {
-  const sig = req.headers["stripe-signature"];
-  let event;
+// @desc    Stripe webhook - MOVED TO server.js for raw body support
+// router.post("/stripe/webhook", ...) 
+// HANDLED BY payment_webhook.js via server.js mount point.
 
+// @route   GET api/payment/stripe/session/:id
+// @desc    Get Stripe session details for verification + Synchronous Fulfillment fallback
+// @access  Public (Session ID serves as token)
+router.get("/stripe/session/:id", async (req, res) => {
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    const session = await stripe.checkout.sessions.retrieve(req.params.id);
+    
+    // Check if we already have the purchase recorded
+    let purchase = await Purchase.findOne({ paymentId: session.id });
+    
+    // SYNC FULFILLMENT FALLBACK:
+    // If Stripe says it's paid but our DB is behind (webhook lag), fulfill now!
+    if (!purchase && session.payment_status === 'paid') {
+        console.log(`[Sync Fulfillment] Fulfilling session ${session.id} during redirect`);
+        const template = await Template.findById(session.metadata.templateId);
+        
+        let expiresAt = null;
+        if (template && template.category === "Pro") {
+          expiresAt = new Date();
+          expiresAt.setDate(expiresAt.getDate() + 7);
+        }
+
+        purchase = new Purchase({
+          user: session.metadata.userId,
+          cvDocument: session.metadata.cvId,
+          template: session.metadata.templateId,
+          amount: session.amount_total / 100,
+          provider: "stripe",
+          paymentId: session.id,
+          status: "completed",
+          expiresAt: expiresAt
+        });
+
+        await purchase.save();
+        
+        await CVDocument.findByIdAndUpdate(session.metadata.cvId, {
+          $set: { lastDownloaded: new Date() }
+        });
+    }
+
+    const cv = await CVDocument.findById(session.metadata.cvId);
+
+    res.json({
+      cvId: session.metadata.cvId,
+      cvTitle: cv?.title || "Your CV",
+      status: session.payment_status,
+      isFulfilled: !!purchase,
+      customer_email: session.customer_details?.email
+    });
   } catch (err) {
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+    console.error(err);
+    res.status(500).send("Server Error");
   }
-
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
-    
-    // Create purchase record
-    const purchase = new Purchase({
-      user: session.metadata.userId,
-      cvDocument: session.metadata.cvId,
-      template: session.metadata.templateId,
-      amount: session.amount_total / 100,
-      provider: "stripe",
-      paymentId: session.id,
-      status: "completed",
-    });
-
-    await purchase.save();
-    
-    // Update CV document last downloaded or status
-    await CVDocument.findByIdAndUpdate(session.metadata.cvId, {
-      $set: { lastDownloaded: new Date() }
-    });
-  }
-
-  res.json({ received: true });
 });
 
 // @route   POST api/payment/paypal/create-order
@@ -119,6 +141,112 @@ router.post("/paypal/create-order", auth, async (req, res) => {
 
     const order = await client.execute(request);
     res.json({ id: order.result.id });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+});
+
+// @route   POST api/payment/paypal/capture-order
+// @desc    Capture PayPal order and create purchase record
+// @access  Private
+router.post("/paypal/capture-order", auth, async (req, res) => {
+  const { orderId } = req.body;
+
+  try {
+    const request = new paypal.orders.OrdersCaptureRequest(orderId);
+    request.requestBody({});
+
+    const capture = await client.execute(request);
+    
+    if (capture.result.status === "COMPLETED") {
+      const customData = JSON.parse(capture.result.purchase_units[0].custom_id);
+      const { userId, cvId, templateId } = customData;
+
+      const template = await Template.findById(templateId);
+      
+      let expiresAt = null;
+      if (template && template.category === "Pro") {
+        expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 7);
+      }
+
+      const purchase = new Purchase({
+        user: userId,
+        cvDocument: cvId,
+        template: templateId,
+        amount: parseFloat(capture.result.purchase_units[0].payments.captures[0].amount.value),
+        provider: "paypal",
+        paymentId: orderId,
+        status: "completed",
+        expiresAt: expiresAt
+      });
+
+      await purchase.save();
+
+      await CVDocument.findByIdAndUpdate(cvId, {
+        $set: { lastDownloaded: new Date() }
+      });
+
+      res.json({ status: "success", purchaseId: purchase._id });
+    } else {
+      res.status(400).json({ msg: "Payment not completed" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+});
+
+// @route   GET api/payment/stripe/session/:id
+// @desc    Get Stripe session details for verification + Synchronous Fulfillment fallback
+// @access  Public (Session ID serves as token)
+router.get("/stripe/session/:id", async (req, res) => {
+  try {
+    const session = await stripe.checkout.sessions.retrieve(req.params.id);
+    
+    // Check if we already have the purchase recorded
+    let purchase = await Purchase.findOne({ paymentId: session.id });
+    
+    // SYNC FULFILLMENT FALLBACK:
+    // If Stripe says it's paid but our DB is behind (webhook lag), fulfill now!
+    if (!purchase && session.payment_status === 'paid') {
+        console.log(`[Sync Fulfillment] Fulfilling session ${session.id} during redirect`);
+        const template = await Template.findById(session.metadata.templateId);
+        
+        let expiresAt = null;
+        if (template && template.category === "Pro") {
+          expiresAt = new Date();
+          expiresAt.setDate(expiresAt.getDate() + 7);
+        }
+
+        purchase = new Purchase({
+          user: session.metadata.userId,
+          cvDocument: session.metadata.cvId,
+          template: session.metadata.templateId,
+          amount: session.amount_total / 100,
+          provider: "stripe",
+          paymentId: session.id,
+          status: "completed",
+          expiresAt: expiresAt
+        });
+
+        await purchase.save();
+        
+        await CVDocument.findByIdAndUpdate(session.metadata.cvId, {
+          $set: { lastDownloaded: new Date() }
+        });
+    }
+
+    const cv = await CVDocument.findById(session.metadata.cvId);
+
+    res.json({
+      cvId: session.metadata.cvId,
+      cvTitle: cv?.title || "Your CV",
+      status: session.payment_status,
+      isFulfilled: !!purchase,
+      customer_email: session.customer_details?.email
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server Error");

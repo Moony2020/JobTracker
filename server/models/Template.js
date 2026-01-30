@@ -15,8 +15,8 @@ const TemplateSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["Basic", "Premium"],
-      default: "Basic",
+      enum: ["Free", "Pro"],
+      default: "Free",
     },
     price: {
       type: Number,

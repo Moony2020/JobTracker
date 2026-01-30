@@ -1,5 +1,6 @@
 import React from 'react';
-import { User, Briefcase, GraduationCap, Megaphone, Phone, Mail, MapPin } from 'lucide-react';
+import { User, Briefcase, GraduationCap, Megaphone, Phone, Mail, MapPin, Globe } from 'lucide-react';
+import { formatDate } from '../../../utils/formatters';
 
 const TimelineTemplate = ({ data, settings }) => {
   const { personal, experience, education, skills, languages, references } = data;
@@ -66,10 +67,10 @@ const TimelineTemplate = ({ data, settings }) => {
                 </div>
               )}
               <div className="extra-sidebar-info" style={{ marginTop: '10px', fontSize: '0.75rem', opacity: 0.8, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                {personal.birthDate && <span>Birth: {personal.birthDate}</span>}
+                {personal.birthDate && <span>Birth: {formatDate(personal.birthDate)}</span>}
                 {personal.nationality && <span>Nationality: {personal.nationality}</span>}
                 {personal.idNumber && <span>ID: {personal.idNumber}</span>}
-                {personal.driversLicense && <span>License: {personal.driversLicense}</span>}
+                {personal.driversLicense && <span>License: {formatDate(personal.driversLicense)}</span>}
               </div>
             </div>
           </div>
@@ -90,7 +91,10 @@ const TimelineTemplate = ({ data, settings }) => {
               <h2 className="sidebar-title">Languages</h2>
               <div className="sidebar-list">
                 {languages.map((lang, idx) => (
-                  <div key={idx} className="sidebar-list-item">{lang}</div>
+                  <div key={idx} className="sidebar-list-item">
+                    <strong>{lang.name}</strong> 
+                    {lang.level && <span style={{ opacity: 0.8, fontSize: '0.9em', display: 'block' }}>{lang.level}</span>}
+                  </div>
                 ))}
               </div>
             </div>
@@ -140,7 +144,13 @@ const TimelineTemplate = ({ data, settings }) => {
                   <div className="exp-meta-row">
                     <span className="exp-company-text">{exp.company}</span>
                     <span className="exp-dots">•</span>
-                    <span className="exp-date-text">{exp.startDate} - {exp.endDate}</span>
+                    {exp.location && (
+                      <>
+                        <span className="exp-location-text">{exp.location}</span>
+                        <span className="exp-dots">•</span>
+                      </>
+                    )}
+                    <span className="exp-date-text">{formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}</span>
                   </div>
                   {exp.description && (
                     <div className="exp-description-text" dangerouslySetInnerHTML={{ __html: exp.description }} />
@@ -160,7 +170,13 @@ const TimelineTemplate = ({ data, settings }) => {
                   <div className="edu-meta-row">
                     <span className="edu-school-text">{edu.school}</span>
                     <span className="edu-dots">•</span>
-                    <span className="edu-date-text">{edu.startDate} - {edu.endDate}</span>
+                    {edu.location && (
+                      <>
+                        <span className="edu-location-text">{edu.location}</span>
+                        <span className="edu-dots">•</span>
+                      </>
+                    )}
+                    <span className="edu-date-text">{formatDate(edu.startDate)} - {formatDate(edu.endDate)}</span>
                   </div>
                 </div>
               ))}

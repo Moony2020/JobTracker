@@ -7,12 +7,35 @@ const Template = require("../models/Template");
 // @route   GET api/cv
 // @desc    Get all user's CVs
 // @access  Private
+// @route   GET api/cv
+// @desc    Get all user's CVs with purchase status
+// @access  Private
 router.get("/", auth, async (req, res) => {
   try {
     const cvs = await CVDocument.find({ user: req.user.id })
       .populate("templateId")
       .sort({ updatedAt: -1 });
-    res.json(cvs);
+    
+    // Get all completed purchases for this user
+    const Purchase = require("../models/Purchase");
+    const purchases = await Purchase.find({ 
+      user: req.user.id, 
+      status: "completed" 
+    });
+
+    // Map CVs with a helper 'isPaid' flag
+    const cvsWithStatus = cvs.map(cv => {
+      const isPaid = purchases.some(p => 
+        p.cvDocument.toString() === cv._id.toString() && 
+        p.template.toString() === cv.templateId?._id?.toString()
+      );
+      return {
+        ...cv.toObject(),
+        isPaid
+      };
+    });
+
+    res.json(cvsWithStatus);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
@@ -79,7 +102,18 @@ router.get("/:id", auth, async (req, res) => {
       return res.status(401).json({ msg: "Not authorized" });
     }
 
-    res.json(cv);
+    // Check if CV is paid
+    const Purchase = require("../models/Purchase");
+    const purchase = await Purchase.findOne({
+      user: req.user.id,
+      cvDocument: cv._id,
+      status: "completed"
+    });
+
+    res.json({
+      ...cv.toObject(),
+      isPaid: !!purchase
+    });
   } catch (err) {
     console.error(err.message);
     if (err.kind === "ObjectId") {
@@ -170,17 +204,30 @@ router.get("/export/:id", auth, async (req, res) => {
       return res.status(401).json({ msg: "Not authorized" });
     }
 
-    // If template is premium, check if a completed purchase exists
-    if (cv.templateId.category === "Premium") {
+    // If template is Pro or Premium, check if a completed and unexpired purchase exists
+    if (cv.templateId.category === "Pro" || cv.templateId.category === "Premium") {
+      // Find ANY completed purchase for this user and this CV document
+      console.log(`[Export] Verifying purchase for User: ${req.user.id}, CV: ${cv._id}, Template: ${cv.templateId.key}`);
+      
       const purchase = await Purchase.findOne({
         user: req.user.id,
         cvDocument: cv._id,
-        template: cv.templateId._id,
         status: "completed"
-      });
+      }).sort({ createdAt: -1 });
 
       if (!purchase) {
-        return res.status(402).json({ msg: "Payment required for premium template" });
+        console.log(`[Export] 402: No purchase found matching User: ${req.user.id} and CV: ${cv._id}`);
+        // Log all completed purchases for this user for debugging
+        const allUserPurchases = await Purchase.find({ user: req.user.id, status: "completed" });
+        console.log(`[Export] User ${req.user.id} has ${allUserPurchases.length} total completed purchases.`);
+        allUserPurchases.forEach(p => console.log(` - Purchase ${p._id} for CV: ${p.cvDocument}`));
+        
+        return res.status(402).json({ msg: "Payment required for Pro template" });
+      }
+
+      // Check if access has expired (only for Pro, Premium is lifetime)
+      if (purchase.expiresAt && new Date() > purchase.expiresAt) {
+        return res.status(403).json({ msg: "Access to this Pro template download has expired (7-day window)" });
       }
     }
     // Ensure template exists to avoid crash

@@ -4,10 +4,23 @@
     box-sizing: border-box !important;
     color: #1e293b;
     line-height: 1.5;
-    word-wrap: break-word; /* Prevent text clipping */
+    word-wrap: break-word;
     overflow-wrap: break-word;
     width: 100% !important;
     max-width: 100% !important;
+    /* Ensure content flows across pages instead of cutting off */
+    overflow: visible !important;
+}
+
+/* Page break rules for PDF Export */
+.exp-item, .classic-item, .pro-exp-item, .experience-item-box, .education-item-box {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+}
+
+h2, .pro-content-title, .sidebar-title {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
 }
 
 /* Force Desktop Width in Thumbnail Mode */
@@ -17,6 +30,12 @@
 .thumbnail-mode .timeline-template {
     width: 210mm !important;
     min-width: 210mm !important;
+}
+
+/* Print Alignment Fixes */
+.resume-paper, .modern-template, .classic-template, .professional-blue-template, .timeline-template {
+    min-height: 297mm; /* Full A4 minimum height */
+    overflow: visible !important;
 }
 
 /* Modern Template */
@@ -30,7 +49,7 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    overflow: hidden;
+    overflow: visible !important;
 }
 
 .modern-header {
@@ -285,14 +304,16 @@
 
 /* RIGHT MAIN CONTENT */
 .pro-main {
-    padding: 50px 50px;
+    padding: 30px 30px; /* Reduced from 40px top to 30px to close gap */
     background: white;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start; /* Ensure top alignment */
 }
 
 .pro-header {
-    margin-bottom: 35px;
+    margin-bottom: 30px;
+    margin-top: 0;
 }
 
 .pro-name {
@@ -549,6 +570,7 @@
     margin-top: 8px;
 }
 
+
 .reference-item-box {
     font-size: 0.9rem;
     margin-bottom: 15px;
@@ -557,4 +579,49 @@
 .ref-contact-small {
     font-size: 0.8rem;
     color: #64748b;
+}
+
+/* Print Mode Overrides */
+@media print {
+    @page {
+        size: A4;
+        margin: 0;
+    }
+    body {
+        background: white !important;
+    }
+    .cv-print-only {
+        width: 210mm !important;
+        background: white !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .resume-template, .modern-template, .classic-template, .professional-blue-template, .timeline-template {
+        overflow: visible !important;
+        height: auto !important;
+        min-height: 297mm;
+        box-shadow: none !important;
+        page-break-after: auto !important;
+    }
+    /* Ensure colors print */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
+
+/* Specific class used by Editor.jsx in print mode */
+.cv-print-only {
+    width: 210mm !important;
+    margin: 0 auto;
+    background: white;
+}
+
+.cv-print-only .resume-template {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    min-height: 297mm;
 }

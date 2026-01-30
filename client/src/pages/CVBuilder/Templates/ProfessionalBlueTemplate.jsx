@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatDate } from '../../../utils/formatters';
 import './Templates.css';
 
 const ProfessionalBlueTemplate = ({ data, settings }) => {
@@ -7,9 +8,6 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
 
   // Helper to check if array has valid items
   const hasItems = (arr) => arr && arr.length > 0;
-
-  // Helper to check if we should show placeholders (if main fields are empty)
-  const showPlaceholders = !personal.firstName && !personal.lastName;
 
   return (
     <div className="professional-blue-template" style={{ fontFamily: settings?.font || 'Inter', lineHeight: `${settings?.lineSpacing || 100}%` }}>
@@ -55,10 +53,10 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
                 </div>
               )}
               <div className="pro-extra-info" style={{ marginTop: '15px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '10px' }}>
-                {personal.birthDate && <div className="pro-contact-item"><span className="pro-label">Birth Date</span><span className="pro-value">{personal.birthDate}</span></div>}
+                {personal.birthDate && <div className="pro-contact-item"><span className="pro-label">Birth Date</span><span className="pro-value">{formatDate(personal.birthDate)}</span></div>}
                 {personal.nationality && <div className="pro-contact-item"><span className="pro-label">Nationality</span><span className="pro-value">{personal.nationality}</span></div>}
                 {personal.idNumber && <div className="pro-contact-item"><span className="pro-label">ID Number</span><span className="pro-value">{personal.idNumber}</span></div>}
-                {personal.driversLicense && <div className="pro-contact-item"><span className="pro-label">Driver's License</span><span className="pro-value">{personal.driversLicense}</span></div>}
+                {personal.driversLicense && <div className="pro-contact-item"><span className="pro-label">Driver's License</span><span className="pro-value">{formatDate(personal.driversLicense)}</span></div>}
               </div>
           </div>
         </section>
@@ -85,7 +83,10 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
             <h2 className="pro-section-title">LANGUAGES</h2>
             <ul className="pro-list">
               {hasItems(languages) ? languages.map((lang, i) => (
-                <li key={i} className="pro-list-item">{lang.name} - {lang.level}</li>
+                <li key={i} className="pro-list-item">
+                  <span style={{ fontWeight: 600 }}>{lang.name}</span>
+                  {lang.level && <span style={{ opacity: 0.8, fontSize: '0.85em', marginLeft: '6px' }}>— {lang.level}</span>}
+                </li>
               )) : (
                 <div style={{ opacity: 0.7 }}>
                   <li className="pro-list-item">English - Native</li>
@@ -164,9 +165,12 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
               <div key={i} className="pro-exp-item">
                 <div className="pro-exp-header">
                   <h3 className="pro-exp-title">{exp.title}</h3>
-                  <span className="pro-exp-date">{exp.startDate} - {exp.endDate || 'Present'}</span>
+                  <span className="pro-exp-date">{formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}</span>
                 </div>
-                <p className="pro-exp-company">{exp.company}</p>
+                <p className="pro-exp-company">
+                  {exp.company}
+                  {exp.location && <span style={{ fontWeight: 400, opacity: 0.8 }}> | {exp.location}</span>}
+                </p>
                 {exp.description && <div className="pro-exp-desc" dangerouslySetInnerHTML={{ __html: exp.description }} />}
               </div>
             ))}
@@ -193,9 +197,12 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
               <div key={i} className="pro-exp-item">
                 <div className="pro-exp-header">
                   <h3 className="pro-exp-title">{edu.degree}</h3>
-                  <span className="pro-exp-date">{edu.startDate} - {edu.endDate}</span>
+                  <span className="pro-exp-date">{formatDate(edu.startDate)} - {formatDate(edu.endDate)}</span>
                 </div>
-                <p className="pro-exp-company">{edu.school}</p>
+                <p className="pro-exp-company">
+                  {edu.school}
+                  {edu.location && <span style={{ fontWeight: 400, opacity: 0.8 }}> | {edu.location}</span>}
+                </p>
                 {edu.description && <div className="pro-exp-desc" dangerouslySetInnerHTML={{ __html: edu.description }} />}
               </div>
             ))}

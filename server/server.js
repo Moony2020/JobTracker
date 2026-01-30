@@ -15,7 +15,11 @@ app.use(
   })
 );
 
-app.use(express.json());
+// Stripe Webhook MUST come before express.json() to maintain raw body for signature verification
+app.post("/api/payment/stripe/webhook", express.raw({ type: "application/json" }), require("./routes/payment_webhook"));
+
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "../client/dist")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -40,6 +44,7 @@ app.use("/api/interview", require("./routes/interview"));
 app.use("/api/reports", require("./routes/reports"));
 app.use("/api/cv", require("./routes/cv"));
 app.use("/api/payment", require("./routes/payment"));
+app.use("/api/admin", require("./routes/admin"));
 
 // Serve React app
 app.get("*", (req, res) => {

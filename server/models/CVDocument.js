@@ -29,6 +29,7 @@ const CVDocumentSchema = new mongoose.Schema(
       personal: {
         firstName: String,
         lastName: String,
+        jobTitle: String,
         email: String,
         phone: String,
         location: String,
@@ -36,6 +37,14 @@ const CVDocumentSchema = new mongoose.Schema(
         website: String,
         summary: String,
         photo: String, // Base64 or URL
+        city: String,
+        country: String,
+        address: String,
+        zipCode: String,
+        idNumber: String,
+        birthDate: Date,
+        nationality: String,
+        driversLicense: String
       },
       experience: [{
         title: String,
@@ -50,15 +59,13 @@ const CVDocumentSchema = new mongoose.Schema(
         school: String,
         degree: String,
         field: String,
+        location: String,
         startDate: Date,
         endDate: Date,
         current: { type: Boolean, default: false },
         description: String,
       }],
-      skills: [{
-        name: String,
-        level: String, // e.g., Beginner, Expert
-      }],
+      skills: [String],
       languages: [{
         name: String,
         level: String,
@@ -67,6 +74,33 @@ const CVDocumentSchema = new mongoose.Schema(
         name: String,
         description: String,
         link: String,
+      }],
+      hobbies: [{
+        name: String,
+      }],
+      volunteering: [{
+        role: String,
+        organization: String,
+        description: String,
+      }],
+      courses: [{
+        name: String,
+        institution: String,
+      }],
+      military: [{
+        role: String,
+        organization: String,
+      }],
+      references: [{
+        name: String,
+        contact: String,
+      }],
+      links: [{
+        name: String,
+        url: String,
+      }],
+      gdpr: [{
+        text: String,
       }],
       customSections: [{
         title: String,

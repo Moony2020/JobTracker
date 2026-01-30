@@ -3,81 +3,214 @@ import {
   LayoutDashboard,
   Users,
   CreditCard,
-  Zap,
   Database,
-  BarChart3,
   Settings,
   ShieldCheck,
   ChevronRight,
   Search,
   Bell,
-  Moon,
-  Globe,
-  MoreHorizontal,
   TrendingUp,
-  Clock,
   LogOut,
   User as UserIcon,
   Menu,
   X,
 } from "lucide-react";
+import { useNavigate, useLocation, Routes, Route, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AdminProfileModal from "../components/AdminProfileModal";
+import AdminOverview from "./Admin/AdminOverview";
+import AdminUsers from "./Admin/AdminUsers";
+import AdminPayments from "./Admin/AdminPayments";
+import AdminTemplates from "./Admin/AdminTemplates";
+import AdminDownloads from "./Admin/AdminDownloads";
+import AdminSettings from "./Admin/AdminSettings";
 
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-} from "recharts";
+
 
 import "./AdminDashboard.css";
 
-const usageData = [
-  { name: "Mon", free: 2000, paid: 4000 },
-  { name: "Tue", free: 3000, paid: 4500 },
-  { name: "Wed", free: 2500, paid: 6000 },
-  { name: "Thu", free: 3500, paid: 5500 },
-  { name: "Fri", free: 4000, paid: 7500 },
-  { name: "Sat", free: 3000, paid: 6500 },
-  { name: "Sun", free: 2500, paid: 5000 },
-];
 
-const userData = [
-  { name: "Free", value: 45, color: "#5B7CFF" },
-  { name: "Basic", value: 30, color: "#8B5CFF" },
-  { name: "Pro", value: 25, color: "#C06BFF" },
-];
 
-const incomeData = [
-  { name: "Apr 4", value: 4500 },
-  { name: "Apr 10", value: 3800 },
-  { name: "Apr 16", value: 5200 },
-  { name: "Apr 22", value: 4000 },
-  { name: "Apr 24", value: 4800 },
-  { name: "Apr 26", value: 6824 },
-];
 
+const translations = {
+  en: {
+    dashboard: "Dashboard",
+    users: "Users",
+    payments: "Payments",
+    templates: "CV Templates",
+    downloads: "Access Control",
+    settings: "Settings",
+    logout: "Logout",
+    totalUsers: "Total Users",
+    activeUsers: "Active Users",
+    last30Days: "Last 30 days",
+    totalCVs: "Total CVs Created",
+    paidDownloads: "Paid Downloads",
+    revenueThisMonth: "Revenue This Month",
+    recentPayments: "Recent Payments",
+    userAnalytics: "User Analytics",
+    incomeInsights: "Income Insights",
+    search: "Search...",
+    free: "Free",
+    pro: "Pro",
+    viewDetails: "View Details",
+    manageTemplates: "Manage Templates",
+    user: "User",
+    date: "Date",
+    template: "Template",
+    amount: "Amount",
+    status: "Status",
+    method: "Method",
+    thisMonth: "this month",
+    monthly: "Monthly",
+    weekly: "Weekly",
+    daily: "Daily",
+    admin: "Admin",
+    myProfile: "My Profile",
+  },
+  ar: {
+    dashboard: "لوحة التحكم",
+    users: "المستخدمين",
+    payments: "المدفوعات",
+    templates: "نماذج السيرة الذاتية",
+    downloads: "التحكم في الوصول",
+    settings: "الإعدادات",
+    logout: "تسجيل الخروج",
+    totalUsers: "إجمالي المستخدمين",
+    activeUsers: "المستخدمين النشطين",
+    last30Days: "آخر 30 يوم",
+    totalCVs: "إجمالي السير الذاتية",
+    paidDownloads: "التحميلات المدفوعة",
+    revenueThisMonth: "إيرادات هذا الشهر",
+    recentPayments: "المدفوعات الأخيرة",
+    userAnalytics: "تحليلات المستخدمين",
+    incomeInsights: "رؤى الدخل",
+    search: "بحث...",
+    free: "مجاني",
+    pro: "احترافي",
+    viewDetails: "عرض التفاصيل",
+    manageTemplates: "إدارة النماذج",
+    user: "المستخدم",
+    date: "التاريخ",
+    template: "النموذج",
+    amount: "المبلغ",
+    status: "الحالة",
+    method: "الطريقة",
+    thisMonth: "هذا الشهر",
+    monthly: "شهري",
+    weekly: "أسبوعي",
+    daily: "يومي",
+    admin: "مدير",
+    myProfile: "ملفي الشخصي",
+  },
+  sv: {
+    dashboard: "Översikt",
+    users: "Användare",
+    payments: "Betalningar",
+    templates: "CV-mallar",
+    downloads: "Åtkomstkontroll",
+    settings: "Inställningar",
+    logout: "Logga ut",
+    totalUsers: "Totalt antal användare",
+    activeUsers: "Aktiva användare",
+    last30Days: "Senaste 30 dagarna",
+    totalCVs: "Totalt skapade CV:n",
+    paidDownloads: "Betalda nedladdningar",
+    revenueThisMonth: "Intäkter denna månad",
+    recentPayments: "Senaste betalningar",
+    userAnalytics: "Användaranalys",
+    incomeInsights: "Inkomstinsikter",
+    search: "Sök...",
+    free: "Gratis",
+    pro: "Pro",
+    viewDetails: "Visa detaljer",
+    manageTemplates: "Hantera mallar",
+    user: "Användare",
+    date: "Datum",
+    template: "Mall",
+    amount: "Belopp",
+    status: "Status",
+    method: "Metod",
+    thisMonth: "denna månad",
+    monthly: "Månadsvis",
+    weekly: "Veckovis",
+    daily: "Daglig",
+    admin: "Admin",
+    myProfile: "Min profil",
+  }
+};
 
 const AdminDashboard = () => {
   const { user, logout, setUser } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [lang, setLang] = useState(localStorage.getItem("adminLang") || "en");
+  const [showLangDropdown, setShowLangDropdown] = useState(false);
+
+  const langFlags = {
+    en: "🇺🇸",
+    ar: "🇸🇦",
+    sv: "🇸🇪"
+  };
+
+  const [stats, setStats] = useState({
+    kpis: {
+      totalUsers: 0,
+      activeUsers: 0,
+      totalCVs: 0,
+      paidDownloads: 0,
+      revenueThisMonth: 0
+    },
+    recentPayments: [],
+    usageAnalytics: [],
+    incomeInsights: [],
+    todayActivity: 0
+  });
+  const [loading, setLoading] = useState(true);
   const dropdownRef = useRef(null);
+  const langDropdownRef = useRef(null);
+
+  const t = translations[lang];
+
+  const fetchStats = async (isSilent = false) => {
+    try {
+      if (!isSilent) setLoading(true);
+      const response = await fetch(`/api/admin/stats`, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      const data = await response.json();
+      setStats(data);
+      if (!isSilent) setLoading(false);
+    } catch (err) {
+      console.error("Failed to fetch admin stats:", err);
+      if (!isSilent) setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+    
+    // Set up 10-second polling for real-time dashboard sync
+    const pollInterval = setInterval(() => {
+      fetchStats(true);
+    }, 10000);
+
+    return () => clearInterval(pollInterval);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowProfileDropdown(false);
+      }
+      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target)) {
+        setShowLangDropdown(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -93,17 +226,21 @@ const AdminDashboard = () => {
     return user.name.substring(0, 2).toUpperCase();
   }, [user]);
 
-  const planList = useMemo(
-    () => [
-      { name: "Free", icon: <Globe size={15} />, dotClass: "free" },
-      { name: "Basic", icon: <Database size={15} />, dotClass: "basic" },
-      { name: "Pro", icon: <Zap size={15} />, dotClass: "pro" },
-    ],
-    []
-  );
+  const handleLangChange = (newLang) => {
+    setLang(newLang);
+    localStorage.setItem("adminLang", newLang);
+  };
+
+  if (loading) {
+    return (
+      <div className="admin-loading">
+        <div className="loader"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className={`admin-dashboard-container ${isMobileMenuOpen ? "mobile-menu-active" : ""}`}>
+    <div className={`admin-dashboard-container ${isMobileMenuOpen ? "mobile-menu-active" : ""} ${lang === 'ar' ? 'rtl' : ''}`}>
       {/* Sidebar Overlay */}
       {isMobileMenuOpen && (
         <div className="sidebar-overlay" onClick={() => setIsMobileMenuOpen(false)} />
@@ -111,7 +248,7 @@ const AdminDashboard = () => {
 
       {/* Sidebar */}
       <aside className={`admin-sidebar ${isMobileMenuOpen ? "open" : ""}`}>
-        <div className="admin-logo">
+        <div className="admin-logo" onClick={() => navigate('/admin')} style={{ cursor: 'pointer' }}>
           <div className="logo-glow" />
           <div className="logo-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -120,73 +257,46 @@ const AdminDashboard = () => {
               <path d="M12 7v2M12 15v2M7 12h2M15 12h2M8.5 8.5l1.5 1.5M14 14l1.5 1.5M8.5 15.5l1.5-1.5M14 10l1.5-1.5" />
             </svg>
           </div>
-          <span>AI Admin</span>
+          <span>JobTracker {t.admin}</span>
         </div>
 
         <nav className="admin-nav">
           <div className="nav-group">
-            <button className="nav-item active">
+            <NavLink to="/admin" end style={{ textDecoration: 'none' }} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
               <LayoutDashboard size={18} />
-              <span>Dashboard</span>
+              <span>{t.dashboard}</span>
               <div className="active-glow" />
-            </button>
+            </NavLink>
 
-            <button className="nav-item">
+            <NavLink to="/admin/users" style={{ textDecoration: 'none' }} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
               <Users size={18} />
-              <span>Users</span>
-            </button>
+              <span>{t.users}</span>
+            </NavLink>
 
-            <button className="nav-item">
+            <NavLink to="/admin/payments" style={{ textDecoration: 'none' }} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
               <CreditCard size={18} />
-              <span>Payments</span>
-            </button>
+              <span>{t.payments}</span>
+            </NavLink>
 
-            <button className="nav-item">
-              <Zap size={18} />
-              <span>AI Models</span>
-              <ChevronRight size={14} className="chevron" />
-            </button>
-
-            <button className="nav-item">
+            <NavLink to="/admin/templates" style={{ textDecoration: 'none' }} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
               <Database size={18} />
-              <span>Credits</span>
+              <span>{t.templates}</span>
               <ChevronRight size={14} className="chevron" />
-            </button>
+            </NavLink>
 
-            <button className="nav-item">
-              <BarChart3 size={18} />
-              <span>Reports</span>
-              <ChevronRight size={14} className="chevron" />
-            </button>
-
-            <button className="nav-item">
-              <Settings size={18} />
-              <span>Settings</span>
-              <ChevronRight size={14} className="chevron" />
-            </button>
-
-            <button className="nav-item">
+            <NavLink to="/admin/downloads" style={{ textDecoration: 'none' }} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
               <ShieldCheck size={18} />
-              <span>Security</span>
+              <span>{t.downloads}</span>
               <ChevronRight size={14} className="chevron" />
-            </button>
+            </NavLink>
+
+            <NavLink to="/admin/settings" style={{ textDecoration: 'none' }} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+              <Settings size={18} />
+              <span>{t.settings}</span>
+              <ChevronRight size={14} className="chevron" />
+            </NavLink>
           </div>
-
-          <div className="nav-divider" />
-
-          <button className="manage-ai-btn">
-            <Zap size={18} />
-            <span>Manage AI Models</span>
-            <ChevronRight size={14} />
-          </button>
         </nav>
-
-        <div className="sidebar-footer">
-          <button className="upgrade-pill-btn">
-            <span>Upgrade</span>
-            <ChevronRight size={14} />
-          </button>
-        </div>
       </aside>
 
       {/* Main */}
@@ -200,26 +310,51 @@ const AdminDashboard = () => {
             >
               {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
-            <h1>Dashboard</h1>
+            <h1>
+              {location.pathname === '/admin/users' ? t.users :
+               location.pathname === '/admin/payments' ? t.payments :
+               location.pathname === '/admin/templates' ? t.templates :
+               location.pathname === '/admin/downloads' ? t.downloads :
+               location.pathname === '/admin/settings' ? t.settings :
+               t.dashboard}
+            </h1>
+          </div>
+
+          <div className="search-box">
+            <Search size={18} />
+            <input type="text" placeholder={t.search} />
           </div>
 
           <div className="header-actions">
-            <div className="search-box">
-              <Search size={18} />
-              <input type="text" placeholder="Search..." />
+            <div className="admin-lang-menu" ref={langDropdownRef}>
+              <button 
+                className={`lang-trigger-btn ${showLangDropdown ? 'active' : ''}`}
+                onClick={() => setShowLangDropdown(!showLangDropdown)}
+              >
+                <span className="lang-flag">{langFlags[lang]}</span>
+                <span>{lang.toUpperCase()}</span>
+              </button>
+
+              {showLangDropdown && (
+                <div className="lang-dropdown">
+                  <button onClick={() => { handleLangChange('en'); setShowLangDropdown(false); }}>
+                    <span className="menu-flag">{langFlags.en}</span> English
+                  </button>
+                  <button onClick={() => { handleLangChange('ar'); setShowLangDropdown(false); }}>
+                    <span className="menu-flag">{langFlags.ar}</span> العربية
+                  </button>
+                  <button onClick={() => { handleLangChange('sv'); setShowLangDropdown(false); }}>
+                    <span className="menu-flag">{langFlags.sv}</span> Svenska
+                  </button>
+                </div>
+              )}
             </div>
-
-            <button className="icon-btn" aria-label="Theme">
-              <Moon size={18} />
-            </button>
-
-            <button className="icon-btn" aria-label="Language">
-              <Globe size={18} />
-            </button>
 
             <button className="icon-btn relative" aria-label="Notifications">
               <Bell size={18} />
-              <span className="notification-dot" />
+              {stats.todayActivity > 0 && (
+                <span className="notification-badge-count">{stats.todayActivity}</span>
+              )}
             </button>
 
             <div className="admin-user-menu" ref={dropdownRef}>
@@ -235,7 +370,7 @@ const AdminDashboard = () => {
                   <div className="dropdown-user-info">
                     <p className="user-name">{user?.name || "Administrator"}</p>
                     <p className="user-email">{user?.email}</p>
-                    <span className="user-role-badge">Admin</span>
+                    <span className="user-role-badge">{t.admin}</span>
                   </div>
                   <div className="dropdown-divider" />
                   <button 
@@ -246,11 +381,11 @@ const AdminDashboard = () => {
                     }}
                   >
                     <UserIcon size={16} />
-                    <span>My Profile</span>
+                    <span>{t.myProfile}</span>
                   </button>
                   <button className="dropdown-link logout-link" onClick={logout}>
                     <LogOut size={16} />
-                    <span>Log Out</span>
+                    <span>{t.logout}</span>
                   </button>
                 </div>
               )}
@@ -258,406 +393,15 @@ const AdminDashboard = () => {
           </div>
         </header>
 
-        {/* Top Stats */}
-        <div className="admin-stats-grid">
-          {/* Revenue */}
-          <div className="glass-card admin-stat-card">
-            <div className="stat-top">
-              <div className="stat-left">
-                <div className="stat-icon-wrapper revenue">
-                  <CreditCard size={18} />
-                </div>
-                <span className="stat-title">Revenue</span>
-              </div>
-              <button className="stat-chevron" aria-label="Open">
-                <ChevronRight size={14} style={{ transform: 'rotate(-90deg)' }} />
-              </button>
-            </div>
-
-            <div className="stat-main">
-              <div className="stat-main-row">
-                <div className="stat-value">$2,487</div>
-                <div className="stat-badge positive">+22%</div>
-              </div>
-
-              <div className="spark-wrapper">
-                <div className="spark-line revenue-spark" />
-                <div className="spark-meta">72%</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="glass-card admin-stat-card">
-            <div className="stat-top">
-              <div className="stat-left">
-                <div className="stat-icon-wrapper users">
-                  <Users size={18} />
-                </div>
-                <span className="stat-title">New Users</span>
-              </div>
-              <button className="stat-chevron" aria-label="Open">
-                <ChevronRight size={14} style={{ transform: 'rotate(-90deg)' }} />
-              </button>
-            </div>
-
-            <div className="stat-main">
-              <div className="stat-main-row">
-                <div className="stat-value">1,492</div>
-                <div className="stat-badge positive">+8.9%</div>
-              </div>
-              <div className="stat-spark-mini" />
-              <div className="stat-sub">+32% this week</div>
-            </div>
-          </div>
-
-          <div className="glass-card admin-stat-card">
-            <div className="stat-top">
-              <div className="stat-left">
-                <div className="stat-icon-wrapper quota">
-                  <Zap size={18} />
-                </div>
-                <span className="stat-title">AI Quota Usage</span>
-              </div>
-              <button className="stat-chevron" aria-label="Open">
-                <ChevronRight size={14} style={{ transform: 'rotate(-90deg)' }} />
-              </button>
-            </div>
-
-            <div className="stat-main">
-              <div className="stat-main-row">
-                <div className="stat-value">
-                  72,340 <span className="value-unit">/ f 100K</span>
-                </div>
-              </div>
-
-              <div className="quota-bar">
-                <div className="quota-fill" style={{ width: "72%" }} />
-              </div>
-
-              <div className="stat-sub">4,670 requests</div>
-            </div>
-          </div>
-
-          <div className="glass-card admin-stat-card">
-            <div className="stat-top">
-              <div className="stat-left">
-                <div className="stat-icon-wrapper subscriptions">
-                  <BarChart3 size={18} />
-                </div>
-                <span className="stat-title">Active Subscriptions</span>
-              </div>
-              <button className="stat-chevron" aria-label="Open">
-                <ChevronRight size={14} style={{ transform: 'rotate(-90deg)' }} />
-              </button>
-            </div>
-
-            <div className="stat-main">
-              <div className="stat-main-row">
-                <div className="stat-value">
-                  297 <span className="tiny-plus">+35</span>
-                </div>
-              </div>
-
-              <div className="subs-bar">
-                <div className="subs-fill" style={{ width: "65%" }} />
-              </div>
-
-              <div className="stat-sub">+35 this week</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Middle Grid */}
-        <div className="admin-content-grid">
-          {/* Recent Payments */}
-          <div className="glass-card table-section">
-            <div className="card-header">
-              <h2>Recent Payments</h2>
-              <button className="header-dot-btn" aria-label="More">
-                <MoreHorizontal size={18} />
-              </button>
-            </div>
-
-            <div className="admin-table-wrapper">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>User</th>
-                    <th>Date</th>
-                    <th>Plan</th>
-                    <th>Amount</th>
-                    <th />
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {[
-                    {
-                      name: "Emma W.",
-                      date: "4/18/2026",
-                      plan: "Pro Plan",
-                      amount: "$5.99",
-                      avatar: "https://i.pravatar.cc/150?u=emma",
-                    },
-                    {
-                      name: "Ahmed K.",
-                      date: "4/18/2026",
-                      plan: "Pro Plan",
-                      amount: "$5.99",
-                      avatar: "https://i.pravatar.cc/150?u=ahmed",
-                    },
-                    {
-                      name: "Jason L.",
-                      date: "4/18/2026",
-                      plan: "Pro Plan",
-                      amount: "$5.99",
-                      avatar: "https://i.pravatar.cc/150?u=jason",
-                    },
-                    {
-                      name: "Loubna C.",
-                      date: "4/18/2026",
-                      plan: "CV Download",
-                      amount: "$1.49",
-                      avatar: "https://i.pravatar.cc/150?u=lou",
-                    },
-                  ].map((row, i) => (
-                    <tr key={i}>
-                      <td>
-                        <div className="user-info">
-                          <img src={row.avatar} alt="" />
-                          <span>{row.name}</span>
-                        </div>
-                      </td>
-                      <td>{row.date}</td>
-                      <td>{row.plan}</td>
-                      <td>
-                        <span className="amount-text">{row.amount}</span>
-                      </td>
-                      <td className="row-actions">
-                        <button className="row-dot-btn" aria-label="Row menu">
-                          <MoreHorizontal size={16} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* AI Usage */}
-          <div className="glass-card chart-section-large">
-            <div className="card-header">
-              <div className="header-titles">
-                <h2>AI Usage &amp; Limits</h2>
-                <div className="header-meta">
-                  <span>Today&apos;s Usage</span>
-                  <span className="meta-value">
-                    <Clock size={14} /> 10,342
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="chart-wrapper">
-              <ResponsiveContainer width="100%" height={240}>
-                <AreaChart data={usageData}>
-                  <defs>
-                    <linearGradient id="colorFree" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#5B7CFF" stopOpacity={0.38} />
-                      <stop offset="100%" stopColor="#5B7CFF" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="colorPaid" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#8B5CFF" stopOpacity={0.38} />
-                      <stop offset="100%" stopColor="#8B5CFF" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-
-                  <CartesianGrid
-                    strokeDasharray="4 6"
-                    stroke="rgba(255,255,255,0.06)"
-                    vertical={false}
-                  />
-
-                  <XAxis
-                    dataKey="name"
-                    stroke="rgba(255,255,255,0.40)"
-                    fontSize={12}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-
-                  <YAxis hide />
-
-                  <Tooltip
-                    contentStyle={{
-                      background: "rgba(10,12,22,0.72)",
-                      border: "1px solid rgba(255,255,255,0.10)",
-                      borderRadius: "14px",
-                      backdropFilter: "blur(12px)",
-                      color: "#EAF0FF",
-                    }}
-                    itemStyle={{ fontSize: 12 }}
-                    cursor={{ stroke: "transparent" }}
-                  />
-
-                  <Area
-                    type="monotone"
-                    dataKey="free"
-                    stroke="#5B7CFF"
-                    strokeWidth={3}
-                    fill="url(#colorFree)"
-                    dot={false}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="paid"
-                    stroke="#8B5CFF"
-                    strokeWidth={3}
-                    fill="url(#colorPaid)"
-                    dot={false}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-
-              <div className="chart-legend">
-                <div className="legend-item">
-                  <span className="dot free" /> Free Tier
-                </div>
-                <div className="legend-item">
-                  <span className="dot paid" /> Paid Tier
-                </div>
-                <button className="view-details-btn">View Details</button>
-              </div>
-            </div>
-          </div>
-
-          {/* User Analytics */}
-          <div className="glass-card analytics-section">
-            <div className="card-header">
-              <h2>User Analytics</h2>
-
-              <div className="time-filters">
-                <button className="filter-btn active">Monthly</button>
-                <button className="filter-btn">Weekly</button>
-                <button className="filter-btn">Daily</button>
-              </div>
-            </div>
-
-            <div className="analytics-layout">
-              {/* donut */}
-              <div className="donut-wrap">
-                <ResponsiveContainer width="100%" height={170}>
-                  <PieChart>
-                    <Pie
-                      data={userData}
-                      innerRadius={50}
-                      outerRadius={75}
-                      paddingAngle={3}
-                      dataKey="value"
-                      stroke="rgba(0,0,0,0)"
-                    >
-                      {userData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="donut-center">
-                  <span>45%</span>
-                </div>
-              </div>
-
-              {/* circle legend panel (matches image) */}
-              <div className="plans-orb">
-                <div className="plans-orb-inner">
-                  {planList.map((p) => (
-                    <div className="orb-row" key={p.name}>
-                      <div className={`orb-icon ${p.dotClass}`}>{p.icon}</div>
-                      <div className="orb-text">{p.name}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* amount + button */}
-              <div className="analytics-actions">
-                <div className="monthly-amount">
-                  <TrendingUp size={16} />
-                  <span className="amt">$6,824</span>
-                  <span className="muted">this month</span>
-                </div>
-
-                <button className="manage-billing-btn">
-                  <Database size={16} />
-                  Manage Billing
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Income Insights */}
-          <div className="glass-card insights-section">
-            <div className="card-header">
-              <div className="header-titles">
-                <h2>Income Insights</h2>
-              </div>
-              <button className="header-dot-btn" aria-label="More">
-                <MoreHorizontal size={18} />
-              </button>
-            </div>
-
-            <div className="income-topline">
-              <div className="income-amount">
-                <span className="amt">$6,824</span>
-                <span className="muted">this month</span>
-              </div>
-
-              <button className="details-btn ghost">View Details</button>
-            </div>
-
-            <div className="income-chart">
-              <ResponsiveContainer width="100%" height={170}>
-                <BarChart
-                  data={incomeData}
-                  margin={{ top: 10, right: 10, left: 10, bottom: 15 }}
-                >
-                  <Tooltip
-                    cursor={{ fill: "rgba(255,255,255,0.05)" }}
-                    contentStyle={{
-                      background: "rgba(10,12,22,0.85)",
-                      border: "1px solid rgba(255,255,255,0.12)",
-                      borderRadius: "14px",
-                      backdropFilter: "blur(12px)",
-                      color: "#EAF0FF",
-                      padding: "10px 14px",
-                    }}
-                    itemStyle={{ color: "#EAF0FF", fontSize: 13, fontWeight: 700 }}
-                    labelStyle={{ color: "rgba(234,240,255,0.4)", fontSize: 11, marginBottom: 4, fontWeight: 800 }}
-                  />
-                  <XAxis
-                    dataKey="name"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: "rgba(255,255,255,0.45)", fontSize: 11 }}
-                    tickFormatter={(v, idx) => {
-                      if (idx === 0) return "Apr";
-                      const parts = String(v).split(" ");
-                      return parts[1] || v;
-                    }}
-                  />
-                  <YAxis hide />
-                  <Bar 
-                    dataKey="value" 
-                    fill="#5B7CFF"
-                    radius={[6, 6, 0, 0]} 
-                    maxBarSize={22}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
+        {/* Nested Content Rendering */}
+        <Routes>
+          <Route index element={<AdminOverview stats={stats} t={t} />} />
+          <Route path="users" element={<AdminUsers t={t} />} />
+          <Route path="payments" element={<AdminPayments t={t} />} />
+          <Route path="templates" element={<AdminTemplates t={t} />} />
+          <Route path="downloads" element={<AdminDownloads t={t} />} />
+          <Route path="settings" element={<AdminSettings t={t} />} />
+        </Routes>
       </main>
 
       <AdminProfileModal 

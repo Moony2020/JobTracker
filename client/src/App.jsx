@@ -10,6 +10,7 @@ import AdminLogin from './components/AdminLogin';
 import Login from './components/Login';
 import Register from './components/Register';
 import api from './services/api';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './index.css';
 import ChangePassword from './components/ChangePassword';
@@ -21,26 +22,43 @@ import ScrollToTop from './components/ScrollToTop';
 
 const AppContent = () => {
   const { user, loading: authLoading } = useAuth();
+
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(localStorage.getItem('theme') !== 'light');
   const [language, setLanguage] = useState(localStorage.getItem('jt_language') || 'English');
-  // Persist current page
+  
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [currentPage, setCurrentPage] = useState(() => {
     const path = window.location.pathname;
-    // Check if we are in admin or print mode first
-    if (path.startsWith('/admin')) {
-      return 'admin';
-    }
-    if (path.startsWith('/cv-builder/print/')) {
-      return 'cv-builder';
-    }
-    return localStorage.getItem('jt_currentPage') || 'dashboard';
+    if (path.startsWith('/admin')) return 'admin';
+    if (path === '/applications') return 'applications';
+    if (path === '/statistics') return 'statistics';
+    if (path === '/jobs') return 'jobs';
+    if (path.startsWith('/cv-builder')) return 'cv-builder';
+    return 'dashboard';
   });
 
+  useEffect(() => {
+    const path = location.pathname;
+    if (path.startsWith('/admin')) setCurrentPage('admin');
+    else if (path === '/applications') setCurrentPage('applications');
+    else if (path === '/statistics') setCurrentPage('statistics');
+    else if (path === '/jobs') setCurrentPage('jobs');
+    else if (path.startsWith('/cv-builder')) setCurrentPage('cv-builder');
+    else if (path === '/') setCurrentPage('dashboard');
+  }, [location]);
+
+  const onOpenPage = (page) => {
+    if (page === 'dashboard') navigate('/');
+    else navigate(`/${page}`);
+  };
+
   const isPrinting = useMemo(() => {
-    return window.location.pathname.startsWith('/cv-builder/print/');
-  }, []); // Stable across the session
+    return location.pathname.startsWith('/cv-builder/print/');
+  }, [location.pathname]);
 
   useEffect(() => {
     if (isPrinting || currentPage === 'admin') return; // Don't persist print or admin page
@@ -259,13 +277,13 @@ const AppContent = () => {
   return (
     <div className="app-container">
       {/* Hide Header only if isFullScreen is true. Otherwise show it for all pages including cv-builder list view */}
-      {!isFullScreen && !isPrinting && !window.location.pathname.startsWith('/admin') && (
+      {!isFullScreen && !isPrinting && !location.pathname.startsWith('/admin') && (
         <Header 
           darkMode={darkMode} 
           toggleTheme={() => setDarkMode(!darkMode)} 
           language={language}
           setLanguage={setLanguage}
-          onOpenPage={setCurrentPage}
+          onOpenPage={onOpenPage}
           onLoginClick={() => setShowLogin(true)}
           onRegisterClick={() => setShowRegister(true)}
           onChangePasswordClick={() => setShowChangePassword(true)}
@@ -282,51 +300,53 @@ const AppContent = () => {
           padding: (isFullScreen || currentPage === 'cv-builder') ? '0' : undefined 
         }}
       >
-        {currentPage === 'dashboard' && (
-          <Dashboard 
-            applications={applications} 
-            stats={stats} 
-            onAddApplication={handleAddApplication} 
-            onEdit={handleEditClick}
-            onDelete={handleDeleteClick}
-            onStatusChange={handleStatusChange}
-            loading={loading}
-            language={language}
-          />
-        )}
-        {currentPage === 'applications' && (
-          <Applications 
-            applications={applications}
-            onEdit={handleEditClick}
-            onDelete={handleDeleteClick}
-            onStatusChange={handleStatusChange}
-            loading={loading}
-            language={language}
-          />
-        )}
-        {currentPage === 'statistics' && (
-          <Statistics applications={applications} loading={loading} language={language} />
-        )}
-        {currentPage === 'jobs' && (
-          <JobFinder language={language} user={user} />
-        )}
-        {currentPage === 'admin' && (
-          user?.role === 'admin' ? (
-            <AdminDashboard />
-          ) : (
-            <AdminLogin />
-          )
-        )}
-        {currentPage === 'cv-builder' && (
-          <CVBuilder 
-            language={language} 
-            user={user} 
-            onExit={() => setCurrentPage('dashboard')} 
-            setFullScreen={setIsFullScreen}
-            showNotify={showNotify}
-            isPrinting={isPrinting}
-          />
-        )}
+        <Routes>
+          <Route path="/" element={
+            <Dashboard 
+              applications={applications} 
+              stats={stats} 
+              onAddApplication={handleAddApplication} 
+              onEdit={handleEditClick}
+              onDelete={handleDeleteClick}
+              onStatusChange={handleStatusChange}
+              loading={loading}
+              language={language}
+            />
+          } />
+          <Route path="/applications" element={
+            <Applications 
+              applications={applications}
+              onEdit={handleEditClick}
+              onDelete={handleDeleteClick}
+              onStatusChange={handleStatusChange}
+              loading={loading}
+              language={language}
+            />
+          } />
+          <Route path="/statistics" element={
+            <Statistics applications={applications} loading={loading} language={language} />
+          } />
+          <Route path="/jobs" element={
+            <JobFinder language={language} user={user} />
+          } />
+          <Route path="/admin/*" element={
+             user?.role === 'admin' ? <AdminDashboard /> : <AdminLogin />
+          } />
+          <Route path="/cv-builder/*" element={
+            <CVBuilder 
+              language={language} 
+              user={user} 
+              onExit={() => {
+                setCurrentPage('dashboard');
+                navigate('/');
+              }} 
+              setFullScreen={setIsFullScreen}
+              showNotify={showNotify}
+              isPrinting={isPrinting}
+            />
+          } />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
 
       {showLogin && <Login onClose={() => setShowLogin(false)} language={language} />}

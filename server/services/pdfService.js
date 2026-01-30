@@ -25,7 +25,14 @@ const generatePDF = async (cvId, userId, templateKey, token) => {
 
     // Use 127.0.0.1 for faster/more reliable resolution than 'localhost'
     const clientUrl = process.env.CLIENT_URL || "http://127.0.0.1:5173";
-    const printUrl = `${clientUrl}/cv-builder/print/${cvId}`;
+    
+    // Fetch CV to get latest settings for query params
+    const CVDocument = require("../models/CVDocument");
+    const cv = await CVDocument.findById(cvId);
+    const colorHex = cv?.settings?.themeColor?.replace('#', '') || '2563eb';
+    const fontName = cv?.settings?.font || 'Inter';
+    
+    const printUrl = `${clientUrl}/cv-builder/print/${cvId}?token=${token}&template=${templateKey}&color=${colorHex}&font=${fontName}`;
     
     console.log(`[PDF] Puppeteer visiting: ${printUrl}`);
 
@@ -42,12 +49,12 @@ const generatePDF = async (cvId, userId, templateKey, token) => {
       });
     }
 
-    // High viewport for initial render
-    await page.setViewport({ width: 1200, height: 1600 });
-
-    // Navigate and wait for content
+    // Set A4 viewport before navigation for stable media query triggering
+    await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 2 });
+    
+    // Navigate and wait for full network idle to ensure fonts/styles load
     await page.goto(printUrl, {
-      waitUntil: "domcontentloaded",
+      waitUntil: ["domcontentloaded", "networkidle0"],
       timeout: 60000
     });
     
@@ -56,17 +63,11 @@ const generatePDF = async (cvId, userId, templateKey, token) => {
     // Explicitly wait for the template hook we added
     try {
       await page.waitForSelector('.resume-template', { timeout: 20000 });
-      console.log(`[PDF] Template detected, waiting for final font/style settle...`);
-      // Short delay for final layout stabilization
-      await new Promise(r => setTimeout(r, 2000)); 
+      console.log(`[PDF] Template detected, waiting for final layout stabilization...`);
+      await new Promise(r => setTimeout(r, 1000)); 
     } catch (e) {
       console.error(`[PDF ERROR] Template .resume-template never appeared!`);
-      // Take a screenshot of the failure for logs (optional but helpful)
-      // await page.screenshot({ path: 'export-failure.png' });
     }
-
-    // Ensure we are at A4 A-size before snapping
-    await page.setViewport({ width: 794, height: 1123 });
 
     const pdfBuffer = await page.pdf({
       format: "A4",
@@ -76,8 +77,7 @@ const generatePDF = async (cvId, userId, templateKey, token) => {
         right: "0px",
         bottom: "0px",
         left: "0px",
-      },
-      preferCSSPageSize: true
+      }
     });
 
     console.log(`[PDF] Success! Generated ${pdfBuffer.length} bytes`);

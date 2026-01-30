@@ -86,7 +86,7 @@
   display:flex;
   align-items:center;
   gap:12px;
-  padding:6px 10px 22px 10px;
+  padding:6px 10px 22px 2px;
   font-size:20px;
   font-weight:800;
   letter-spacing:0.2px;
@@ -95,7 +95,7 @@
 
 .admin-dashboard-container .logo-glow{
   position:absolute;
-  left:10px;
+  left:2px;
   top:8px;
   width:54px;
   height:54px;
@@ -151,6 +151,7 @@
 .admin-dashboard-container .nav-item:hover{
   background: rgba(255,255,255,0.05);
   color: rgba(234,240,255,0.90);
+  transform: none !important;
 }
 .admin-dashboard-container .nav-item.active{
   background: rgba(91,124,255,0.10);
@@ -205,6 +206,26 @@
 .admin-dashboard-container .manage-ai-btn span{ flex:1; text-align:left; font-weight:700; font-size:14px; }
 .admin-dashboard-container .security-footer-btn{ margin-top:0; color:rgba(234,240,255,0.4); }
 
+.admin-dashboard-container .logout-pill-btn{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px 18px;
+  border-radius:16px;
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  background: rgba(248, 113, 113, 0.05);
+  color: #F87171;
+  cursor:pointer;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.admin-dashboard-container .logout-pill-btn:hover{
+  background: rgba(248, 113, 113, 0.12);
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
 .admin-dashboard-container .sidebar-footer{ 
   padding-top:10px; 
 }
@@ -246,6 +267,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .admin-dashboard-container .admin-header{
@@ -293,6 +316,92 @@
   justify-content: flex-end;
   min-width: 0;
 }
+.admin-dashboard-container .admin-lang-menu {
+  position: relative;
+}
+
+.admin-dashboard-container .lang-trigger-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  color: rgba(234,240,255,0.7);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-dashboard-container .lang-flag {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.admin-dashboard-container .menu-flag {
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+.admin-dashboard-container.rtl .menu-flag {
+  margin-right: 0;
+  margin-left: 8px;
+}
+
+.admin-dashboard-container .lang-trigger-btn:hover,
+.admin-dashboard-container .lang-trigger-btn.active {
+  background: rgba(91,124,255,0.12);
+  border-color: rgba(91,124,255,0.2);
+  color: white;
+}
+
+.admin-dashboard-container .lang-dropdown {
+  position: absolute;
+  top: 44px;
+  right: 0;
+  width: 140px;
+  background: #0b1022;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 14px;
+  padding: 8px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-dashboard-container.rtl .lang-dropdown {
+  right: auto;
+  left: 0;
+}
+
+.admin-dashboard-container .lang-dropdown button {
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: rgba(234,240,255,0.7);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-dashboard-container.rtl .lang-dropdown button {
+  text-align: right;
+}
+
+.admin-dashboard-container .lang-dropdown button:hover {
+  background: rgba(255,255,255,0.06);
+  color: white;
+}
+
 .admin-dashboard-container .search-box{
   display:flex;
   align-items:center;
@@ -666,8 +775,8 @@
 }
 
 .admin-save-btn:hover {
-  transform: translateY(-2px);
   box-shadow: 0 15px 40px rgba(107, 75, 244, 0.35);
+  transform: none !important;
 }
 
 .admin-save-btn.danger {
@@ -722,13 +831,14 @@
   backdrop-filter: blur(18px) saturate(150%);
   box-shadow: var(--shadow);
   overflow:hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+  transform: none !important;
 }
 
 .admin-dashboard-container .glass-card:hover{
-  transform: translateY(-4px);
   box-shadow: 0 25px 60px rgba(0,0,0,0.45);
   border-color: rgba(255,255,255,0.14);
+  transform: none !important;
 }
 
 .admin-dashboard-container .glass-card::after{
@@ -778,8 +888,47 @@
 }
 .stat-icon-wrapper.revenue{ color:#5BFFB1; background: rgba(91,255,177,0.06); }
 .stat-icon-wrapper.users{ color:#8B5CFF; background: rgba(139,92,246,0.08); }
-.stat-icon-wrapper.quota{ color:#B17CFF; background: rgba(177,124,255,0.08); }
-.stat-icon-wrapper.subscriptions{ color:#C06BFF; background: rgba(192,107,255,0.08); }
+.stat-icon-wrapper.cvs{ color:#5B7CFF; background: rgba(91,124,255,0.08); }
+.stat-icon-wrapper.downloads{ color:#C06BFF; background: rgba(192,107,255,0.08); }
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.status-badge.completed { background: rgba(74, 222, 128, 0.1); color: #4ADE80; }
+.status-badge.failed { background: rgba(248, 113, 113, 0.1); color: #F87171; }
+.status-badge.pending { background: rgba(251, 191, 36, 0.1); color: #FBBF24; }
+.status-badge.refunded { background: rgba(156, 163, 175, 0.1); color: #9CA3AF; }
+
+.admin-loading {
+  position: fixed;
+  inset: 0;
+  background: #070816;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #5B7CFF;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
 .admin-dashboard-container .stat-chevron{
   width:34px; height:34px;
@@ -839,6 +988,55 @@
   background: rgba(255,255,255,0.06);
   position:relative;
   overflow:hidden;
+  transition: all 0.3s ease;
+}
+
+.admin-dashboard-container.rtl {
+  direction: rtl;
+}
+
+.admin-dashboard-container.rtl .admin-sidebar {
+  left: auto;
+  right: 0;
+  border-right: none;
+  border-left: 1px solid rgba(255,255,255,0.08);
+}
+
+.admin-dashboard-container.rtl .admin-main {
+  margin-left: 0;
+  margin-right: 230px;
+}
+
+.admin-dashboard-container.rtl .nav-item {
+  text-align: right;
+}
+
+.admin-dashboard-container.rtl .nav-badge-icon,
+.admin-dashboard-container.rtl .nav-item .chevron {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.admin-dashboard-container.rtl .active-glow {
+  left: auto;
+  right: 0;
+}
+
+.admin-dashboard-container.rtl .header-actions {
+  justify-content: flex-start;
+}
+
+.admin-dashboard-container.rtl .search-box {
+  margin-left: auto;
+  margin-right: 20px;
+}
+
+.admin-dashboard-container.rtl .stat-left {
+  flex-direction: row-reverse;
+}
+
+.admin-dashboard-container.rtl .dropdown-link {
+  text-align: right;
 }
 .admin-dashboard-container .spark-line::before{
   content:"";
@@ -936,23 +1134,39 @@
 }
 
 /* ===== Recent payments table ===== */
-.table-section{ padding-bottom: 16px; }
-.admin-table-wrapper{ padding: 10px 18px 18px; }
-.admin-dashboard-container .admin-table{ width:100%; border-collapse:collapse; }
+.table-section{ grid-column: 1 / -1; padding-bottom: 16px; }
+.admin-table-wrapper{ 
+  padding: 10px 18px 18px; 
+  overflow-x: auto; 
+  width: 100%;
+  display: block;
+  scrollbar-width: thin;
+  scrollbar-color: var(--blue) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+.admin-dashboard-container .admin-table{ 
+  width:100%; 
+  border-collapse:collapse; 
+  min-width: 800px; /* Increased to force scroll on tablets/mobiles */
+}
 .admin-table th{
   text-align:left;
   font-size: 12px;
   font-weight: 800;
   color: rgba(234,240,255,0.40);
-  padding: 14px 0;
+  padding: 18px 24px;
   border-bottom: 1px solid rgba(255,255,255,0.08);
+  white-space: nowrap;
 }
 .admin-table td{
-  padding: 14px 0;
+  padding: 18px 24px;
   border-bottom: 1px solid rgba(255,255,255,0.07);
   font-size: 14px;
   color: rgba(234,240,255,0.70);
+  white-space: nowrap;
+  transition: background 0.2s ease;
 }
+/*.admin-table tr:hover td { background: rgba(255,255,255,0.02); }*/
 .admin-dashboard-container .user-info{
   display:flex;
   align-items:center;
@@ -976,6 +1190,21 @@
   border: 1px solid rgba(255,255,255,0.08);
   color: rgba(234,240,255,0.70);
   cursor:pointer;
+}
+
+/* ===== Admin Page Generic Classes ===== */
+.admin-page-card { min-height: 500px; }
+.admin-placeholder-content {
+  padding: 30px;
+  color: rgba(234,240,255,0.5);
+  font-size: 15px;
+}
+.empty-state-dash {
+  margin-top: 40px;
+  padding: 60px;
+  border: 2px dashed rgba(255,255,255,0.05);
+  border-radius: 20px;
+  text-align: center;
 }
 
 /* ===== AI Usage Card ===== */
@@ -1258,6 +1487,16 @@
   .admin-dashboard-container .stats-value{ font-size: 24px; }
 }
 
+@media (max-width: 850px) {
+  .admin-dashboard-container .search-box {
+    order: 3;
+    width: 100%;
+    max-width: none;
+    flex: 0 0 100%;
+    margin: 4px 0 0 0 !important;
+  }
+}
+
 @media (max-width: 600px){
   .admin-dashboard-container .admin-sidebar{ 
     width: 250px; 
@@ -1292,22 +1531,28 @@
 
 @media (max-width: 480px){
   .admin-dashboard-container .glass-header{
-    flex-direction: column;
-    align-items: stretch;
-    gap: 14px;
-    padding: 15px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 18px;
   }
   .admin-dashboard-container .header-title{
-    justify-content: space-between;
+    flex: 1;
+    width: auto;
   }
   .admin-dashboard-container .header-actions{
-    width: 100%;
-    justify-content: space-between;
+    width: auto;
+    flex: 0 0 auto;
+    justify-content: flex-end;
     gap: 8px;
   }
   .admin-dashboard-container .search-box{
-    flex: 1;
-    min-width: 0;
+    order: 3;
+    width: 100%;
+    flex: 0 0 100%;
+    max-width: none;
+    margin: 4px 0 0 0 !important;
   }
 
   /* Horizontal Scroller for Recent Payments */
@@ -1482,8 +1727,8 @@
 }
 
 .admin-dashboard-container .login-submit-btn:hover{
-  transform: translateY(-2px);
   box-shadow: 0 15px 40px rgba(139,92,246,0.35);
+  transform: none !important;
 }
 
 .admin-dashboard-container .login-submit-btn:disabled{

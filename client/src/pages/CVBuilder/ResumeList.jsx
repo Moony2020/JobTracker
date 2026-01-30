@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Plus, Edit3, Trash2, FileText, Download, Crown } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import TemplateRenderer from './Templates/TemplateRenderer';
 import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
 
@@ -39,6 +40,7 @@ const sampleData = {
 };
 
 const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
+  const { user } = useAuth();
   const [resumes, setResumes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [templates, setTemplates] = useState([]);
@@ -51,25 +53,53 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
 
   const fetchData = async () => {
     try {
-      const [, templatesRes] = await Promise.all([
+      const [resumesRes, templatesRes] = await Promise.all([
         api.get('/cv'),
         api.get('/cv/templates')
       ]);
-      // Filter out Minimalist (duplicate of Modern) and inject Timeline at the START
-      const filteredTemplates = templatesRes.data.filter(t => t.key !== 'minimalist');
-      const hasTimeline = filteredTemplates.some(t => t.key === 'timeline');
+      setResumes(resumesRes.data);
+      // Re-order and Filter templates as requested
+      // Order: Timeline (Free), Classic (Free), Modern (Free), Creative (Pro)
+      const rawTemplates = templatesRes.data;
       
-      if (!hasTimeline) {
-        filteredTemplates.unshift({ // Add to START of list
-          _id: 'timeline-temp-id',
-          name: 'Timeline', // Shorter name as requested
-          key: 'timeline',
-          category: 'Free',
-          price: 0, // Essential for the "FREE" badge
-          isActive: true
-        });
+      const orderedKeys = ['timeline', 'classic', 'modern', 'creative'];
+      let finalTemplates = [];
+
+      // 1. Ensure Timeline exists (Client side fallback if not in DB yet)
+      let timelineTpl = rawTemplates.find(t => t.key === 'timeline');
+      if (!timelineTpl) {
+        timelineTpl = {
+            _id: 'timeline-temp-id',
+            name: 'Timeline',
+            key: 'timeline',
+            category: 'Free',
+            price: 0,
+            isActive: true
+        };
       }
-      setTemplates(filteredTemplates);
+
+      // Build final list in specific order: Timeline, Classic, Modern, Creative
+      orderedKeys.forEach(key => {
+        let tpl = rawTemplates.find(t => t.key === key);
+        if (key === 'timeline') tpl = timelineTpl;
+        
+        if (tpl) {
+          // Force Creative to be Pro for the badge and payment logic
+          if (key === 'creative') {
+             tpl.category = 'Pro';
+          }
+          finalTemplates.push(tpl);
+        }
+      });
+
+      // 3. Add any other templates that weren't in the primary list
+      rawTemplates.forEach(t => {
+        if (!orderedKeys.includes(t.key) && t.key !== 'minimalist') {
+          finalTemplates.push(t);
+        }
+      });
+
+      setTemplates(finalTemplates);
     } catch (err) {
       console.error("Error fetching CV data:", err);
     } finally {
@@ -103,6 +133,31 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
 
   const handleDownload = async (e, cv) => {
     e.stopPropagation();
+    
+    // Check Premium Status
+    const isPremiumTemplate = cv.templateId?.category === 'Premium' || cv.templateId?.category === 'Pro';
+    const isUserPremium = user?.isPremium || false;
+
+    if (isPremiumTemplate && !isUserPremium && !cv.isPaid) {
+       if (showNotify) showNotify('Initiating payment for Premium template...', 'info');
+       try {
+           const res = await api.post('/payment/stripe/create-session', {
+               cvId: cv._id,
+               templateId: cv.templateId._id
+           });
+           
+           if (res.data.url) {
+               window.location.href = res.data.url;
+           } else {
+               throw new Error('No checkout URL received');
+           }
+       } catch (err) {
+           console.error('[Payment] Error:', err);
+           if (showNotify) showNotify('Failed to start payment processing.', 'error');
+       }
+       return;
+    }
+
     try {
       const response = await api.get(`/cv/export/${cv._id}`, {
         responseType: 'blob'
@@ -182,7 +237,7 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
                   />
                 </div>
                 {/* Badges restored - Visible always */}
-                {tpl.category === 'Premium' && (
+                {tpl.category === 'Pro' && (
                   <div className="premium-badge">
                     <Crown size={14} />
                     <span>PRO</span>

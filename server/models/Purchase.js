@@ -40,6 +40,10 @@ const PurchaseSchema = new mongoose.Schema(
       enum: ["pending", "completed", "failed", "refunded"],
       default: "pending",
     },
+    expiresAt: {
+      type: Date,
+      // Only applicable for Pro template purchases
+    },
   },
   {
     timestamps: true,

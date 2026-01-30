@@ -1,14 +1,120 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import TemplateRenderer from './Templates/TemplateRenderer';
 import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
 import RichTextEditor from '../../components/RichTextEditor';
 import { 
   Bold, Italic, Underline, Link as LinkIcon, List, AlignLeft, AlignCenter, AlignRight,
   CheckCircle, Trash2, Plus, Minus, ChevronUp, ChevronDown, Layout, X, ChevronLeft, Download,
-  User, Briefcase, GraduationCap, Globe, Code, Heart, Type, ArrowLeft, Palette, Save, Eye, FileText, HelpCircle, Check, Camera, Upload
+  User, Briefcase, GraduationCap, Globe, Code, Heart, Type, ArrowLeft, Palette, Save, Eye, FileText, HelpCircle, Check, Camera, Upload, Loader2, Calendar
 } from 'lucide-react';
 import './CVBuilder.css';
 import api from '../../services/api';
+
+
+const DateInput = ({ value, onChange, disabled }) => {
+  // Parse existing "YYYY-MM" value
+  const [year, month] = value ? value.split('-') : ['', ''];
+
+  const handleYearChange = (e) => {
+    const newYear = e.target.value;
+    if (newYear && month) {
+      onChange(`${newYear}-${month}`);
+    } else if (newYear) {
+      // Default to January if no month yet
+      onChange(`${newYear}-01`);
+    } else {
+       onChange('');
+    }
+  };
+
+  const handleMonthChange = (e) => {
+    const newMonth = e.target.value;
+    if (year && newMonth) {
+      onChange(`${year}-${newMonth}`);
+    } else if (newMonth) {
+       // Wait for year, but can't really set partial date. 
+       // We'll just store temporary or require Year first. 
+       // Logic: Users usually pick year then month or vice versa.
+       // If year is missing, we can pause or assume current year? 
+       // Better: Just don't trigger onChange with valid date until both exist? 
+       // BUT the parent expects a value.
+       // Let's use current year as fallback if month is picked first? No, that's dangerous.
+       // Let's force them to pick Year.
+       // Actually, we can just update the partial state if we managed it locally, but here we control via props.
+       // Let's pass partial? No, standard date inputs break.
+       // We'll default Year to current year if missing? 
+       const currentY = new Date().getFullYear();
+       onChange(`${currentY}-${newMonth}`);
+    }
+  };
+
+  // Generate years (1970 - Current + 5)
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 1970 + 6 }, (_, i) => currentYear + 5 - i);
+
+  const months = [
+    { val: '01', label: 'January' },
+    { val: '02', label: 'February' },
+    { val: '03', label: 'March' },
+    { val: '04', label: 'April' },
+    { val: '05', label: 'May' },
+    { val: '06', label: 'June' },
+    { val: '07', label: 'July' },
+    { val: '08', label: 'August' },
+    { val: '09', label: 'September' },
+    { val: '10', label: 'October' },
+    { val: '11', label: 'November' },
+    { val: '12', label: 'December' }
+  ];
+
+  return (
+    <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+      {/* Month Select */}
+      <div style={{ position: 'relative', flex: 1 }}>
+        <select
+          className="form-input"
+          value={month || ''}
+          onChange={handleMonthChange}
+          disabled={disabled}
+          style={{ appearance: 'none', paddingRight: '24px', width: '100%' }}
+        >
+          <option value="" disabled>Month</option>
+          {months.map(m => (
+            <option key={m.val} value={m.val}>{m.label}</option>
+          ))}
+        </select>
+        <ChevronDown 
+          size={14} 
+          color="#94a3b8" 
+          style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} 
+        />
+      </div>
+
+      {/* Year Select */}
+      <div style={{ position: 'relative', flex: 1 }}>
+        <select
+          className="form-input"
+          value={year || ''}
+          onChange={handleYearChange}
+          disabled={disabled}
+          style={{ appearance: 'none', paddingRight: '24px', width: '100%' }}
+        >
+          <option value="" disabled>Year</option>
+          {years.map(y => (
+            <option key={y} value={y}>{y}</option>
+          ))}
+        </select>
+        <ChevronDown 
+          size={14} 
+          color="#94a3b8" 
+          style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} 
+        />
+      </div>
+    </div>
+  );
+};
 
 const SAMPLE_DATA = {
   personal: {
@@ -33,6 +139,9 @@ const SAMPLE_DATA = {
 };
 
 const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [activeCvId, setActiveCvId] = useState(propCvId);
   const [loading, setLoading] = useState(activeCvId ? true : false);
   const [viewMode, setViewMode] = useState(() => {
@@ -135,12 +244,20 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
       fontSize: 100
     },
     templateId: null,
-    templateKey: 'modern'
+    templateKey: 'modern',
+    isPaid: false
   });
 
   const [activeSection, setActiveSection] = useState('personal');
   const [isSaved, setIsSaved] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
   const [availableTemplates, setAvailableTemplates] = useState([]);
+  const canvasRef = React.useRef(null);
+  
+  // Page Tracking State
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const previewScrollRef = React.useRef(null); // Ref for scroll container
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
     section: null,
@@ -161,10 +278,28 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
           const res = await api.get(`/cv/${activeCvId}`);
           console.log(`[Editor] CV data received:`, res.data ? 'Success' : 'Empty');
           if (res.data) {
+            // Check for URL overrides (used by PDF service)
+            const params = new URLSearchParams(location.search);
+            const templateOverride = params.get('template');
+            const colorOverride = params.get('color');
+            const fontOverride = params.get('font');
+
             const normalizedData = {
               ...res.data,
+              isPaid: res.data.isPaid || false,
+              templateKey: templateOverride || res.data.templateId?.key || 'modern',
+              settings: {
+                ...res.data.settings,
+                themeColor: colorOverride ? `#${colorOverride}` : (res.data.settings?.themeColor || '#2563eb'),
+                font: fontOverride || (res.data.settings?.font || 'Inter')
+              },
               data: {
-                personal: res.data.data?.personal || {},
+                personal: {
+                  firstName: '', lastName: '', jobTitle: '', email: '', phone: '', location: '',
+                  summary: '', photo: null, city: '', country: '', address: '', zipCode: '',
+                  idNumber: '', birthDate: '', nationality: '', driversLicense: '',
+                  ...(res.data.data?.personal || {})
+                },
                 experience: res.data.data?.experience || [],
                 education: res.data.data?.education || [],
                 skills: res.data.data?.skills || [],
@@ -178,20 +313,17 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                 military: res.data.data?.military || [],
                 references: res.data.data?.references || [],
                 gdpr: res.data.data?.gdpr || []
-              },
-              settings: res.data.settings || { themeColor: '#2563eb', font: 'Inter', lineSpacing: 100 },
-              templateKey: res.data.templateId?.key || 'modern'
+              }
             };
             setCvData(normalizedData);
           }
         } else {
              console.log(`[Editor] Initializing new CV`);
-             // Initialize from history state if creating new
-             const historyState = window.history.state;
-             if (historyState && historyState.templateKey) {
+             // Initialize from location state if creating new
+             if (location.state && location.state.templateKey) {
                 setCvData(prev => ({
                    ...prev,
-                   templateKey: historyState.templateKey
+                   templateKey: location.state.templateKey
                 }));
              }
         }
@@ -202,7 +334,10 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
       }
     };
     init();
-  }, [propCvId, activeCvId]);
+  }, [propCvId, activeCvId, location.state, location.search]);
+
+  // Track canvas height for dynamic pagination
+ 
   
 
   const handlePhotoUpload = (e) => {
@@ -243,8 +378,9 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
         });
         if (res.data?._id) {
           setActiveCvId(res.data._id);
+          setIsSaved(true);
+          return res.data._id; // Return the new ID
         }
-        setIsSaved(true);
       } catch (err) {
         console.error("Error creating CV:", err);
       }
@@ -257,11 +393,51 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
           templateId: templateIdToSave
         });
         setIsSaved(true);
+        return activeCvId; // Return existing ID
       } catch (err) {
         console.error("Error updating CV:", err);
       }
     }
+    return activeCvId;
   }, [activeCvId, cvData.data, cvData.settings, cvData.title, cvData.templateKey, cvData.templateId, availableTemplates]);
+
+  // Calculate Pages & Track Scroll
+  useEffect(() => {
+    if (!canvasRef.current || !previewScrollRef.current) return;
+
+    const calculatePages = () => {
+        if (!canvasRef.current) return;
+        const height = canvasRef.current.scrollHeight;
+        const pages = Math.ceil(height / 1123) || 1; // 1123px is A4 height
+        setTotalPages(pages);
+    };
+
+    // Initial calcs
+    calculatePages();
+    const observer = new ResizeObserver(calculatePages);
+    if (canvasRef.current) observer.observe(canvasRef.current);
+
+    // Scroll Listener
+    const handleScroll = () => {
+        if (!previewScrollRef.current) return;
+        const scrollY = previewScrollRef.current.scrollTop;
+        const pageIndex = Math.floor((scrollY + 300) / 1123) + 1; // 1123 (A4 height, no gap)
+        setCurrentPage(Math.min(pageIndex, totalPages));
+    };
+
+    previewScrollRef.current.addEventListener('scroll', handleScroll);
+    return () => {
+        observer.disconnect();
+        if (previewScrollRef.current) previewScrollRef.current.removeEventListener('scroll', handleScroll);
+    };
+  }, [totalPages]); 
+
+  // Auto-scroll to page 2 if needed (optional helper)
+  const scrollToPage = (page) => {
+      if (!previewScrollRef.current) return;
+      const targetY = (page - 1) * 1133;
+      previewScrollRef.current.scrollTo({ top: targetY, behavior: 'smooth' });
+  };
 
   useEffect(() => {
     if (!isSaved) {
@@ -304,16 +480,48 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
   };
 
   const handleDownload = async () => {
-    if (!activeCvId) {
-        if (showNotify) showNotify('Please wait for the CV to save or enter some details first.', 'info');
-        await handleSave();
+    // 1. Force Save First to ensure Backend has latest Template Key and we have a valid ID
+    if (showNotify) showNotify('Saving latest changes...', 'info');
+    const savedId = await handleSave();
+    
+    if (!savedId) {
+        if (showNotify) showNotify('Could not save CV. Please try again.', 'error');
         return;
     }
 
+    const currentTemplate = availableTemplates.find(t => t.key === cvData.templateKey);
+    const templateCategory = currentTemplate?.category;
+    const isPremiumTemplate = templateCategory === 'Premium' || templateCategory === 'Pro';
+    const isUserPremium = user?.isPremium || false;
+    
+    console.log('[Download] Checking Template:', currentTemplate?.key, 'User Premium:', isUserPremium, 'CV Paid:', cvData.isPaid);
+
+    if (isPremiumTemplate && !isUserPremium && !cvData.isPaid) {
+       if (showNotify) showNotify('Initiating payment for Premium template...', 'info');
+       
+       try {
+           const res = await api.post('/payment/stripe/create-session', {
+               cvId: savedId,
+               templateId: currentTemplate._id
+           });
+           
+           if (res.data.url) {
+               window.location.href = res.data.url;
+           } else {
+               throw new Error('No checkout URL received');
+           }
+       } catch (err) {
+           console.error('[Payment] Error:', err);
+           if (showNotify) showNotify('Failed to start payment processing. Please try again.', 'error');
+       }
+       return;
+     }
+
     try {
       if (showNotify) showNotify('Generating PDF...', 'info');
+      setIsExporting(true);
       
-      const response = await api.get(`/cv/export/${activeCvId}`, {
+      const response = await api.get(`/cv/export/${savedId}`, {
         responseType: 'blob'
       });
       
@@ -343,9 +551,9 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
       if (showNotify) showNotify('PDF downloaded successfully!', 'success');
     } catch (err) {
       console.error("Error downloading CV:", err);
-      if (showNotify) {
-        showNotify("Failed to download PDF. Please try again.", "error");
-      }
+      if (showNotify) showNotify(err.message || 'Error downloading PDF', 'error');
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -353,7 +561,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
     const newItem = section === 'experience' ? { title: '', company: '', startDate: '', endDate: '', current: false, description: '' }
                : section === 'education' ? { school: '', degree: '', startDate: '', endDate: '', description: '' }
                : section === 'skills' ? ''
-               : section === 'languages' ? { name: '', level: 'Native' }
+               : section === 'languages' ? { name: '', level: '' }
                : section === 'projects' ? { name: '', description: '', url: '' }
                : section === 'links' ? { name: '', url: '' }
                : section === 'hobbies' ? { name: '' }
@@ -409,6 +617,15 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
 
   return (
     <div className={`cv-editor-design ${viewMode === 'design' ? 'mode-design' : 'mode-content'}`}>
+      {isExporting && (
+        <div className="pdf-export-overlay">
+          <div className="export-loader-card">
+            <Loader2 className="spinner" size={48} />
+            <h3>Generating your PDF...</h3>
+            <p>This will only take a few seconds.</p>
+          </div>
+        </div>
+      )}
       <div className="editor-global-header">
         <div className="header-left">
           {viewMode === 'content' ? (
@@ -717,22 +934,27 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                             />
                           </div>
                           <div className="form-group">
-                            <label className="form-label">Start Date</label>
+                            <label className="form-label">Location</label>
                             <input 
-                              type="date"
                               className="form-input" 
-                              value={exp.startDate} 
-                              onChange={(e) => updateItem('experience', idx, 'startDate', e.target.value)}
+                              placeholder="City, Country"
+                              value={exp.location || ''} 
+                              onChange={(e) => updateItem('experience', idx, 'location', e.target.value)}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Start Date</label>
+                            <DateInput 
+                              value={exp.startDate ? exp.startDate.substring(0, 7) : ''} 
+                              onChange={(val) => updateItem('experience', idx, 'startDate', val)}
                             />
                           </div>
                           <div className="form-group">
                             <label className="form-label">End Date</label>
-                            <input 
-                              type="date"
-                              className="form-input" 
-                              value={exp.endDate} 
+                            <DateInput 
+                              value={exp.endDate ? exp.endDate.substring(0, 7) : ''} 
                               disabled={exp.current}
-                              onChange={(e) => updateItem('experience', idx, 'endDate', e.target.value)}
+                              onChange={(val) => updateItem('experience', idx, 'endDate', val)}
                             />
                           </div>
                         </div>
@@ -788,21 +1010,26 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                             />
                           </div>
                           <div className="form-group">
-                            <label className="form-label">Start Date</label>
+                            <label className="form-label">Location</label>
                             <input 
-                              type="date"
                               className="form-input" 
-                              value={edu.startDate} 
-                              onChange={(e) => updateItem('education', idx, 'startDate', e.target.value)}
+                              placeholder="City, Country"
+                              value={edu.location || ''} 
+                              onChange={(e) => updateItem('education', idx, 'location', e.target.value)}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Start Date</label>
+                            <DateInput 
+                              value={edu.startDate ? edu.startDate.substring(0, 7) : ''} 
+                              onChange={(val) => updateItem('education', idx, 'startDate', val)}
                             />
                           </div>
                           <div className="form-group">
                             <label className="form-label">End Date</label>
-                            <input 
-                              type="date"
-                              className="form-input" 
-                              value={edu.endDate} 
-                              onChange={(e) => updateItem('education', idx, 'endDate', e.target.value)}
+                            <DateInput 
+                              value={edu.endDate ? edu.endDate.substring(0, 7) : ''} 
+                              onChange={(val) => updateItem('education', idx, 'endDate', val)}
                             />
                           </div>
                         </div>
@@ -902,11 +1129,24 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                                         onChange={(val) => updateItem(key, idx, field, val)}
                                         placeholder={`Describe your ${config.title.toLowerCase()}...`}
                                       />
+                                    ) : field === 'level' && key === 'languages' ? (
+                                      <select 
+                                        className="form-input"
+                                        value={item[field] || ''}
+                                        onChange={(e) => updateItem(key, idx, field, e.target.value)}
+                                      >
+                                        <option value="">Select Level</option>
+                                        <option value="Native">Native</option>
+                                        <option value="Proficient">Proficient</option>
+                                        <option value="Intermediate">Intermediate</option>
+                                        <option value="Basic">Basic</option>
+                                      </select>
                                     ) : (
                                       <input 
                                         className="form-input" 
                                         value={item[field] || ''} 
                                         onChange={(e) => updateItem(key, idx, field, e.target.value)}
+                                        placeholder={item[field] ? '' : (field === 'name' ? 'Language Name' : '')}
                                       />
                                     )}
                                   </div>
@@ -1126,7 +1366,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                            </div>
                            <div className="tpl-name-sidebar">
                              {tpl.name}
-                             {tpl.category === 'Premium' && <span className="premium-badge-sidebar" style={{marginLeft: '6px'}}>PRO</span>}
+                             {tpl.category === 'Pro' && <span className="premium-badge-sidebar" style={{marginLeft: '6px'}}>PRO</span>}
                            </div>
                         </div>
                      ))}
@@ -1144,9 +1384,9 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
         </aside>
 
         <main className="editor-preview-pane">
-          <div className="preview-scroll-area">
+          <div className="preview-scroll-area" ref={previewScrollRef}>
             <div className="preview-scaler">
-              <div className="resume-paper-canvas">
+              <div className="resume-paper-canvas" ref={canvasRef}>
                 <TemplateRenderer 
                   templateKey={cvData.templateKey} 
                   data={cvData.data} 
@@ -1156,21 +1396,38 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
             </div>
 
             {/* Premium Pill - Inside scroll area to stay under CV */}
-            <div className="preview-footer-minimal">
-               {isSaved ? (
-                 <div className="status-saved-text" style={{ display: 'flex', alignItems: 'center', color: '#10b981', gap: '8px' }}>
-                   <CheckCircle size={14} strokeWidth={3} />
-                   <span>Saved</span>
-                 </div>
-               ) : (
-                 <div className="status-saved-text" style={{ color: '#cbd5e1' }}>
-                   <span>Saving...</span>
-                 </div>
-               )}
-               <div className="pagination-text" style={{ marginLeft: '8px', paddingLeft: '8px', borderLeft: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center' }}>
-                  <span style={{ color: '#cbd5e1', fontWeight: 500 }}>Page 1 / 1</span>
-               </div>
-            </div>
+
+
+             <div className="preview-footer-minimal">
+                {isSaved ? (
+                  <div className="status-saved-text" style={{ display: 'flex', alignItems: 'center', color: '#10b981', gap: '8px' }}>
+                    <CheckCircle size={14} strokeWidth={3} />
+                    <span>Saved</span>
+                  </div>
+                ) : (
+                  <div className="status-saved-text" style={{ color: '#cbd5e1' }}>
+                    <span>Saving...</span>
+                  </div>
+                )}
+
+                <div className="pagination-text">
+                    <button 
+                        className="page-link-btn" 
+                        onClick={() => scrollToPage(currentPage > 1 ? currentPage - 1 : totalPages)}
+                        disabled={totalPages <= 1}
+                    >
+                        <ChevronUp size={14} />
+                    </button>
+                    <span>Page {currentPage} / {totalPages}</span>
+                    <button 
+                        className="page-link-btn" 
+                        onClick={() => scrollToPage(currentPage < totalPages ? currentPage + 1 : 1)}
+                        disabled={totalPages <= 1}
+                    >
+                        <ChevronDown size={14} />
+                    </button>
+                </div>
+             </div>
           </div>
         </main>
       </div>
