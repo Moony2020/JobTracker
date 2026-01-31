@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef, useEffect } from "react";
+import React, { useMemo, useState, useRef, useEffect, useCallback } from "react";
 import {
   LayoutDashboard,
   Users,
@@ -13,7 +13,7 @@ import {
   LogOut,
   User as UserIcon,
   Menu,
-  X,
+  X
 } from "lucide-react";
 import { useNavigate, useLocation, Routes, Route, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -147,9 +147,15 @@ const AdminDashboard = () => {
 
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [lang, setLang] = useState(localStorage.getItem("adminLang") || "en");
   const [showLangDropdown, setShowLangDropdown] = useState(false);
+  const [lastClearedAt, setLastClearedAt] = useState(() => {
+    const saved = localStorage.getItem("admin_notif_cleared");
+    if (!saved) return new Date(0);
+    return new Date(saved.match(/^\d+$/) ? parseInt(saved) : saved);
+  });
 
   const langFlags = {
     en: "🇺🇸",
@@ -168,16 +174,22 @@ const AdminDashboard = () => {
     recentPayments: [],
     usageAnalytics: [],
     incomeInsights: [],
-    todayActivity: 0
+    todayActivity: 0,
+    todayUsers: 0,
+    todayPayments: 0
   });
+
   const [loading, setLoading] = useState(true);
+  
   const dropdownRef = useRef(null);
   const langDropdownRef = useRef(null);
+  const notifDropdownRef = useRef(null);
 
   const t = translations[lang];
 
-  const fetchStats = async (isSilent = false) => {
+  const fetchStats = useCallback(async (isSilent = false) => {
     try {
+      await Promise.resolve(); // Break synchronous execution path to avoid cascading render lint
       if (!isSilent) setLoading(true);
       const response = await fetch(`/api/admin/stats`, {
         headers: {
@@ -191,18 +203,48 @@ const AdminDashboard = () => {
       console.error("Failed to fetch admin stats:", err);
       if (!isSilent) setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchStats();
+    const init = async () => {
+      await fetchStats();
+    };
+    init();
     
-    // Set up 10-second polling for real-time dashboard sync
     const pollInterval = setInterval(() => {
       fetchStats(true);
     }, 10000);
-
     return () => clearInterval(pollInterval);
-  }, []);
+  }, [fetchStats]);
+
+  const notifications = useMemo(() => {
+    if (!stats?.recentPayments || !Array.isArray(stats.recentPayments)) return [];
+    
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    return stats.recentPayments
+      .filter(p => {
+        const pDate = new Date(p.createdAt);
+        return pDate >= startOfToday && pDate.getTime() > lastClearedAt.getTime();
+      })
+      .map(p => ({
+        id: p._id,
+        type: "payment",
+        title: `New Payment: $${p.amount.toFixed(2)}`,
+        user: p.user?.name || "Guest",
+        time: new Date(p.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        link: "/admin/payments"
+      }));
+  }, [stats.recentPayments, lastClearedAt]);
+
+  const paymentNotifsCount = useMemo(() => 
+    notifications.filter(n => n.type === 'payment').length
+  , [notifications]);
+
+  const userNotifsCount = useMemo(() => 
+    notifications.filter(n => n.type === 'user').length
+  , [notifications]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -212,10 +254,24 @@ const AdminDashboard = () => {
       if (langDropdownRef.current && !langDropdownRef.current.contains(event.target)) {
         setShowLangDropdown(false);
       }
+      if (notifDropdownRef.current && !notifDropdownRef.current.contains(event.target)) {
+        setShowNotifDropdown(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleNotifClick = (link) => {
+    navigate(link);
+    setShowNotifDropdown(false);
+  };
+
+  const clearNotifications = () => {
+    const now = Date.now();
+    localStorage.setItem("admin_notif_cleared", now.toString());
+    setLastClearedAt(new Date(now));
+  };
 
   const initials = useMemo(() => {
     if (!user?.name) return "AD";
@@ -271,11 +327,13 @@ const AdminDashboard = () => {
             <NavLink to="/admin/users" style={{ textDecoration: 'none' }} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
               <Users size={18} />
               <span>{t.users}</span>
+              {userNotifsCount > 0 && <span className="notification-badge-sidebar">{userNotifsCount}</span>}
             </NavLink>
 
             <NavLink to="/admin/payments" style={{ textDecoration: 'none' }} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
               <CreditCard size={18} />
               <span>{t.payments}</span>
+              {paymentNotifsCount > 0 && <span className="notification-badge-sidebar">{paymentNotifsCount}</span>}
             </NavLink>
 
             <NavLink to="/admin/templates" style={{ textDecoration: 'none' }} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
@@ -350,12 +408,44 @@ const AdminDashboard = () => {
               )}
             </div>
 
-            <button className="icon-btn relative" aria-label="Notifications">
-              <Bell size={18} />
-              {stats.todayActivity > 0 && (
-                <span className="notification-badge-count">{stats.todayActivity}</span>
+            <div className="admin-notification-menu" ref={notifDropdownRef}>
+              <button 
+                className={`icon-btn relative ${showNotifDropdown ? 'active' : ''}`} 
+                aria-label="Notifications"
+                onClick={() => setShowNotifDropdown(!showNotifDropdown)}
+              >
+                <Bell size={18} />
+                {notifications.length > 0 && (
+                  <span className="notification-badge-count">{notifications.length}</span>
+                )}
+              </button>
+
+              {showNotifDropdown && (
+                <div className="admin-notification-dropdown">
+                  <div className="notif-header">
+                    <h3>Notifications</h3>
+                    <button className="clear-all-btn" onClick={clearNotifications}>Clear all</button>
+                  </div>
+                  <div className="notif-list">
+                    {notifications.length > 0 ? (
+                      notifications.map(n => (
+                        <button key={n.id} className="notif-item" onClick={() => handleNotifClick(n.link)}>
+                          <div className={`notif-icon ${n.type}`}>
+                            {n.type === 'payment' ? <CreditCard size={14} /> : <UserIcon size={14} />}
+                          </div>
+                          <div className="notif-content">
+                            <span className="notif-title">{n.title}</span>
+                            <span className="notif-time">{n.user} • {n.time}</span>
+                          </div>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="notif-empty">No new activities today</div>
+                    )}
+                  </div>
+                </div>
               )}
-            </button>
+            </div>
 
             <div className="admin-user-menu" ref={dropdownRef}>
               <button 

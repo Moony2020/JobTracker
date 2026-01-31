@@ -6,6 +6,16 @@ import { useNavigate } from 'react-router-dom';
 const AdminOverview = ({ stats, t }) => {
   const navigate = useNavigate();
 
+  const getSimplifiedTemplateName = (name) => {
+    if (!name) return 'Unknown Template';
+    const lower = name.toLowerCase();
+    if (lower.includes('creative')) return 'Creative';
+    if (lower.includes('modern')) return 'Modern';
+    if (lower.includes('classic')) return 'Classic';
+    if (lower.includes('timeline')) return 'Timeline';
+    return name;
+  };
+
   return (
     <>
       <div className="admin-stats-grid">
@@ -111,8 +121,11 @@ const AdminOverview = ({ stats, t }) => {
                       <div style={{ fontWeight: '600', color: 'white' }}>{row.user?.name || row.userName || row.user?.email || row.email || 'Unknown User'}</div>
                       <div style={{ fontSize: '11px', opacity: 0.4 }}>{row.user?.email || row.email}</div>
                     </td>
-                      <td>{new Date(row.createdAt).toLocaleDateString()}</td>
-                      <td>{row.template?.name || row.templateName}</td>
+                      <td>
+                        <div style={{ color: 'white', fontSize: '13px' }}>{new Date(row.createdAt).toLocaleDateString()}</div>
+                        <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}>{new Date(row.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                      </td>
+                      <td>{getSimplifiedTemplateName(row.template?.name || row.templateName)}</td>
                       <td style={{ textTransform: 'capitalize' }}>{row.provider || row.method}</td>
                       <td><span className="amount-text">${row.amount.toFixed(2)}</span></td>
                       <td><span className={`status-badge ${row.status}`}>{row.status}</span></td>

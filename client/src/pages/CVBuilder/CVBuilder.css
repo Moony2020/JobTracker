@@ -685,10 +685,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 60px 20px;
+    justify-content: flex-start; /* Changed from center to push up */
+    padding: 20px 20px 40px 20px; /* Reduced top padding significantly */
     text-align: center;
-    min-height: 80vh;
+    min-height: auto; /* Remove fixed height which caused bottom gap */
     animation: success-fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 100%);
 }
@@ -699,7 +699,8 @@
     align-items: center;
     width: 100%;
     max-width: 700px;
-    padding: 50px 40px;
+    padding: 40px 40px; /* Adjusted padding */
+    margin-top: 40px; /* Space from header */
 }
 
 @keyframes success-fade-in {
@@ -707,21 +708,8 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-.success-icon-wrapper {
-    width: 100px;
-    height: 100px;
-    background: rgba(16, 185, 129, 0.1);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #10b981;
-    margin: 0 auto 30px auto; /* Force central margin */
-    box-shadow: 0 0 40px rgba(16, 185, 129, 0.2);
-}
-
 .success-page-container h1 {
-    font-size: 3rem;
+    font-size: clamp(2rem, 5vw, 3rem); /* Responsive scaling */
     font-weight: 800;
     margin-bottom: 16px;
     background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
@@ -730,9 +718,22 @@
     -webkit-text-fill-color: transparent;
 }
 
+.success-icon-wrapper {
+    width: clamp(80px, 10vw, 100px); /* Responsive scaling */
+    height: clamp(80px, 10vw, 100px);
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #10b981;
+    margin: 0 auto 30px auto; 
+    box-shadow: 0 0 40px rgba(16, 185, 129, 0.2);
+}
+
 .success-page-container p {
     color: #475569;
-    font-size: 1.25rem;
+    font-size: clamp(1rem, 2vw, 1.25rem); /* Responsive scaling */
     max-width: 600px;
     line-height: 1.6;
     margin-bottom: 40px;
@@ -742,6 +743,8 @@
     display: flex;
     gap: 20px;
     margin-bottom: 40px;
+    flex-wrap: wrap; /* Allow wrapping on mobile */
+    justify-content: center;
 }
 
 .btn-download-success {
@@ -811,6 +814,31 @@
   overflow: visible !important; 
   flex-shrink: 0;
   border-radius: 2px;
+}
+
+/* Visual Page Breaks in Editor */
+.resume-paper-canvas.show-page-breaks::after {
+  content: "Page Break";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image: linear-gradient(to bottom, transparent 1122px, #6366f1 1122px, #6366f1 1124px, transparent 1124px);
+  background-size: 100% 1123px; /* A4 height */
+  z-index: 1000;
+  font-size: 12px;
+  color: #6366f1;
+  text-align: right;
+  padding-right: 20px;
+  padding-top: 1105px; /* Just below the line */
+  box-sizing: border-box;
+  opacity: 0.4;
+  font-family: sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 700;
 }
 
 /* Medium-Small Floating Footer Pill */
@@ -1514,7 +1542,7 @@ input[type="month"]::-webkit-calendar-picker-indicator {
 
 /* Precise Thumbnail Scaling - Applied only to the container */
 .tpl-preview-container > div {
-    transform: scale(0.23); /* Reduced globally to matching mobile fix */
+    transform: scale(0.234); /* Increased to fully fill 185px width (edge-to-edge) */
     transform-origin: top center;
     width: 210mm !important;
     height: 297mm !important;
@@ -1863,6 +1891,62 @@ input[type="month"]::-webkit-calendar-picker-indicator {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 15px !important;
   }
+  
+  /* DESKTOP DESIGN MODE OVERRIDES (Responsive) */
+  .mode-design .editor-sidebar-forms {
+    flex: 0 0 450px !important; 
+    min-width: 450px !important;
+  }
+  
+  .mode-design .editor-preview-pane {
+    overflow: auto !important; 
+    height: 100% !important;
+    display: block !important;
+  }
+  
+  .mode-design .preview-scroll-area {
+    /* padding removed, using pseudo-element instead */
+    min-height: 100% !important;
+    width: 100% !important;
+  }
+
+  /* FORCE BOTTOM SPACING WITH PSEUDO-ELEMENT */
+  /* FORCE BOTTOM SPACING WITH PSEUDO-ELEMENT */
+  .mode-design .preview-scroll-area::after {
+    content: "";
+    display: block !important;
+    height: 5px !important; /* Minimal Spacer */
+    width: 100% !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Default Desktop (Medium Screens: 993px - 1400px) */
+  .mode-design .preview-scaler {
+    margin: 5px auto 25px auto !important; /* REDUCED BOTTOM MARGIN to 25px */
+    transform: scale(0.65) !important; 
+    height: 730px !important; 
+    width: 524px !important; 
+  }
+  
+  .mode-design .preview-footer-minimal {
+    display: none !important;
+  }
+
+  /* Large Screens (>1400px) */
+  @media (min-width: 1400px) {
+    .mode-design .preview-scaler {
+       transform: scale(0.75) !important;
+       height: 842px !important; 
+       width: 604px !important;
+    }
+  }
+
+  /* HIDE PAGE BREAK INDICATOR IN DESIGN MODE */
+  .mode-design .show-page-breaks::before,
+  .mode-design .show-page-breaks::after {
+    display: none !important;
+  }
+
 }
 
 /* Specific Tablet Range (768px - 992px) */
@@ -1986,21 +2070,35 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   .mode-design .editor-preview-pane {
     flex: 1 !important;
     height: 100% !important;
-    overflow: hidden !important;
+    overflow-y: auto !important; /* ENABLE SCROLLING */
+    overflow-x: hidden !important;
   }
   
   .mode-design .preview-scaler {
-    margin: -11px auto 0 auto !important;
-    transform: scale(0.52) !important;
-    height: 584px !important;
-    width: 419px !important;
+    margin: 5px auto 40px auto !important; /* Reduced top margin to 5px */
+    transform: scale(0.55) !important; /* Reduced from 0.75 to 0.55 to fit Tablet screen */
+    height: 618px !important; /* 1123 * 0.55 */
+    width: 444px !important; /* 806 * 0.55 */
   }
   
+  /* HIDE PAGE BREAK INDICATOR IN DESIGN MODE */
+  .mode-design .show-page-breaks::before,
+  .mode-design .show-page-breaks::after {
+    display: none !important;
+  }
+
+  /* FORCE BOTTOM SPACING WITH PSEUDO-ELEMENT */
+  .mode-design .preview-scroll-area::after {
+    content: "";
+    display: block !important;
+    height: 3px !important; /* CONSISTENT 3px SPACER */
+    width: 100% !important;
+    flex-shrink: 0 !important;
+  }
+  
+  /* HIDE FOOTER IN DESIGN MODE AS REQUESTED */
   .mode-design .preview-footer-minimal {
-    position: absolute !important;
-    bottom: -40px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
+    display: none !important;
   }
 }
 

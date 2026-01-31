@@ -350,6 +350,133 @@
   margin-left: 8px;
 }
 
+/* Notification Menu Anchor */
+.admin-dashboard-container .admin-notification-menu {
+  position: relative;
+}
+
+/* Notification Dropdown Container */
+.admin-dashboard-container .admin-notification-dropdown {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  width: 270px;
+  background: #0b0d22; /* Use theme variable or solid dark */
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  box-shadow: 0 15px 45px rgba(0,0,0,0.6);
+  z-index: 1000;
+  overflow: hidden;
+  text-align: left;
+  animation: notif-slide-down 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes notif-slide-down {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.admin-dashboard-container .notif-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.02);
+}
+
+.admin-dashboard-container .notif-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.3px;
+}
+
+.admin-dashboard-container .clear-all-btn {
+  background: transparent;
+  border: none;
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.admin-dashboard-container .clear-all-btn:hover {
+  background: rgba(91,124,255,0.1);
+  color: white;
+}
+
+.admin-dashboard-container .notif-list {
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.admin-dashboard-container .notif-item {
+  width: 100%;
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.admin-dashboard-container .notif-item:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+.admin-dashboard-container .notif-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.04);
+}
+
+.admin-dashboard-container .notif-icon.payment { color: var(--green); background: rgba(74, 222, 128, 0.1); }
+.admin-dashboard-container .notif-icon.user { color: var(--blue); background: rgba(91, 124, 255, 0.1); }
+
+.admin-dashboard-container .notif-content {
+  flex: 1;
+}
+
+.admin-dashboard-container .notif-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 2px;
+}
+
+.admin-dashboard-container .notif-time {
+  font-size: 11px;
+  color: rgba(234,240,255,0.4);
+}
+
+.admin-dashboard-container .notif-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: rgba(234,240,255,0.3);
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
 .admin-dashboard-container .lang-trigger-btn:hover,
 .admin-dashboard-container .lang-trigger-btn.active {
   background: rgba(91,124,255,0.12);
@@ -450,6 +577,40 @@
   background: rgba(91,124,255,0.12);
   border-color: rgba(91,124,255,0.18);
   color: rgba(234,240,255,0.92);
+}
+
+.admin-dashboard-container .notification-badge-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ef4444;
+  color: white;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 800;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #0b0d22;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+  z-index: 10;
+}
+
+.admin-dashboard-container .notification-badge-sidebar {
+  margin-left: auto;
+  background: #ef4444;
+  color: white;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 800;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 .notification-dot{
   position:absolute;

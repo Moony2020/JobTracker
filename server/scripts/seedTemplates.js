@@ -5,30 +5,30 @@ require("dotenv").config({ path: path.join(__dirname, "../../.env") });
 
 const templates = [
   {
+    name: "Timeline",
+    key: "timeline",
+    category: "Free",
+    price: 0,
+    thumbnail: "/images/templates/timeline.png",
+  },
+  {
     name: "Classic Professional",
     key: "classic",
-    category: "Basic",
+    category: "Free",
     price: 0,
     thumbnail: "/images/templates/classic.png",
   },
   {
     name: "Modern ATS-Friendly",
     key: "modern",
-    category: "Basic",
+    category: "Free",
     price: 0,
     thumbnail: "/images/templates/modern.png",
   },
   {
-    name: "Minimalist Clean",
-    key: "minimalist",
-    category: "Basic",
-    price: 0,
-    thumbnail: "/images/templates/minimalist.png",
-  },
-  {
     name: "Creative Executive",
     key: "creative",
-    category: "Premium",
+    category: "Pro",
     price: 1.5,
     thumbnail: "/images/templates/creative.png",
   },

@@ -65,27 +65,12 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
       const orderedKeys = ['timeline', 'classic', 'modern', 'creative'];
       let finalTemplates = [];
 
-      // 1. Ensure Timeline exists (Client side fallback if not in DB yet)
-      let timelineTpl = rawTemplates.find(t => t.key === 'timeline');
-      if (!timelineTpl) {
-        timelineTpl = {
-            _id: 'timeline-temp-id',
-            name: 'Timeline',
-            key: 'timeline',
-            category: 'Free',
-            price: 0,
-            isActive: true
-        };
-      }
-
       // Build final list in specific order: Timeline, Classic, Modern, Creative
       orderedKeys.forEach(key => {
-        let tpl = rawTemplates.find(t => t.key === key);
-        if (key === 'timeline') tpl = timelineTpl;
-        
+        const tpl = rawTemplates.find(t => t.key === key);
         if (tpl) {
-          // Force Creative to be Pro for the badge and payment logic
-          if (key === 'creative') {
+          // Force Creative to be Pro for the badge and payment logic if category is Premium
+          if (key === 'creative' || tpl.category === 'Premium') {
              tpl.category = 'Pro';
           }
           finalTemplates.push(tpl);
@@ -94,7 +79,7 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
 
       // 3. Add any other templates that weren't in the primary list
       rawTemplates.forEach(t => {
-        if (!orderedKeys.includes(t.key) && t.key !== 'minimalist') {
+        if (!orderedKeys.includes(t.key)) {
           finalTemplates.push(t);
         }
       });
@@ -273,7 +258,7 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
                 <div className="resume-details">
                   <h3>{cv.title}</h3>
                   <span className="template-name">{cv.templateId?.name || 'Custom Template'}</span>
-                  <span className="last-updated">Updated {new Date(cv.updatedAt).toLocaleString(language === 'Arabic' ? 'ar-EG' : 'en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                  <span className="last-updated">Updated {new Date(cv.updatedAt).toLocaleString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })}</span>
                 </div>
                 <div className="resume-actions">
                   <button className="action-btn edit" title="Edit" onClick={() => onEdit(cv)}>

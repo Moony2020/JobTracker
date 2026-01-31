@@ -53,20 +53,31 @@ const generatePDF = async (cvId, userId, templateKey, token) => {
     await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 2 });
     
     // Navigate and wait for full network idle to ensure fonts/styles load
+    console.log(`[PDF] Navigating to: ${printUrl}`);
     await page.goto(printUrl, {
       waitUntil: ["domcontentloaded", "networkidle0"],
       timeout: 60000
     });
     
-    console.log(`[PDF] Page navigation finished, waiting for template...`);
+    console.log(`[PDF] Page navigation finished, checking for error markers...`);
+
+    // Check if the page itself rendered an error (optional but helpful)
+    const hasError = await page.evaluate(() => document.body.innerText.includes('Error loading CV'));
+    if (hasError) {
+      console.error(`[PDF ERROR] Page content contains error message!`);
+    }
 
     // Explicitly wait for the template hook we added
     try {
+      console.log(`[PDF] Waiting for .resume-template selector...`);
       await page.waitForSelector('.resume-template', { timeout: 20000 });
       console.log(`[PDF] Template detected, waiting for final layout stabilization...`);
-      await new Promise(r => setTimeout(r, 1000)); 
+      await new Promise(r => setTimeout(r, 1500)); // Increased for Windows stability
     } catch (e) {
       console.error(`[PDF ERROR] Template .resume-template never appeared!`);
+      // If it fails, let's take a look at the HTML content for debugging
+      const content = await page.content();
+      console.log(`[PDF DEBUG] Page content snippet: ${content.substring(0, 500)}...`);
     }
 
     const pdfBuffer = await page.pdf({

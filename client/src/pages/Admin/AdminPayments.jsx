@@ -36,6 +36,16 @@ const AdminPayments = ({ t }) => {
     }).format(amount);
   };
 
+  const getSimplifiedTemplateName = (name) => {
+    if (!name) return 'Unknown Template';
+    const lower = name.toLowerCase();
+    if (lower.includes('creative')) return 'Creative';
+    if (lower.includes('modern')) return 'Modern';
+    if (lower.includes('classic')) return 'Classic';
+    if (lower.includes('timeline')) return 'Timeline';
+    return name;
+  };
+
   return (
     <div className="glass-card admin-page-card" style={{ padding: '0', overflow: 'hidden' }}>
       <div className="card-header" style={{ padding: '24px', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -97,16 +107,20 @@ const AdminPayments = ({ t }) => {
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <FileText size={14} style={{ color: 'rgba(255,255,255,0.4)' }} />
-                      <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '13px' }}>{payment.template?.name || 'Unknown Template'}</span>
+                      <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '13px' }}>{getSimplifiedTemplateName(payment.template?.name)}</span>
                     </div>
                   </td>
                   <td>
                     <div style={{ color: 'white', fontSize: '14px', fontWeight: '600' }}>{formatAmount(payment.amount)}</div>
                   </td>
                   <td>
-                    <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Calendar size={13} />
-                      {new Date(payment.createdAt).toLocaleDateString()}
+                    <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '13px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        {new Date(payment.createdAt).toLocaleDateString()}
+                      </div>
+                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', paddingLeft: '0' }}>
+                        {new Date(payment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </div>
                     </div>
                   </td>
                   <td>

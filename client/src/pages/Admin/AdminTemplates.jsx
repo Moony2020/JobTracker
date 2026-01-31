@@ -1,6 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Database, Search, Edit2, CheckCircle, XCircle, DollarSign, Tag } from 'lucide-react';
+import TemplateRenderer from '../CVBuilder/Templates/TemplateRenderer';
+
+const SAMPLE_DATA = {
+  personal: {
+    firstName: "John",
+    lastName: "Doe",
+    jobTitle: "Professional Title",
+    email: "email@example.com",
+    phone: "(555) 123-4567",
+    address: "New York, USA",
+    summary: "Experienced professional with a strong background in..."
+  },
+  experience: [],
+  education: [],
+  skills: []
+};
 
 const AdminTemplates = ({ t }) => {
   const [templates, setTemplates] = useState([]);
@@ -78,14 +94,22 @@ const AdminTemplates = ({ t }) => {
                 <tr key={template._id} className="table-row-hover">
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{ width: '40px', height: '52px', overflow: 'hidden', borderRadius: '4px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        {template.thumbnail ? (
-                           <img src={template.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        ) : (
-                           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.2)' }}>
-                             <Tag size={16} />
-                           </div>
-                        )}
+                      <div style={{ width: '40px', height: '52px', overflow: 'hidden', borderRadius: '4px', background: 'white', border: '1px solid rgba(255,255,255,0.1)', position: 'relative' }}>
+                        <div style={{ 
+                          transform: 'scale(0.05)', 
+                          transformOrigin: 'top left', 
+                          width: '794px', 
+                          height: '1123px',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0
+                        }}>
+                           <TemplateRenderer 
+                              templateKey={template.key}
+                              data={SAMPLE_DATA}
+                              settings={{ themeColor: '#6366f1' }}
+                           />
+                        </div>
                       </div>
                       <div style={{ color: 'white', fontSize: '14px', fontWeight: '500' }}>{template.name}</div>
                     </div>

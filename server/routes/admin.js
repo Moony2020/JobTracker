@@ -84,7 +84,15 @@ router.get("/stats", auth, auth.adminOnly, async (req, res) => {
     // 6. Today's Activity (for Notifications)
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
-    const todayActivity = await Purchase.countDocuments({ status: "completed", createdAt: { $gte: startOfToday } });
+    
+    const todayPayments = await Purchase.countDocuments({ 
+      status: "completed", 
+      createdAt: { $gte: startOfToday } 
+    });
+
+    const todayUsers = await User.countDocuments({
+      createdAt: { $gte: startOfToday }
+    });
 
     res.json({
       kpis: {
@@ -97,7 +105,9 @@ router.get("/stats", auth, auth.adminOnly, async (req, res) => {
       recentPayments,
       usageAnalytics: formattedUsage,
       incomeInsights: formattedIncome,
-      todayActivity
+      todayPayments,
+      todayUsers,
+      todayActivity: todayPayments + todayUsers // Total for the bell icon
     });
   } catch (err) {
     console.error(err);

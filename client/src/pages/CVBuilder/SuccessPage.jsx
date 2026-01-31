@@ -72,15 +72,15 @@ const SuccessPage = ({ showNotify }) => {
 
                 if (isFulfilled) {
                     setStatus('ready');
-                    // Use a timeout to ensure state has settled before triggering download
+                    // Use a slightly longer timeout to ensure backend PDF generation (Puppeteer) is ready
                     setTimeout(() => {
                         if (!isCancelled) {
                             handleDownload(fetchedCvId, fetchedCvTitle);
                         }
-                    }, 800);
+                    }, 2000);
                 } else if (pollCount < maxPolls) {
                     pollCount++;
-                    setTimeout(verifySession, 1500);
+                    setTimeout(verifySession, 2500); // 2.5s between polls
                 } else {
                     setStatus('ready');
                 }
@@ -104,9 +104,11 @@ const SuccessPage = ({ showNotify }) => {
     if (status === 'verifying') {
         return (
             <div className="success-page-container">
-                <Loader2 size={48} className="animate-spin" style={{ color: '#6366f1', marginBottom: '20px' }} />
-                <h2>Verifying Payment...</h2>
-                <p>Please wait while we confirm your transaction.</p>
+                <div className="success-card glass-card" style={{ padding: '60px 40px' }}>
+                    <Loader2 size={48} className="animate-spin" style={{ color: '#6366f1', marginBottom: '24px' }} />
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginBottom: '8px' }}>Securing your download...</h2>
+                    <p style={{ fontSize: '1rem', color: '#64748b' }}>Please wait while we prepare your premium PDF.</p>
+                </div>
             </div>
         );
     }

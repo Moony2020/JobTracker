@@ -271,7 +271,20 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
     const init = async () => {
       try {
         const tplRes = await api.get('/cv/templates');
-        setAvailableTemplates(tplRes.data);
+        const rawTemplates = tplRes.data;
+        const orderedKeys = ['timeline', 'classic', 'modern', 'creative'];
+        const sortedTemplates = [];
+        
+        orderedKeys.forEach(key => {
+          const tpl = rawTemplates.find(t => t.key === key);
+          if (tpl) sortedTemplates.push(tpl);
+        });
+        
+        rawTemplates.forEach(t => {
+          if (!orderedKeys.includes(t.key)) sortedTemplates.push(t);
+        });
+        
+        setAvailableTemplates(sortedTemplates);
         
         if (activeCvId) {
           console.log(`[Editor] Fetching CV data for ID: ${activeCvId}`);
@@ -708,7 +721,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                         )}
                       </div>
                       <div className="photo-actions">
-                        {cvData.templateKey === 'creative' ? (
+                        {(cvData.templateKey === 'creative' || cvData.templateKey === 'professional-blue') ? (
                           <>
                             <label className="upload-btn-ghost" style={{ cursor: 'pointer', display: 'inline-flex' }}>
                               <Camera size={16} />
@@ -1353,7 +1366,10 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                                   <TemplateRenderer 
                                     templateKey={tpl.key}
                                     data={SAMPLE_DATA}
-                                    settings={cvData.settings}
+                                    settings={cvData.templateKey === tpl.key 
+                                      ? cvData.settings 
+                                      : { ...cvData.settings, themeColor: '#2563eb' }
+                                    }
                                   />
                               </div>
                               {cvData.templateKey === tpl.key && (
@@ -1365,7 +1381,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                               )}
                            </div>
                            <div className="tpl-name-sidebar">
-                             {tpl.name}
+                             {tpl.key.charAt(0).toUpperCase() + tpl.key.slice(1)}
                              {tpl.category === 'Pro' && <span className="premium-badge-sidebar" style={{marginLeft: '6px'}}>PRO</span>}
                            </div>
                         </div>
@@ -1377,7 +1393,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
               
               <div className="editor-footer-info">
                  <Layout size={14} />
-                 <span>Customizing: {availableTemplates.find(t => t.key === cvData.templateKey)?.name || 'Modern'}</span>
+                 <span>Customizing: {availableTemplates.find(t => t.key === cvData.templateKey)?.key ? (availableTemplates.find(t => t.key === cvData.templateKey).key.charAt(0).toUpperCase() + availableTemplates.find(t => t.key === cvData.templateKey).key.slice(1)) : 'Modern'}</span>
               </div>
             </div>
           )}
@@ -1386,7 +1402,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
         <main className="editor-preview-pane">
           <div className="preview-scroll-area" ref={previewScrollRef}>
             <div className="preview-scaler">
-              <div className="resume-paper-canvas" ref={canvasRef}>
+              <div className={`resume-paper-canvas ${!isPrintMode ? 'show-page-breaks' : ''}`} ref={canvasRef}>
                 <TemplateRenderer 
                   templateKey={cvData.templateKey} 
                   data={cvData.data} 
@@ -1528,7 +1544,10 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                               <TemplateRenderer 
                                 templateKey={tpl.key}
                                 data={SAMPLE_DATA}
-                                settings={{ ...cvData.settings, isThumbnail: true }}
+                                settings={cvData.templateKey === tpl.key 
+                                  ? { ...cvData.settings, isThumbnail: true }
+                                  : { ...cvData.settings, themeColor: '#2563eb', isThumbnail: true }
+                                }
                               />
                           </div>
                           {cvData.templateKey === tpl.key && (
@@ -1539,7 +1558,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                             </div>
                           )}
                       </div>
-                      <span className="drawer-tpl-name">{tpl.name}</span>
+                      <span className="drawer-tpl-name">{tpl.key.charAt(0).toUpperCase() + tpl.key.slice(1)}</span>
                    </div>
                 ))}
              </div>

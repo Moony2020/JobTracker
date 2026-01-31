@@ -10,11 +10,21 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
   const hasItems = (arr) => arr && arr.length > 0;
 
   return (
-    <div className="professional-blue-template" style={{ fontFamily: settings?.font || 'Inter', lineHeight: `${settings?.lineSpacing || 100}%` }}>
-      {/* LEFT SIDEBAR - Dark Blue */}
-      <div className="pro-sidebar" style={{ backgroundColor: themeColor }}>
+    <div 
+      className="professional-blue-template" 
+      style={{ 
+        fontFamily: settings?.font || 'Inter', 
+        lineHeight: `${settings?.lineSpacing || 100}%`,
+        '--theme-color': themeColor 
+      }}
+    >
+      {/* Fixed Background for PDF Consistency - Standard "Sidebar on every page" technique */}
+      <div className="pro-sidebar-bg"></div>
+
+      {/* LEFT SIDEBAR - Content Only (Background is fixed) */}
+      <div className="pro-sidebar">
         {/* Profile Photo */}
-        <div className="pro-photo-container">
+        <div className="pro-photo-container" style={{ border: '4px solid rgba(255, 255, 255, 0.3)' }}>
             {personal.photo ? (
                <img src={personal.photo} alt="Profile" className="pro-photo" />
             ) : (
@@ -26,7 +36,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
 
         {/* Contact Section */}
         <section className="pro-section">
-          <h2 className="pro-section-title">CONTACT</h2>
+          <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)' }}>CONTACT</h2>
           <div className="pro-contact-list">
              <div className="pro-contact-item">
                 <span className="pro-label">Email</span>
@@ -62,25 +72,20 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
         </section>
 
         {/* Skills Section */}
-        <section className="pro-section">
-            <h2 className="pro-section-title">SKILLS</h2>
-            <ul className="pro-list">
-              {hasItems(skills) ? skills.map((skill, i) => (
-                <li key={i} className="pro-list-item">{skill}</li>
-              )) : (
-                <div style={{ opacity: 0.7 }}>
-                  <li className="pro-list-item">Skill One</li>
-                  <li className="pro-list-item">Skill Two</li>
-                  <li className="pro-list-item">Skill Three</li>
-                  <li className="pro-list-item">Skill Four</li>
-                </div>
-              )}
-            </ul>
-        </section>
+        {hasItems(skills) && (
+          <section className="pro-section">
+              <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)' }}>SKILLS</h2>
+              <ul className="pro-list">
+                {skills.map((skill, i) => (
+                  <li key={i} className="pro-list-item">{skill}</li>
+                ))}
+              </ul>
+          </section>
+        )}
 
         {/* Languages Section */}
         <section className="pro-section">
-            <h2 className="pro-section-title">LANGUAGES</h2>
+            <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)' }}>LANGUAGES</h2>
             <ul className="pro-list">
               {hasItems(languages) ? languages.map((lang, i) => (
                 <li key={i} className="pro-list-item">
@@ -90,7 +95,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
               )) : (
                 <div style={{ opacity: 0.7 }}>
                   <li className="pro-list-item">English - Native</li>
-                  <li className="pro-list-item">Spanish - Intermediate</li>
+                  <li className="pro-list-item">Swedish - Proficient</li>
                 </div>
               )}
             </ul>
@@ -99,7 +104,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
         {/* Links Section */}
         {data.links && data.links.length > 0 && (
           <section className="pro-section">
-            <h2 className="pro-section-title">LINKS</h2>
+            <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)' }}>LINKS</h2>
             <div className="pro-contact-list">
               {data.links.map((link, i) => (
                 <div key={i} className="pro-contact-item">
@@ -114,7 +119,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
         {/* Hobbies Section */}
         {data.hobbies && data.hobbies.length > 0 && (
           <section className="pro-section">
-            <h2 className="pro-section-title">HOBBIES</h2>
+            <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)' }}>HOBBIES</h2>
             <p className="pro-value" style={{ color: 'white', opacity: 0.9 }}>
               {data.hobbies.map(h => h.name).join(', ')}
             </p>
@@ -124,7 +129,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
         {/* References Section */}
         {data.references && data.references.length > 0 && (
           <section className="pro-section">
-            <h2 className="pro-section-title">REFERENCES</h2>
+            <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)' }}>REFERENCES</h2>
             {data.references.map((ref, i) => (
               <div key={i} className="pro-contact-item" style={{ marginBottom: '10px' }}>
                 <span className="pro-label">{ref.name}</span>
@@ -144,12 +149,6 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
       </div>
 
         {/* Professional Summary */}
-        {(!personal.summary) && (
-          <section className="pro-content-section">
-            <h2 className="pro-content-title" style={{ color: themeColor }}>PROFESSIONAL SUMMARY</h2>
-            <p className="pro-summary" style={{ opacity: 0.7 }}>Professional summary goes here. Briefly describe your career highlights, key skills, and professional achievements to give recruiters a quick overview of your qualifications.</p>
-          </section>
-        )}
         {personal.summary && (
           <section className="pro-content-section">
             <h2 className="pro-content-title" style={{ color: themeColor }}>PROFESSIONAL SUMMARY</h2>
@@ -158,14 +157,20 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
         )}
 
         {/* Work Experience */}
-        {hasItems(experience) ? (
+        {hasItems(experience) && (
           <section className="pro-content-section">
             <h2 className="pro-content-title" style={{ color: themeColor }}>WORK EXPERIENCE</h2>
             {experience.map((exp, i) => (
               <div key={i} className="pro-exp-item">
                 <div className="pro-exp-header">
                   <h3 className="pro-exp-title">{exp.title}</h3>
-                  <span className="pro-exp-date">{formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}</span>
+                  {(exp.startDate || exp.endDate || exp.current) && (
+                    <span className="pro-exp-date">
+                      {formatDate(exp.startDate)}
+                      {(exp.startDate && (exp.endDate || exp.current)) && ' - '}
+                      {exp.current ? 'Present' : formatDate(exp.endDate)}
+                    </span>
+                  )}
                 </div>
                 <p className="pro-exp-company">
                   {exp.company}
@@ -175,29 +180,23 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
               </div>
             ))}
           </section>
-        ) : (
-          <section className="pro-content-section" style={{ opacity: 0.7 }}>
-            <h2 className="pro-content-title" style={{ color: themeColor }}>WORK EXPERIENCE</h2>
-            <div className="pro-exp-item">
-               <div className="pro-exp-header">
-                 <h3 className="pro-exp-title">Job Position</h3>
-                 <span className="pro-exp-date">2020 - Present</span>
-               </div>
-               <p className="pro-exp-company">Company Name</p>
-               <p className="pro-exp-desc">Describe your key responsibilities, achievements, and the impact you made in this role.</p>
-            </div>
-          </section>
         )}
 
         {/* Education */}
-        {hasItems(education) ? (
+        {hasItems(education) && (
           <section className="pro-content-section">
             <h2 className="pro-content-title" style={{ color: themeColor }}>EDUCATION</h2>
             {education.map((edu, i) => (
               <div key={i} className="pro-exp-item">
                 <div className="pro-exp-header">
                   <h3 className="pro-exp-title">{edu.degree}</h3>
-                  <span className="pro-exp-date">{formatDate(edu.startDate)} - {formatDate(edu.endDate)}</span>
+                  {(edu.startDate || edu.endDate) && (
+                    <span className="pro-exp-date">
+                      {formatDate(edu.startDate)}
+                      {(edu.startDate && edu.endDate) && ' - '}
+                      {formatDate(edu.endDate)}
+                    </span>
+                  )}
                 </div>
                 <p className="pro-exp-company">
                   {edu.school}
@@ -207,17 +206,6 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
               </div>
             ))}
           </section>
-        ) : (
-           <section className="pro-content-section" style={{ opacity: 0.7 }}>
-            <h2 className="pro-content-title" style={{ color: themeColor }}>EDUCATION</h2>
-            <div className="pro-exp-item">
-              <div className="pro-exp-header">
-                <h3 className="pro-exp-title">Degree / Major</h3>
-                <span className="pro-exp-date">2016 - 2020</span>
-              </div>
-              <p className="pro-exp-company">University Name</p>
-            </div>
-           </section>
         )}
 
         {/* Volunteering */}
