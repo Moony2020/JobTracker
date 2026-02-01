@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import { Plus, Edit3, Trash2, FileText, Download, Crown } from 'lucide-react';
+import { Plus, Edit3, Trash2, FileText, Download, Crown, Loader2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import TemplateRenderer from './Templates/TemplateRenderer';
 import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
@@ -49,6 +49,7 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
   const [templates, setTemplates] = useState([]);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [resumeToDelete, setResumeToDelete] = useState(null);
+  const [downloadingId, setDownloadingId] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -147,6 +148,7 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
     }
 
     try {
+      setDownloadingId(cv._id);
       const response = await api.get(`/cv/export/${cv._id}`, {
         responseType: 'blob'
       });
@@ -187,6 +189,8 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
           showNotify("Failed to download PDF", "error");
         }
       }
+    } finally {
+      setDownloadingId(null);
     }
   };
 
@@ -274,8 +278,18 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
                   <button className="action-btn edit" title="Edit" onClick={() => onEdit(cv)}>
                     <Edit3 size={18} />
                   </button>
-                  <button className="action-btn download" title="Download" onClick={(e) => handleDownload(e, cv)}>
-                    <Download size={18} />
+                  <button 
+                    className="action-btn download" 
+                    title="Download" 
+                    onClick={(e) => handleDownload(e, cv)}
+                    disabled={downloadingId === cv._id}
+                    style={downloadingId === cv._id ? { cursor: 'wait', opacity: 0.7 } : {}}
+                  >
+                    {downloadingId === cv._id ? (
+                      <Loader2 size={18} className="spinner" style={{ animation: 'spin 1s linear infinite' }} />
+                    ) : (
+                      <Download size={18} />
+                    )}
                   </button>
                   <button className="action-btn delete" title="Delete" onClick={(e) => handleDelete(e, cv)}>
                     <Trash2 size={18} />
@@ -285,6 +299,7 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
             ))}
           </div>
         ) : (
+
           <div style={{ textAlign: 'center', padding: '40px', background: 'transparent', borderRadius: '12px', border: '2px dashed var(--light-border)' }}>
              <p style={{ color: 'var(--text-muted)' }}>{language === 'Arabic' ? 'لا توجد سير ذاتية محفوظة حاليا' : 'No saved resumes found. Start by selecting a template above!'}</p>
           </div>
