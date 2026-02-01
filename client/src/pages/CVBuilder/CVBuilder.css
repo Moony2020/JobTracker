@@ -2715,7 +2715,6 @@ input[type="month"]::-webkit-calendar-picker-indicator {
 }
 
 .resume-item-card:hover {
-  transform: translateY(-2px);
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
   border-color: #3b82f6;
 }
@@ -2827,16 +2826,27 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   color: #cbd5e1;
 }
 
-.dark-mode .action-btn:hover {
-  background: #475569;
-  color: white;
-  border-color: #64748b;
+/* Glassy Purple Hover for Edit */
+.dark-mode .action-btn.edit:hover {
+  background: rgba(99, 102, 241, 0.2); /* Glassy Indigo/Purple */
+  color: #a5b4fc;
+  border-color: #6366f1;
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+}
+
+/* Glassy Green Hover for Download */
+.dark-mode .action-btn.download:hover {
+  background: rgba(16, 185, 129, 0.2); /* Glassy Green */
+  color: #6ee7b7;
+  border-color: #10b981;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
 }
 
 .dark-mode .action-btn.delete:hover {
-  background: #450a0a;
+  background: rgba(239, 68, 68, 0.2);
   color: #fca5a5;
-  border-color: #7f1d1d;
+  border-color: #ef4444;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
 }
 
 /* Mobile Adjustments for List */
