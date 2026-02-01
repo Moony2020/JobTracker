@@ -107,7 +107,7 @@ const AdminTemplates = ({ t }) => {
                            <TemplateRenderer 
                               templateKey={template.key}
                               data={SAMPLE_DATA}
-                              settings={{ themeColor: '#6366f1' }}
+                              settings={{ themeColor: template.key === 'executive' ? '#eab37a' : '#6366f1' }}
                            />
                         </div>
                       </div>

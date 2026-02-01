@@ -20,13 +20,9 @@ router.get("/stats", auth, auth.adminOnly, async (req, res) => {
     const totalCVs = await CVDocument.countDocuments();
     const paidDownloads = await Purchase.countDocuments({ status: "completed" });
 
-    // 2. Revenue This Month
-    const startOfMonth = new Date();
-    startOfMonth.setDate(1);
-    startOfMonth.setHours(0, 0, 0, 0);
-
+    // 2. Revenue This Month (Calculated as Last 30 Days to match Dashboard Recent Payments)
     const revenueResult = await Purchase.aggregate([
-      { $match: { status: "completed", createdAt: { $gte: startOfMonth } } },
+      { $match: { status: "completed", createdAt: { $gte: last30Days } } },
       { $group: { _id: null, total: { $sum: "$amount" } } }
     ]);
     const revenueThisMonth = revenueResult.length > 0 ? revenueResult[0].total : 0;
