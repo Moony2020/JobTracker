@@ -1,9 +1,9 @@
 import React from 'react';
 import { formatDate } from '../../../utils/formatters';
 
-const ClassicTemplate = ({ data, settings }) => {
+const ClassicTemplate = ({ data, settings, labels }) => {
   const { personal, experience, education } = data;
-  const themeColor = settings?.themeColor || '#2563eb';
+  const themeColor = settings?.themeColor || '#0f172a';
 
   const hasItems = (arr) => arr && arr.length > 0;
 
@@ -38,21 +38,30 @@ const ClassicTemplate = ({ data, settings }) => {
 
       {(personal.summary || !personal.firstName) && (
         <section>
-          <h2 style={{ color: themeColor }}>Professional Summary</h2>
+          <h2 style={{ color: themeColor }}>{labels?.summary || 'Professional Summary'}</h2>
           <div className="summary" dangerouslySetInnerHTML={{ __html: personal.summary || 'Professional summary goes here.' }} />
         </section>
       )}
 
       {(hasItems(experience) || !personal.firstName) && (
         <section>
-          <h2 style={{ color: themeColor }}>Experience</h2>
+          <h2 style={{ color: themeColor }}>{labels?.experience || 'Experience'}</h2>
           {hasItems(experience) ? experience.map((exp, i) => (
             <div key={i} className="classic-item">
               <div className="item-header">
                 <strong>{exp.title}</strong>
-                <span>{formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}</span>
+                {(exp.startDate || exp.endDate || exp.current) && (
+                  <span>
+                    {formatDate(exp.startDate)}
+                    {(exp.endDate || exp.current) && ` - ${exp.current ? 'Present' : formatDate(exp.endDate)}`}
+                  </span>
+                )}
               </div>
-              <div className="item-sub">{exp.company}{exp.location ? `, ${exp.location}` : ''}</div>
+              {(exp.company || exp.location) && (
+                <div className="item-sub">
+                  {exp.company}{exp.company && exp.location && ` | ${exp.location}`}{!exp.company && exp.location}
+                </div>
+              )}
               {exp.description && <div className="description" dangerouslySetInnerHTML={{ __html: exp.description }} />}
             </div>
           )) : (
@@ -70,14 +79,22 @@ const ClassicTemplate = ({ data, settings }) => {
 
       {(hasItems(education) || !personal.firstName) && (
         <section>
-          <h2 style={{ color: themeColor }}>Education</h2>
+          <h2 style={{ color: themeColor }}>{labels?.education || 'Education'}</h2>
           {hasItems(education) ? education.map((edu, i) => (
             <div key={i} className="classic-item">
               <div className="item-header">
                 <strong>{edu.degree}</strong>
-                <span>{formatDate(edu.startDate)} - {formatDate(edu.endDate)}</span>
+                {(edu.startDate || edu.endDate) && (
+                  <span>
+                    {formatDate(edu.startDate)} {edu.endDate && ` - ${formatDate(edu.endDate)}`}
+                  </span>
+                )}
               </div>
-              <div className="item-sub">{edu.school}{edu.location ? `, ${edu.location}` : ''}</div>
+              {(edu.school || edu.location) && (
+                <div className="item-sub">
+                  {edu.school}{edu.school && edu.location && ` | ${edu.location}`}{!edu.school && edu.location}
+                </div>
+              )}
               {edu.description && <div className="description" dangerouslySetInnerHTML={{ __html: edu.description }} />}
             </div>
           )) : (
@@ -94,7 +111,7 @@ const ClassicTemplate = ({ data, settings }) => {
 
       {data.volunteering && data.volunteering.length > 0 && (
         <section>
-          <h2 style={{ color: themeColor }}>Volunteering</h2>
+          <h2 style={{ color: themeColor }}>{labels?.volunteering || 'Volunteering'}</h2>
           {data.volunteering.map((item, i) => (
             <div key={i} className="classic-item">
               <div className="item-header">
@@ -109,7 +126,7 @@ const ClassicTemplate = ({ data, settings }) => {
 
       {data.courses && data.courses.length > 0 && (
         <section>
-          <h2 style={{ color: themeColor }}>Courses</h2>
+          <h2 style={{ color: themeColor }}>{labels?.courses || 'Courses'}</h2>
           {data.courses.map((item, i) => (
             <div key={i} className="classic-item">
               <div className="item-header">
@@ -123,7 +140,7 @@ const ClassicTemplate = ({ data, settings }) => {
 
       {data.military && data.military.length > 0 && (
         <section>
-          <h2 style={{ color: themeColor }}>Military Service</h2>
+          <h2 style={{ color: themeColor }}>{labels?.military || 'Military Service'}</h2>
           {data.military.map((item, i) => (
             <div key={i} className="classic-item">
               <div className="item-header">
@@ -137,7 +154,7 @@ const ClassicTemplate = ({ data, settings }) => {
 
       {data.links && data.links.length > 0 && (
         <section>
-          <h2 style={{ color: themeColor }}>Links</h2>
+          <h2 style={{ color: themeColor }}>{labels?.links || 'Links'}</h2>
           <div className="classic-item">
             {data.links.map((link, i) => (
               <div key={i}><strong>{link.name}:</strong> {link.url}</div>
@@ -148,14 +165,14 @@ const ClassicTemplate = ({ data, settings }) => {
 
       {data.hobbies && data.hobbies.length > 0 && (
         <section>
-          <h2 style={{ color: themeColor }}>Hobbies</h2>
+          <h2 style={{ color: themeColor }}>{labels?.hobbies || 'Hobbies'}</h2>
           <p>{data.hobbies.map(h => h.name).join(', ')}</p>
         </section>
       )}
 
       {data.references && data.references.length > 0 && (
         <section>
-          <h2 style={{ color: themeColor }}>References</h2>
+          <h2 style={{ color: themeColor }}>{labels?.references || 'References'}</h2>
           {data.references.map((ref, i) => (
             <div key={i} className="classic-item">
               <strong>{ref.name}</strong> • {ref.contact}
@@ -166,7 +183,7 @@ const ClassicTemplate = ({ data, settings }) => {
 
       {data.languages && data.languages.length > 0 && (
         <section>
-          <h2 style={{ color: themeColor }}>Languages</h2>
+          <h2 style={{ color: themeColor }}>{labels?.languages || 'Languages'}</h2>
           <div className="classic-item" style={{ display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
             {data.languages.map((lang, i) => (
               <div key={i}>

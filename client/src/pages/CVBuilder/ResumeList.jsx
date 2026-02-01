@@ -218,7 +218,7 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
                   <TemplateRenderer 
                     templateKey={tpl.key} 
                     data={sampleData} 
-                    settings={{ themeColor: "#2563eb", font: "Inter", lineHeight: 1.5, isThumbnail: true }} 
+                    settings={{ font: "Inter", lineHeight: 1.5, isThumbnail: true }} 
                   />
                 </div>
                 {/* Badges restored - Visible always */}

@@ -27,7 +27,9 @@ h2, .pro-content-title, .sidebar-title {
 .thumbnail-mode .modern-template, 
 .thumbnail-mode .classic-template, 
 .thumbnail-mode .professional-blue-template, 
-.thumbnail-mode .timeline-template {
+.thumbnail-mode .timeline-template,
+.thumbnail-mode .executive-template,
+.thumbnail-mode .elegant-template {
     width: 210mm !important;
     min-width: 210mm !important;
 }
@@ -630,7 +632,7 @@ h2, .pro-content-title, .sidebar-title {
         margin: 0 !important;
         padding: 0 !important;
     }
-    .resume-template, .modern-template, .classic-template, .timeline-template {
+    .resume-template, .modern-template, .classic-template, .timeline-template, .executive-template, .elegant-template {
         overflow: visible !important;
         height: auto !important;
         min-height: 297mm;
@@ -668,4 +670,475 @@ h2, .pro-content-title, .sidebar-title {
     padding: 0 !important;
     transform: none !important;
     min-height: 297mm;
+}
+
+/* Executive Template */
+.executive-template {
+    width: 100%;
+    min-height: 1123px;
+    background: white;
+}
+
+.executive-container {
+    display: flex;
+    min-height: 1123px;
+    position: relative;
+}
+
+.executive-sidebar {
+    width: 260px;
+    background: #000;
+    color: #fff;
+    padding: 60px 30px;
+    flex-shrink: 0;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+.executive-sidebar .sidebar-photo-container {
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.executive-sidebar .sidebar-photo,
+.executive-sidebar .sidebar-photo-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.executive-sidebar .sidebar-photo-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.executive-sidebar .sidebar-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.executive-sidebar .sidebar-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.executive-sidebar .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: #fff;
+    opacity: 1;
+}
+
+.executive-sidebar .sidebar-edu-item {
+    margin-bottom: 20px;
+}
+
+.executive-sidebar .edu-degree {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.executive-sidebar .edu-school {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    margin: 4px 0;
+}
+
+.executive-sidebar .edu-date {
+    font-size: 0.7rem;
+    opacity: 0.6;
+}
+
+.executive-sidebar .skill-item {
+    margin-bottom: 15px;
+}
+
+.executive-sidebar .skill-name {
+    font-size: 0.85rem;
+    display: block;
+    margin-bottom: 6px;
+    color: #fff;
+    opacity: 0.9;
+}
+
+.executive-sidebar .skill-bar-container {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
+.executive-sidebar .skill-bar-fill {
+    height: 100%;
+    background: #fff;
+    border-radius: 2px;
+}
+
+.executive-sidebar .sidebar-lang-item {
+    font-size: 0.85rem;
+    color: #fff;
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+
+.executive-sidebar .lang-level {
+    opacity: 0.7;
+    font-size: 0.8rem;
+}
+
+.executive-main {
+    flex: 1;
+    min-width: 0; /* Important for text wrapping in flexbox */
+    display: flex;
+    flex-direction: column;
+    background: white;
+    padding-top: 140px; /* Reduced space */
+}
+
+.executive-header {
+    position: absolute;
+    top: 60px;
+    left: 260px; 
+    width: 480px; 
+    min-height: 95px; /* Increased height as requested */
+    background: var(--theme-color);
+    padding: 0 45px;
+    border-radius: 0 100px 100px 0; /* Proper PILL rounding on right */
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+.executive-header .name {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+    color: #1e293b;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+}
+
+.executive-header .title, .executive-header .location-header {
+    font-size: 0.95rem; /* Slightly smaller for cleaner look */
+    color: #1e293b;
+    margin-top: 2px; /* Even closer to name */
+    text-transform: uppercase;
+    opacity: 0.7;
+    font-weight: 500;
+}
+
+.executive-content {
+    padding: 40px 30px; /* Reduced side padding to widen contents */
+}
+
+.executive-template .content-section {
+    margin-bottom: 35px;
+}
+
+.executive-template .content-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f1f5f9;
+    color: #1e293b;
+}
+
+.executive-template .exp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+}
+
+.executive-template .exp-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.executive-template .exp-date {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.executive-template .exp-desc {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #475569;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.executive-template .content-text {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+/* Elegant Template */
+.elegant-template {
+    width: 100%;
+    min-height: 1123px;
+    background: linear-gradient(to right, #f8f6f2 280px, #ffffff 280px); /* Split background for sidebar and main */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.elegant-header {
+    height: 160px; 
+    position: relative;
+    width: 100%;
+    background: linear-gradient(to right, #f8f6f2 280px, #ffffff 280px); /* Match template background to remove gaps */
+}
+
+.elegant-header .header-bg {
+    position: absolute;
+    top: 0; 
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #333333;
+    /* Simple sharp center V shape - full bleeding to edges */
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%);
+    z-index: 1;
+}
+
+.elegant-header .header-content {
+    position: relative;
+    z-index: 2;
+    padding: 0 60px;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start; 
+    gap: 40px; 
+    align-items: center; 
+    transform: translateY(-5px); /* Balance the V-shape depth */
+}
+
+.elegant-header .name-wrapper {
+    color: #fff;
+    margin-top: 20px;
+}
+
+.elegant-header .name {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+.elegant-header .title, .elegant-header .location-header {
+    font-size: 1rem;
+    opacity: 0.8;
+    margin-top: 5px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.elegant-header .photo-container {
+    width: 120px; 
+    height: 120px;
+    background: transparent;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transform: translateY(0); /* Center it */
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.elegant-header .photo-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.elegant-header .photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.elegant-body {
+    display: flex;
+    flex: 1;
+    min-height: 903px; /* 1123 - 220 */
+}
+
+.elegant-sidebar {
+    width: 280px;
+    background: transparent; 
+    padding: 30px 40px; /* Even less top padding */
+    flex-shrink: 0;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+.elegant-sidebar .sidebar-section {
+    margin-bottom: 40px;
+}
+
+.elegant-sidebar .sidebar-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 20px;
+    color: #333;
+    border-bottom: 1.5px solid #d1cfc9;
+    padding-bottom: 8px;
+}
+
+.elegant-sidebar .sidebar-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.elegant-sidebar .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: #555;
+}
+
+.elegant-sidebar .sidebar-item {
+    margin-bottom: 20px;
+}
+
+.elegant-sidebar .item-bold {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin: 0;
+    color: #333;
+}
+
+.elegant-sidebar .item-light {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 4px 0;
+}
+
+.elegant-sidebar .item-date {
+    font-size: 0.75rem;
+    color: #555;
+}
+
+.elegant-sidebar .skill-line {
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 8px;
+    padding-left: 10px;
+    border-left: 2px solid #d1cfc9;
+}
+
+.elegant-main {
+    flex: 1;
+    min-width: 0; /* Important for text wrapping in flexbox */
+    background: transparent; 
+    padding: 40px 30px; /* Reduced side padding to widen contents */
+}
+
+.elegant-main .main-section {
+    margin-bottom: 45px;
+}
+
+.elegant-main .main-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+    color: #333;
+    display: inline-block;
+    border-bottom: 3px solid #333;
+    padding-bottom: 5px;
+}
+
+.elegant-main .exp-item {
+    margin-bottom: 30px;
+}
+
+.elegant-main .exp-point-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+}
+
+.elegant-main .exp-role {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    color: #333;
+}
+
+.elegant-main .exp-time {
+    font-size: 0.85rem;
+    color: #777;
+    font-weight: 500;
+}
+
+.elegant-main .exp-desc,
+.elegant-main .main-text {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: #444;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.elegant-main .ref-item {
+    margin-bottom: 20px;
+}
+
+.elegant-main .ref-name {
+    font-weight: 700;
+    margin: 0;
+}
+
+.elegant-main .ref-detail {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 2px 0;
+}
+
+.elegant-main .ref-info {
+    font-size: 0.8rem;
+    color: #888;
 }

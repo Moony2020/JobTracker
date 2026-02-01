@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import TemplateRenderer from './Templates/TemplateRenderer';
@@ -7,8 +7,10 @@ import RichTextEditor from '../../components/RichTextEditor';
 import { 
   Bold, Italic, Underline, Link as LinkIcon, List, AlignLeft, AlignCenter, AlignRight,
   CheckCircle, Trash2, Plus, Minus, ChevronUp, ChevronDown, Layout, X, ChevronLeft, Download,
-  User, Briefcase, GraduationCap, Globe, Code, Heart, Type, ArrowLeft, Palette, Save, Eye, FileText, HelpCircle, Check, Camera, Upload, Loader2, Calendar
+  User, Briefcase, GraduationCap, Globe, Code, Heart, Type, ArrowLeft, Palette, Save, Eye, FileText, HelpCircle, Check, Camera, Upload, Loader2, Calendar, Search as SearchIcon
 } from 'lucide-react';
+import { TRANSLATIONS } from './Translations';
+import { SUMMARY_EXAMPLES } from './Examples';
 import './CVBuilder.css';
 import api from '../../services/api';
 
@@ -127,10 +129,10 @@ const SAMPLE_DATA = {
     summary: "Experienced professional with a strong background in..."
   },
   experience: [
-    { title: "Senior Developer", company: "Tech Corp", startDate: "2020", endDate: "Present", description: "Led development team..." }
+    { title: "Senior Developer", company: "Tech Corp", location: "New York", startDate: "2020", endDate: "", current: true, description: "Led development team..." }
   ],
   education: [
-    { school: "University", degree: "Bachelor's Degree", startDate: "2016", endDate: "2020" }
+    { school: "University", degree: "Bachelor's Degree", location: "Boston", startDate: "2016", endDate: "2020" }
   ],
   skills: ["JavaScript", "React", "Node.js"],
   languages: [],
@@ -138,69 +140,41 @@ const SAMPLE_DATA = {
   links: []
 };
 
+const LANGUAGES = [
+  { code: 'Swedish', label: 'Svenska', iso: 'se' },
+  { code: 'English', label: 'English', iso: 'us' },
+  { code: 'Indonesian', label: 'Indonesia', iso: 'id' },
+  { code: 'Finnish', label: 'Suomi', iso: 'fi' },
+  { code: 'Danish', label: 'Danmark', iso: 'dk' },
+  { code: 'Dutch', label: 'Nederlands', iso: 'nl' },
+  { code: 'Greek', label: 'Ελληνικά', iso: 'gr' },
+  { code: 'Norwegian', label: 'Norsk', iso: 'no' },
+  { code: 'Romanian', label: 'Română', iso: 'ro' },
+  { code: 'Hungarian', label: 'Magyar', iso: 'hu' },
+  { code: 'German', label: 'Deutsch', iso: 'de' },
+  { code: 'Czech', label: 'Čeština', iso: 'cz' },
+  { code: 'Italian', label: 'Italiano', iso: 'it' },
+  { code: 'Turkish', label: 'Türkçe', iso: 'tr' },
+  { code: 'Portuguese', label: 'Português', iso: 'br' },
+  { code: 'Spanish', label: 'Español', iso: 'es' },
+  { code: 'Arabic', label: 'العربية', iso: 'sa' },
+  { code: 'French', label: 'Français', iso: 'fr' },
+  { code: 'Polish', label: 'Polski', iso: 'pl' }
+];
+
+const TEMPLATE_DEFAULTS = {
+  modern: '#2563eb',      // Blue
+  classic: '#0f172a',     // Navy
+  executive: '#eab37a',   // Gold
+  creative: '#2563eb',    // Blue (Requested)
+  professional: '#2563eb', // Blue
+  elegant: '#475569',     // Slate
+  timeline: '#dc2626'     // Red (New Distinct Default)
+};
+
 const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
-  const [activeCvId, setActiveCvId] = useState(propCvId);
-  const [loading, setLoading] = useState(activeCvId ? true : false);
-  const [viewMode, setViewMode] = useState(() => {
-    const savedMode = localStorage.getItem('cv_editor_view_mode');
-    if (savedMode) return savedMode;
-    return 'content';
-  });
-
-  // Track viewport state for smooth transitions
-  const prevWidthRef = React.useRef(typeof window !== 'undefined' ? window.innerWidth : 1200);
-  const lastDesktopModeRef = React.useRef(viewMode);
-
-  useEffect(() => {
-    localStorage.setItem('cv_editor_view_mode', viewMode);
-    // Update the ref whenever viewMode changes while on desktop
-    if (window.innerWidth > 786) {
-      lastDesktopModeRef.current = viewMode;
-    }
-  }, [viewMode]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const isMobile = window.innerWidth <= 786;
-      
-      // Dynamic Scroll Lock for Mobile Editor
-      if (isMobile) {
-        document.body.style.overflow = 'hidden';
-      } else {
-        document.body.style.overflow = '';
-      }
-
-      const prevWidth = prevWidthRef.current;
-      const crossedToMobile = prevWidth > 786 && isMobile;
-      const crossedToDesktop = prevWidth <= 786 && !isMobile;
-
-      if (crossedToMobile) {
-        // Desktop -> Mobile: Switch to content view
-        lastDesktopModeRef.current = viewMode; 
-        setViewMode('content');
-      } else if (crossedToDesktop) {
-        // Mobile -> Desktop: Restore
-        setViewMode(lastDesktopModeRef.current);
-      }
-      
-      prevWidthRef.current = window.innerWidth;
-    };
-
-    window.addEventListener('resize', handleResize);
-    
-    // Initial check on mount
-    if (window.matchMedia('(max-width: 786px)').matches) {
-       document.body.style.overflow = 'hidden';
-    }
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      document.body.style.overflow = ''; // CLEANUP: Restore scrolling when leaving Editor
-    };
-  }, [viewMode]); 
 
   const [cvData, setCvData] = useState({
     title: 'Untitled CV',
@@ -238,15 +212,37 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
       gdpr: []
     },
     settings: {
-      themeColor: '#2563eb',
+      themeColor: location.state?.templateKey ? (TEMPLATE_DEFAULTS[location.state.templateKey] || '#2563eb') : '#10b981',
+      cvLanguage: 'English',
       font: 'Inter',
       lineSpacing: 100,
       fontSize: 100
     },
     templateId: null,
-    templateKey: 'modern',
+    templateKey: location.state?.templateKey || 'modern',
     isPaid: false
   });
+
+  const currentLabels = TRANSLATIONS[cvData.settings.cvLanguage || 'English']?.labels || TRANSLATIONS['English'].labels;
+  const currentUI = TRANSLATIONS[cvData.settings.cvLanguage || 'English']?.ui || TRANSLATIONS['English'].ui;
+
+  const [activeCvId, setActiveCvId] = useState(propCvId);
+  const [loading, setLoading] = useState(activeCvId ? true : false);
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
+  const langMenuRef = useRef(null);
+  const [viewMode, setViewMode] = useState(() => {
+    const savedMode = localStorage.getItem('cv_editor_view_mode');
+    if (savedMode) return savedMode;
+    return 'content';
+  });
+
+  // Track viewport state for smooth transitions
+  const prevWidthRef = React.useRef(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const lastDesktopModeRef = React.useRef(viewMode);
+
+  const [examplesSearch, setExamplesSearch] = useState('');
+  const [isExamplesOpen, setIsExamplesOpen] = useState(false);
+  const examplesRef = useRef(null);
 
   const [activeSection, setActiveSection] = useState('personal');
   const [isSaved, setIsSaved] = useState(true);
@@ -265,6 +261,89 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
     title: ''
   });
   const [showMoreDetails, setShowMoreDetails] = useState(false);
+
+  // UTILITIES
+  const updateNestedState = (path, value) => {
+    setIsSaved(false);
+    const keys = path.split('.');
+    setCvData(prev => {
+      const newState = { ...prev };
+      let current = newState;
+      for (let i = 0; i < keys.length - 1; i++) {
+        current[keys[i]] = { ...current[keys[i]] };
+        current = current[keys[i]];
+      }
+      current[keys[keys.length - 1]] = value;
+      return newState;
+    });
+  };
+
+  const handleApplyExample = (text) => {
+    const currentSummary = cvData.data.personal.summary || '';
+    const hasExistingContent = currentSummary.replace(/<[^>]*>/g, '').trim().length > 0;
+    
+    if (hasExistingContent) {
+      updateNestedState('data.personal.summary', currentSummary + ' ' + text);
+    } else {
+      updateNestedState('data.personal.summary', text);
+    }
+    setIsExamplesOpen(false);
+  };
+
+  // EFFECTS
+  useEffect(() => {
+    localStorage.setItem('cv_editor_view_mode', viewMode);
+    if (window.innerWidth > 786) {
+      lastDesktopModeRef.current = viewMode;
+    }
+  }, [viewMode]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth <= 786;
+      if (isMobile) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+
+      const prevWidth = prevWidthRef.current;
+      const crossedToMobile = prevWidth > 786 && isMobile;
+      const crossedToDesktop = prevWidth <= 786 && !isMobile;
+
+      if (crossedToMobile) {
+        lastDesktopModeRef.current = viewMode; 
+        setViewMode('content');
+      } else if (crossedToDesktop) {
+        setViewMode(lastDesktopModeRef.current);
+      }
+      
+      prevWidthRef.current = window.innerWidth;
+    };
+
+    window.addEventListener('resize', handleResize);
+    if (window.innerWidth <= 786) {
+       document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      document.body.style.overflow = '';
+    };
+  }, [viewMode]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (langMenuRef.current && !langMenuRef.current.contains(event.target)) {
+        setIsLangMenuOpen(false);
+      }
+      if (examplesRef.current && !examplesRef.current.contains(event.target)) {
+        setIsExamplesOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Fetch CV data if editing
   useEffect(() => {
@@ -297,13 +376,26 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
             const colorOverride = params.get('color');
             const fontOverride = params.get('font');
 
+            // Smart Color Initialization
+            // If the saved color is the generic blue (#2563eb) but the template has a SPECIFIC different default (e.g., Executive Gold),
+            // prefer the template default. This fixes "Stuck on Blue" issues.
+            const savedColor = res.data.settings?.themeColor;
+            const tplKey = templateOverride || res.data.templateId?.key || res.data.templateKey || 'modern';
+            const tplDefault = TEMPLATE_DEFAULTS[tplKey] || '#2563eb';
+            
+            let finalColor = savedColor;
+            if (!finalColor || (finalColor === '#2563eb' && tplDefault !== '#2563eb')) {
+               finalColor = tplDefault;
+            }
+            if (colorOverride) finalColor = `#${colorOverride}`;
+
             const normalizedData = {
               ...res.data,
               isPaid: res.data.isPaid || false,
-              templateKey: templateOverride || res.data.templateId?.key || 'modern',
+              templateKey: tplKey,
               settings: {
                 ...res.data.settings,
-                themeColor: colorOverride ? `#${colorOverride}` : (res.data.settings?.themeColor || '#2563eb'),
+                themeColor: finalColor,
                 font: fontOverride || (res.data.settings?.font || 'Inter')
               },
               data: {
@@ -336,7 +428,11 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
              if (location.state && location.state.templateKey) {
                 setCvData(prev => ({
                    ...prev,
-                   templateKey: location.state.templateKey
+                   templateKey: location.state.templateKey,
+                   settings: {
+                     ...prev.settings,
+                     themeColor: TEMPLATE_DEFAULTS[location.state.templateKey] || '#2563eb'
+                   }
                 }));
              }
         }
@@ -438,10 +534,12 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
         setCurrentPage(Math.min(pageIndex, totalPages));
     };
 
-    previewScrollRef.current.addEventListener('scroll', handleScroll);
+    const scrollContainer = previewScrollRef.current;
+    if (scrollContainer) scrollContainer.addEventListener('scroll', handleScroll);
+    
     return () => {
         observer.disconnect();
-        if (previewScrollRef.current) previewScrollRef.current.removeEventListener('scroll', handleScroll);
+        if (scrollContainer) scrollContainer.removeEventListener('scroll', handleScroll);
     };
   }, [totalPages]); 
 
@@ -461,20 +559,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
     }
   }, [handleSave, isSaved]);
 
-  const updateNestedState = (path, value) => {
-    setIsSaved(false);
-    const keys = path.split('.');
-    setCvData(prev => {
-      const newState = { ...prev };
-      let current = newState;
-      for (let i = 0; i < keys.length - 1; i++) {
-        current[keys[i]] = { ...current[keys[i]] };
-        current = current[keys[i]];
-      }
-      current[keys[keys.length - 1]] = value;
-      return newState;
-    });
-  };
+
 
   const confirmDeleteCategory = () => {
     const { section, index } = deleteModal;
@@ -609,9 +694,21 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
     setActiveSection(activeSection === section ? null : section);
   };
 
-  // Predefined colors for design mode
+  // Base colors
+  // Base colors
+  const BASE_COLORS = [
+    '#2563eb', // Blue
+    '#dc2626', // Red
+    '#eab37a', // Gold
+    '#10b981', // Green
+    '#0f172a', // Navy
+  ];
+
+  // Dynamic Preset Colors: Ensure the current template's default is ALWAYS first
+  const currentTemplateDefault = TEMPLATE_DEFAULTS[cvData.templateKey] || '#2563eb';
   const PRESET_COLORS = [
-    '#2563eb', '#dc2626', '#16aec0', '#7c3aed', '#db2777', '#f59e0b', '#10b981', '#1f2937'
+    currentTemplateDefault,
+    ...BASE_COLORS.filter(c => c !== currentTemplateDefault)
   ];
 
   if (loading) return <div className="cv-loading">Loading Editor...</div>;
@@ -643,7 +740,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
         <div className="header-left">
           {viewMode === 'content' ? (
             <div className="cv-title-display">
-              <span className="title-label">Editing:</span>
+              <span className="title-label">{currentUI.editing}:</span>
               <input 
                  className="title-edit-input" 
                  value={cvData.title} 
@@ -653,7 +750,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
           ) : (
             <button className="btn-edit-resume" onClick={() => setViewMode('content')}>
               <ChevronLeft size={18} />
-              <span>Edit Resume</span>
+              <span>{currentUI.personalDetails}</span>
             </button>
           )}
         </div>
@@ -665,12 +762,12 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
               onClick={() => setViewMode('design')} 
             >
               <Layout size={18} />
-              <span>Templates</span>
+              <span>{currentUI.templates}</span>
             </button>
           )}
           <button className="download-btn-red" onClick={handleDownload}>
             <Download size={18} />
-            <span>PDF</span>
+            <span>{currentUI.pdf}</span>
           </button>
         </div>
 
@@ -689,12 +786,97 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
             /* CONTENT MODE SIDEBAR */
             <div className="forms-content-wrapper">
               
+              {/* Language Selector Custom Dropdown */}
+              <div style={{ padding: '0 24px 16px 24px', display: 'flex', alignItems: 'center', gap: '12px', position: 'relative', zIndex: 50 }}>
+                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: '500' }}>Select Language:</span>
+                
+                <div 
+                  className="custom-lang-select" 
+                  style={{ position: 'relative', minWidth: '180px' }}
+                  ref={langMenuRef}
+                >
+                  <button 
+                    onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      border: '1px solid #e2e8f0',
+                      background: 'white',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      color: '#334155'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <img 
+                        src={`https://flagcdn.com/w40/${LANGUAGES.find(l => l.code === (cvData.settings.cvLanguage || 'English'))?.iso}.png`} 
+                        alt="flag" 
+                        style={{ width: '20px', height: 'auto', borderRadius: '2px' }} 
+                      />
+                      <span>{LANGUAGES.find(l => l.code === (cvData.settings.cvLanguage || 'English'))?.label || 'English'}</span>
+                    </div>
+                    <ChevronDown size={14} color="#94a3b8" />
+                  </button>
+
+                  {isLangMenuOpen && (
+                    <div className="lang-dropdown-menu" style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      width: '100%',
+                      maxHeight: '300px',
+                      overflowY: 'auto',
+                      background: '#1e293b', // Darker slate for premium look
+                      color: 'white',
+                      borderRadius: '8px',
+                      boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
+                      marginTop: '8px',
+                      padding: '4px 0',
+                      zIndex: 1000,
+                      border: '1px solid #334155'
+                    }}>
+                      {LANGUAGES.map(lang => (
+                        <div 
+                          key={lang.code}
+                          onClick={() => {
+                            updateNestedState('settings.cvLanguage', lang.code);
+                            setIsLangMenuOpen(false);
+                          }}
+                          style={{
+                            padding: '10px 16px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                            transition: 'background 0.2s',
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.background = '#334155'}
+                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                        >
+                          <img 
+                            src={`https://flagcdn.com/w40/${lang.iso}.png`} 
+                            alt={lang.label} 
+                            style={{ width: '18px', height: 'auto', borderRadius: '2px' }} 
+                          />
+                          <span>{lang.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+              
               {/* Personal Details */}
               <div className="form-section-card">
                 <button className="section-trigger" onClick={() => toggleSection('personal')}>
                   <div className="section-title-box">
                     <User size={20} color="#6366f1" />
-                    <span>Personal Details</span>
+                    <span>{currentUI.personalDetails}</span>
                   </div>
                   {activeSection === 'personal' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                 </button>
@@ -712,7 +894,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                         justifyContent: 'center',
                         overflow: 'hidden',
                         border: '2px solid #e2e8f0',
-                        opacity: cvData.templateKey === 'creative' ? 1 : 0.6
+                        opacity: ['creative', 'professional-blue', 'executive', 'elegant'].includes(cvData.templateKey) ? 1 : 0.6
                       }}>
                         {cvData.data.personal.photo ? (
                           <img src={cvData.data.personal.photo} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -721,16 +903,16 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                         )}
                       </div>
                       <div className="photo-actions">
-                        {(cvData.templateKey === 'creative' || cvData.templateKey === 'professional-blue') ? (
+                        {['creative', 'professional-blue', 'executive', 'elegant'].includes(cvData.templateKey) ? (
                           <>
                             <label className="upload-btn-ghost" style={{ cursor: 'pointer', display: 'inline-flex' }}>
                               <Camera size={16} />
-                              <span style={{ marginLeft: '8px' }}>{cvData.data.personal.photo ? 'Change Photo' : 'Upload Photo'}</span>
+                              <span style={{ marginLeft: '8px' }}>{cvData.data.personal.photo ? currentUI.changePhoto : currentUI.uploadPhoto}</span>
                               <input type="file" hidden accept="image/*" onChange={handlePhotoUpload} />
                             </label>
                             {cvData.data.personal.photo && (
                               <button onClick={removePhoto} style={{ marginLeft: '12px', background: 'transparent', border: 'none', color: '#ef4444', fontSize: '0.85rem', cursor: 'pointer' }}>
-                                Remove
+                                {currentUI.remove}
                               </button>
                             )}
                             <p style={{ margin: '8px 0 0 0', fontSize: '0.75rem', color: '#64748b' }}>JPG or PNG. Max size 2MB.</p>
@@ -739,9 +921,9 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                           <>
                             <button className="upload-btn-ghost" disabled style={{ cursor: 'not-allowed', display: 'inline-flex', opacity: 0.5 }}>
                               <Camera size={16} />
-                              <span style={{ marginLeft: '8px' }}>Upload Photo</span>
+                              <span style={{ marginLeft: '8px' }}>{currentUI.uploadPhoto}</span>
                             </button>
-                            <p style={{ margin: '8px 0 0 0', fontSize: '0.75rem', color: '#64748b' }}>This template does not support photo upload</p>
+                            <p style={{ margin: '8px 0 0 0', fontSize: '0.75rem', color: '#64748b' }}>{currentUI.photoRestriction}</p>
                           </>
                         )}
                       </div>
@@ -749,7 +931,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
 
                     <div className="form-grid">
                       <div className="form-group">
-                        <label className="form-label">First Name</label>
+                        <label className="form-label">{currentUI.firstName}</label>
                         <input 
                           className="form-input" 
                           value={cvData.data.personal.firstName} 
@@ -757,7 +939,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                         />
                       </div>
                       <div className="form-group">
-                        <label className="form-label">Last Name</label>
+                        <label className="form-label">{currentUI.lastName}</label>
                         <input 
                           className="form-input" 
                           value={cvData.data.personal.lastName} 
@@ -765,7 +947,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                         />
                       </div>
                       <div className="form-group">
-                        <label className="form-label">Job Title</label>
+                        <label className="form-label">{currentUI.jobTitle}</label>
                         <input 
                           className="form-input" 
                           value={cvData.data.personal.jobTitle} 
@@ -773,7 +955,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                         />
                       </div>
                       <div className="form-group">
-                        <label className="form-label">Email</label>
+                        <label className="form-label">{currentUI.email}</label>
                         <input 
                           className="form-input" 
                           value={cvData.data.personal.email} 
@@ -781,7 +963,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                         />
                       </div>
                       <div className="form-group">
-                        <label className="form-label">Phone</label>
+                        <label className="form-label">{currentUI.phone}</label>
                         <input 
                           className="form-input" 
                           value={cvData.data.personal.phone} 
@@ -789,7 +971,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                         />
                       </div>
                       <div className="form-group">
-                        <label className="form-label">Location</label>
+                        <label className="form-label">{currentUI.location}</label>
                         <input 
                           className="form-input" 
                           value={cvData.data.personal.location} 
@@ -800,7 +982,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                       {showMoreDetails && (
                         <>
                           <div className="form-group">
-                            <label className="form-label">City</label>
+                            <label className="form-label">{currentUI.city}</label>
                             <input 
                               className="form-input" 
                               value={cvData.data.personal.city} 
@@ -808,7 +990,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                             />
                           </div>
                           <div className="form-group">
-                            <label className="form-label">Country</label>
+                            <label className="form-label">{currentUI.country}</label>
                             <input 
                               className="form-input" 
                               value={cvData.data.personal.country} 
@@ -816,7 +998,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                             />
                           </div>
                           <div className="form-group">
-                            <label className="form-label">Address</label>
+                            <label className="form-label">{currentUI.address}</label>
                             <input 
                               className="form-input" 
                               value={cvData.data.personal.address} 
@@ -824,7 +1006,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                             />
                           </div>
                           <div className="form-group">
-                            <label className="form-label">Zip Code</label>
+                            <label className="form-label">{currentUI.zipCode}</label>
                             <input 
                               className="form-input" 
                               value={cvData.data.personal.zipCode} 
@@ -832,7 +1014,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                             />
                           </div>
                           <div className="form-group">
-                            <label className="form-label">ID Number</label>
+                            <label className="form-label">{currentUI.idNumber}</label>
                             <input 
                               className="form-input" 
                               value={cvData.data.personal.idNumber} 
@@ -840,7 +1022,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                             />
                           </div>
                           <div className="form-group">
-                            <label className="form-label">Birth Date</label>
+                            <label className="form-label">{currentUI.birthDate}</label>
                             <input 
                               type="date"
                               className="form-input" 
@@ -849,7 +1031,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                             />
                           </div>
                           <div className="form-group">
-                            <label className="form-label">Nationality</label>
+                            <label className="form-label">{currentUI.nationality}</label>
                             <input 
                               className="form-input" 
                               value={cvData.data.personal.nationality} 
@@ -857,7 +1039,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                             />
                           </div>
                           <div className="form-group">
-                            <label className="form-label">Driver's License</label>
+                            <label className="form-label">{currentUI.driversLicense}</label>
                             <input 
                               className="form-input" 
                               value={cvData.data.personal.driversLicense} 
@@ -885,7 +1067,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                       }}
                     >
                       {showMoreDetails ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                      <span>{showMoreDetails ? 'Less Details' : 'More Details'}</span>
+                      <span>{showMoreDetails ? currentUI.lessDetails : currentUI.moreDetails}</span>
                     </button>
                   </div>
                 )}
@@ -893,20 +1075,170 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
 
               {/* Professional Summary */}
               <div className="form-section-card">
-                <button className="section-trigger" onClick={() => toggleSection('summary')}>
-                  <div className="section-title-box">
-                    <FileText size={20} color="#6366f1" />
-                    <span>Professional Summary</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', position: 'relative' }}>
+                  <button className="section-trigger" style={{ padding: 0, flex: 1, border: 'none', background: 'transparent' }} onClick={() => toggleSection('summary')}>
+                    <div className="section-title-box">
+                      <FileText size={20} color="#6366f1" />
+                      <span>{currentLabels.summary}</span>
+                    </div>
+                  </button>
+                  
+                  <div style={{ position: 'relative' }} ref={examplesRef}>
+                    <button 
+                      className="btn-examples-link" 
+                      onClick={() => setIsExamplesOpen(!isExamplesOpen)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        fontSize: '13px',
+                        fontWeight: '600',
+                        color: '#6366f1',
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <Palette size={16} />
+                      <span>{currentUI.preWrittenExamples}</span>
+                    </button>
+
+                    {isExamplesOpen && (
+                      <div className="examples-popover" style={{
+                        position: 'absolute',
+                        top: '100%',
+                        right: 0,
+                        width: '450px', /* Slightly wider */
+                        maxHeight: '550px', /* Increased height */
+                        background: 'white',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+                        borderRadius: '12px',
+                        zIndex: 100,
+                        marginTop: '10px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        overflow: 'hidden',
+                        border: '1px solid #e2e8f0'
+                      }}>
+                        <div style={{ padding: '16px', borderBottom: '1px solid #f1f5f9', background: '#f8fafc' }}>
+                          <div style={{ position: 'relative' }}>
+                            <SearchIcon size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#6366f1' }} />
+                            <input 
+                              placeholder={currentUI.searchExamples}
+                              style={{ 
+                                width: '100%', 
+                                padding: '10px 12px 10px 36px',
+                                borderRadius: '8px',
+                                border: '1px solid #e2e8f0',
+                                fontSize: '13px',
+                                background: 'white',
+                                outline: 'none',
+                                transition: 'all 0.2s'
+                              }}
+                              onFocus={(e) => e.target.style.borderColor = '#6366f1'}
+                              onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+                              value={examplesSearch}
+                              onChange={(e) => setExamplesSearch(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div style={{ flex: 1, overflowY: 'auto', padding: '12px', minHeight: 0 }}>
+                          {SUMMARY_EXAMPLES
+                            .filter(cat => 
+                              cat.title.toLowerCase().includes(examplesSearch.toLowerCase()) ||
+                              cat.examples.some(ex => ex.text.toLowerCase().includes(examplesSearch.toLowerCase()))
+                            )
+                            .length > 0 ? (
+                              SUMMARY_EXAMPLES
+                                .filter(cat => 
+                                  cat.title.toLowerCase().includes(examplesSearch.toLowerCase()) ||
+                                  cat.examples.some(ex => ex.text.toLowerCase().includes(examplesSearch.toLowerCase()))
+                                )
+                                .map((cat, idx) => (
+                                  <div key={idx} style={{ marginBottom: '20px' }}>
+                                    <h5 style={{ fontSize: '12px', fontWeight: 700, color: '#334155', textTransform: 'uppercase', marginBottom: '10px', paddingLeft: '4px' }}>
+                                      {cat.title}
+                                    </h5>
+                                    {cat.examples.map((ex, eIdx) => {
+                                      // Find text for current language, fallback to English
+                                      const exText = ex.lang === (cvData.settings.cvLanguage || 'English') ? ex.text 
+                                                    : (ex.lang === 'English' ? ex.text : null);
+                                      
+                                      if (!exText) return null;
+
+                                      return (
+                                        <div 
+                                          key={eIdx} 
+                                          className="example-item"
+                                          onClick={() => {
+                                            updateNestedState('data.personal.summary', exText);
+                                            setIsExamplesOpen(false);
+                                          }}
+                                          style={{
+                                            padding: '12px',
+                                            borderRadius: '8px',
+                                            background: '#f8fafc',
+                                            fontSize: '13px',
+                                            color: '#475569',
+                                            lineHeight: '1.5',
+                                            cursor: 'pointer',
+                                            border: '1px solid transparent',
+                                            transition: 'all 0.2s',
+                                            position: 'relative',
+                                            display: 'flex',
+                                            alignItems: 'flex-start',
+                                            gap: '12px',
+                                            marginBottom: '8px'
+                                          }}
+                                          onMouseEnter={(e) => {
+                                            e.currentTarget.style.background = '#f1f5f9';
+                                            e.currentTarget.style.borderColor = '#6366f1';
+                                          }}
+                                          onMouseLeave={(e) => {
+                                            e.currentTarget.style.background = '#f8fafc';
+                                            e.currentTarget.style.borderColor = 'transparent';
+                                          }}
+                                        >
+                                          <div style={{ 
+                                            width: '24px', 
+                                            height: '24px', 
+                                            borderRadius: '50%', 
+                                            background: '#6366f1', 
+                                            border: '1px solid #6366f1',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            flexShrink: 0,
+                                            marginTop: '2px',
+                                            color: 'white'
+                                          }}>
+                                            <Plus size={14} />
+                                          </div>
+                                          <span>{exText}</span>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                ))
+                            ) : (
+                              <div style={{ textAlign: 'center', padding: '40px 20px', color: '#94a3b8' }}>
+                                <SearchIcon size={32} style={{ marginBottom: '12px', opacity: 0.5 }} />
+                                <p style={{ fontSize: '14px' }}>No examples found for "{examplesSearch}"</p>
+                              </div>
+                            )}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  {activeSection === 'summary' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                </button>
+                </div>
+
                 {activeSection === 'summary' && (
-                  <div className="section-content-inner">
+                  <div className="section-content-inner" style={{ paddingTop: 0 }}>
                     <div className="form-group full-width">
                       <RichTextEditor 
                         value={cvData.data.personal.summary} 
                         onChange={(val) => updateNestedState('data.personal.summary', val)}
-                        placeholder="Write a professional summary..."
+                        placeholder={currentUI.summaryPlaceholder}
                       />
                     </div>
                   </div>
@@ -918,7 +1250,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                 <button className="section-trigger" onClick={() => toggleSection('experience')}>
                   <div className="section-title-box">
                     <Briefcase size={20} color="#6366f1" />
-                    <span>Work Experience</span>
+                    <span>{currentLabels.experience}</span>
                   </div>
                   {activeSection === 'experience' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                 </button>
@@ -931,7 +1263,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                         </button>
                         <div className="form-grid">
                           <div className="form-group">
-                            <label className="form-label">Position</label>
+                            <label className="form-label">{currentUI.jobTitle}</label>
                             <input 
                               className="form-input" 
                               value={exp.title} 
@@ -939,7 +1271,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                             />
                           </div>
                           <div className="form-group">
-                            <label className="form-label">Company</label>
+                            <label className="form-label">{currentLabels.experience.includes('Arbets') ? 'Företag' : 'Company'}</label> 
                             <input 
                               className="form-input" 
                               value={exp.company} 
@@ -947,7 +1279,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                             />
                           </div>
                           <div className="form-group">
-                            <label className="form-label">Location</label>
+                            <label className="form-label">{currentUI.location}</label>
                             <input 
                               className="form-input" 
                               placeholder="City, Country"
@@ -983,7 +1315,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                     ))}
                     <button className="btn-add-section" onClick={() => addItem('experience')}>
                       <Plus size={18} />
-                      <span>Add Experience</span>
+                      <span>{currentUI.addItem} {currentLabels.experience}</span>
                     </button>
                   </div>
                 )}
@@ -994,7 +1326,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                 <button className="section-trigger" onClick={() => toggleSection('education')}>
                   <div className="section-title-box">
                     <GraduationCap size={20} color="#6366f1" />
-                    <span>Education</span>
+                    <span>{currentLabels.education}</span>
                   </div>
                   {activeSection === 'education' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                 </button>
@@ -1058,7 +1390,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                     ))}
                     <button className="btn-add-section" onClick={() => addItem('education')}>
                       <Plus size={18} />
-                      <span>Add Education</span>
+                      <span>{currentUI.addItem} {currentLabels.education}</span>
                     </button>
                   </div>
                 )}
@@ -1069,7 +1401,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                 <button className="section-trigger" onClick={() => toggleSection('skills')}>
                   <div className="section-title-box">
                     <Code size={20} color="#6366f1" />
-                    <span>Skills</span>
+                    <span>{currentLabels.skills}</span>
                   </div>
                   {activeSection === 'skills' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                 </button>
@@ -1083,7 +1415,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                             value={skill} 
                             onChange={(e) => updateItem('skills', idx, null, e.target.value)}
                           />
-                          <button className="action-btn delete" onClick={() => removeItem('skills', idx, skill || 'Skill')}>
+                          <button className="action-btn delete" onClick={() => removeItem('skills', idx, skill || currentLabels.skills)}>
                             <Trash2 size={14} />
                           </button>
                         </div>
@@ -1091,7 +1423,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                     </div>
                     <button className="btn-add-section" onClick={() => addItem('skills')}>
                       <Plus size={18} />
-                      <span>Add Skill</span>
+                      <span>{currentUI.addItem} {currentLabels.skills}</span>
                     </button>
                   </div>
                 )}
@@ -1103,13 +1435,13 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                   if (!cvData.data[key] || cvData.data[key].length === 0) return null;
 
                   const sectionTitles = {
-                    languages: { icon: Globe, title: 'Languages', itemFields: ['name', 'level'] },
-                    volunteering: { icon: Heart, title: 'Volunteering', itemFields: ['role', 'organization', 'description'] },
-                    courses: { icon: GraduationCap, title: 'Courses', itemFields: ['name', 'institution'] },
-                    military: { icon: Briefcase, title: 'Military Service', itemFields: ['role', 'organization'] },
-                    links: { icon: Globe, title: 'Links', itemFields: ['name', 'url'] },
-                    hobbies: { icon: Heart, title: 'Hobbies', itemFields: ['name'] },
-                    references: { icon: User, title: 'References', itemFields: ['name', 'contact'] }
+                    languages: { icon: Globe, title: currentLabels.languages, itemFields: ['name', 'level'] },
+                    volunteering: { icon: Heart, title: currentLabels.volunteering, itemFields: ['role', 'organization', 'description'] },
+                    courses: { icon: GraduationCap, title: currentLabels.courses, itemFields: ['name', 'institution'] },
+                    military: { icon: Briefcase, title: currentLabels.military, itemFields: ['role', 'organization'] },
+                    links: { icon: Globe, title: currentLabels.links, itemFields: ['name', 'url'] },
+                    hobbies: { icon: Heart, title: currentLabels.hobbies, itemFields: ['name'] },
+                    references: { icon: User, title: currentLabels.references, itemFields: ['name', 'contact'] }
                   };
 
                   const config = sectionTitles[key];
@@ -1169,7 +1501,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                           ))}
                           <button className="btn-add-section" onClick={() => addItem(key)}>
                             <Plus size={18} />
-                            <span>Add {config.title}</span>
+                            <span>{currentUI.addItem} {config.title}</span>
                           </button>
                         </div>
                       )}
@@ -1183,7 +1515,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                   <button className="section-trigger" onClick={() => toggleSection('gdpr')}>
                     <div className="section-title-box">
                       <CheckCircle size={20} color="#6366f1" />
-                      <span>GDPR</span>
+                      <span>{currentLabels.gdpr}</span>
                     </div>
                     {activeSection === 'gdpr' ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                   </button>
@@ -1212,47 +1544,47 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
 
               {/* Add Category Section */}
               <div className="add-category-section" style={{ marginTop: '24px' }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: '#334155', marginBottom: '12px' }}>Add Category</h4>
+                <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: '#334155', marginBottom: '12px' }}>{currentUI.addItem}</h4>
                 <div className="category-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                    
                    <button className="cat-btn-add" disabled={cvData.data.languages && cvData.data.languages.length > 0} onClick={() => addItem('languages')}>
                       <Globe size={18} />
-                      <span>Languages</span>
+                      <span>{currentLabels.languages}</span>
                    </button>
 
                    <button className="cat-btn-add" disabled={cvData.data.volunteering && cvData.data.volunteering.length > 0} onClick={() => addItem('volunteering')}>
                       <Heart size={18} />
-                      <span>Volunteering</span>
+                      <span>{currentLabels.volunteering}</span>
                    </button>
                    
                    <button className="cat-btn-add" disabled={cvData.data.courses && cvData.data.courses.length > 0} onClick={() => addItem('courses')}>
                       <GraduationCap size={18} />
-                      <span>Courses</span>
+                      <span>{currentLabels.courses}</span>
                    </button>
 
                    <button className="cat-btn-add" disabled={cvData.data.military && cvData.data.military.length > 0} onClick={() => addItem('military')}>
                       <Briefcase size={18} />
-                      <span>Military Service</span>
+                      <span>{currentLabels.military}</span>
                    </button>
 
                    <button className="cat-btn-add" disabled={cvData.data.links && cvData.data.links.length > 0} onClick={() => addItem('links')}>
                       <Globe size={18} />
-                      <span>Links</span>
+                      <span>{currentLabels.links}</span>
                    </button>
 
                    <button className="cat-btn-add" disabled={cvData.data.hobbies && cvData.data.hobbies.length > 0} onClick={() => addItem('hobbies')}>
                       <Heart size={18} />
-                      <span>Hobbies</span>
+                      <span>{currentLabels.hobbies}</span>
                    </button>
 
                    <button className="cat-btn-add" disabled={cvData.data.references && cvData.data.references.length > 0} onClick={() => addItem('references')}>
                       <User size={18} />
-                      <span>References</span>
+                      <span>{currentLabels.references}</span>
                    </button>
                    
                    <button className="cat-btn-add" disabled={cvData.data.gdpr && cvData.data.gdpr.length > 0} onClick={() => addItem('gdpr')}>
                       <CheckCircle size={18} />
-                      <span>GDPR</span>
+                      <span>{currentLabels.gdpr}</span>
                    </button>
 
                 </div>
@@ -1310,21 +1642,25 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                      {PRESET_COLORS.map(color => (
                         <button
                           key={color}
-                          className={`color-circle-mini ${cvData.settings.themeColor === color ? 'active' : ''}`}
+                          className={`color-circle-mini ${cvData.settings.themeColor === color ? 'active' : ''} ${cvData.templateKey === 'elegant' ? 'disabled' : ''}`}
                           style={{backgroundColor: color}}
-                          onClick={() => updateNestedState('settings.themeColor', color)}
+                          onClick={() => cvData.templateKey !== 'elegant' && updateNestedState('settings.themeColor', color)}
+                          title={cvData.templateKey === 'elegant' ? "This template does not support custom colors" : ""}
                         >
                            {cvData.settings.themeColor === color && <Check size={14} color="white" />}
+                           {cvData.templateKey === 'elegant' && <X size={14} color="white" style={{ position: 'absolute' }} />}
                         </button>
                      ))}
-                     <div className="custom-picker-sidebar">
+                     <div className={`custom-picker-sidebar ${cvData.templateKey === 'elegant' ? 'disabled' : ''}`} title={cvData.templateKey === 'elegant' ? "This template does not support custom colors" : ""}>
                        <input 
                          type="color" 
                          value={cvData.settings.themeColor}
-                         onChange={(e) => updateNestedState('settings.themeColor', e.target.value)}
-                         style={{opacity: 0, position: 'absolute', width: '100%', height: '100%', cursor: 'pointer'}}
+                         onChange={(e) => cvData.templateKey !== 'elegant' && updateNestedState('settings.themeColor', e.target.value)}
+                         disabled={cvData.templateKey === 'elegant'}
+                         style={{opacity: 0, position: 'absolute', width: '100%', height: '100%', cursor: cvData.templateKey === 'elegant' ? 'not-allowed' : 'pointer'}}
                        />
                        <Palette size={14} color="#64748b" />
+                       {cvData.templateKey === 'elegant' && <X size={14} color="#64748b" style={{ position: 'absolute' }} />}
                      </div>
                   </div>
                 </div>
@@ -1359,17 +1695,27 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                         <div 
                            key={tpl._id} 
                            className={`tpl-card-sidebar ${cvData.templateKey === tpl.key ? 'active' : ''}`}
-                           onClick={() => updateNestedState('templateKey', tpl.key)}
+                           onClick={() => {
+                             setCvData(prev => ({
+                               ...prev,
+                               templateKey: tpl.key,
+                               settings: {
+                                 ...prev.settings,
+                                 themeColor: TEMPLATE_DEFAULTS[tpl.key] || '#2563eb'
+                               }
+                             }));
+                           }}
                         >
                            <div className="tpl-thumb-sidebar">
                               <div className="tpl-preview-container">
                                   <TemplateRenderer 
                                     templateKey={tpl.key}
                                     data={SAMPLE_DATA}
-                                    settings={cvData.templateKey === tpl.key 
-                                      ? cvData.settings 
-                                      : { ...cvData.settings, themeColor: '#2563eb' }
-                                    }
+                                    settings={{
+                                      ...cvData.settings,
+                                      themeColor: TEMPLATE_DEFAULTS[tpl.key] || '#2563eb', // Force default color for thumbnail
+                                      isThumbnail: true
+                                    }}
                                   />
                               </div>
                               {cvData.templateKey === tpl.key && (
@@ -1537,17 +1883,27 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                    <div 
                       key={tpl._id} 
                       className={`drawer-tpl-card ${cvData.templateKey === tpl.key ? 'active' : ''}`}
-                      onClick={() => updateNestedState('templateKey', tpl.key)}
+                      onClick={() => {
+                        setCvData(prev => ({
+                           ...prev,
+                           templateKey: tpl.key,
+                           settings: {
+                             ...prev.settings,
+                             themeColor: TEMPLATE_DEFAULTS[tpl.key] || '#2563eb'
+                           }
+                        }));
+                      }}
                    >
                       <div className="drawer-tpl-thumb">
                           <div className="drawer-preview-scaler">
                               <TemplateRenderer 
                                 templateKey={tpl.key}
                                 data={SAMPLE_DATA}
-                                settings={cvData.templateKey === tpl.key 
-                                  ? { ...cvData.settings, isThumbnail: true }
-                                  : { ...cvData.settings, themeColor: '#2563eb', isThumbnail: true }
-                                }
+                                settings={{
+                                  ...cvData.settings,
+                                  themeColor: TEMPLATE_DEFAULTS[tpl.key] || '#2563eb', // Force default color for thumbnail
+                                  isThumbnail: true
+                                }}
                               />
                           </div>
                           {cvData.templateKey === tpl.key && (

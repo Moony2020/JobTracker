@@ -1,9 +1,9 @@
 import React from 'react';
 import { formatDate } from '../../../utils/formatters';
 
-const ModernTemplate = ({ data, settings }) => {
+const ModernTemplate = ({ data, settings, labels }) => {
   const { personal, experience, education, skills } = data;
-  const themeColor = settings?.themeColor || '#2563eb';
+  const themeColor = settings?.themeColor || '#10b981';
 
   // Helper to check if array has valid items
   const hasItems = (arr) => arr && arr.length > 0;
@@ -29,12 +29,18 @@ const ModernTemplate = ({ data, settings }) => {
         <div className="main-col">
           {(hasItems(experience) || !personal.firstName) && (
             <section>
-              <h2 style={{ color: themeColor }}>Experience</h2>
+              <h2 style={{ color: themeColor }}>{labels?.experience || 'Experience'}</h2>
               {hasItems(experience) ? experience.map((exp, i) => (
                 <div key={i} className="exp-item">
                   <h3>{exp.title}</h3>
                   <div className="meta">
-                    {exp.company}{exp.location && ` | ${exp.location}`} | {formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}
+                    {exp.company}{exp.company && (exp.location || exp.startDate || exp.endDate || exp.current) && ' | '}
+                    {exp.location}{exp.location && (exp.startDate || exp.endDate || exp.current) && ' | '}
+                    {(exp.startDate || exp.endDate || exp.current) && (
+                      <>
+                        {formatDate(exp.startDate)} { (exp.endDate || exp.current) && ` - ${exp.current ? 'Present' : formatDate(exp.endDate)}`}
+                      </>
+                    )}
                   </div>
                   {exp.description && <div className="description" dangerouslySetInnerHTML={{ __html: exp.description }} />}
                 </div>
@@ -50,12 +56,18 @@ const ModernTemplate = ({ data, settings }) => {
 
           {(hasItems(education) || !personal.firstName) && (
             <section>
-              <h2 style={{ color: themeColor }}>Education</h2>
+              <h2 style={{ color: themeColor }}>{labels?.education || 'Education'}</h2>
               {hasItems(education) ? education.map((edu, i) => (
                 <div key={i} className="exp-item">
                   <h3>{edu.degree}</h3>
                   <div className="meta">
-                    {edu.school}{edu.location && ` | ${edu.location}`} | {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
+                    {edu.school}{edu.school && (edu.location || edu.startDate || edu.endDate) && ' | '}
+                    {edu.location}{edu.location && (edu.startDate || edu.endDate) && ' | '}
+                    {(edu.startDate || edu.endDate) && (
+                      <>
+                        {formatDate(edu.startDate)} {edu.endDate && ` - ${formatDate(edu.endDate)}`}
+                      </>
+                    )}
                   </div>
                   {edu.description && <div className="description" dangerouslySetInnerHTML={{ __html: edu.description }} />}
                 </div>
@@ -70,7 +82,7 @@ const ModernTemplate = ({ data, settings }) => {
 
           {data.volunteering && data.volunteering.length > 0 && (
             <section>
-              <h2 style={{ color: themeColor }}>Volunteering</h2>
+              <h2 style={{ color: themeColor }}>{labels?.volunteering || 'Volunteering'}</h2>
               {data.volunteering.map((item, i) => (
                 <div key={i} className="exp-item">
                   <h3>{item.role}</h3>
@@ -83,7 +95,7 @@ const ModernTemplate = ({ data, settings }) => {
 
           {data.courses && data.courses.length > 0 && (
             <section>
-              <h2 style={{ color: themeColor }}>Courses</h2>
+              <h2 style={{ color: themeColor }}>{labels?.courses || 'Courses'}</h2>
               {data.courses.map((item, i) => (
                 <div key={i} className="exp-item">
                   <h3>{item.name}</h3>
@@ -95,7 +107,7 @@ const ModernTemplate = ({ data, settings }) => {
 
           {data.military && data.military.length > 0 && (
             <section>
-              <h2 style={{ color: themeColor }}>Military Service</h2>
+              <h2 style={{ color: themeColor }}>{labels?.military || 'Military Service'}</h2>
               {data.military.map((item, i) => (
                 <div key={i} className="exp-item">
                   <h3>{item.role}</h3>
@@ -108,7 +120,7 @@ const ModernTemplate = ({ data, settings }) => {
         
         <div className="side-col">
           <section className="contact-info">
-            <h2 style={{ color: themeColor }}>Contact</h2>
+            <h2 style={{ color: themeColor }}>{labels?.contact || 'Contact'}</h2>
             <p>{personal.email || 'email@example.com'}</p>
             <p>{personal.phone || '(555) 123-4567'}</p>
             {personal.address && <p>{personal.address}</p>}
@@ -126,7 +138,7 @@ const ModernTemplate = ({ data, settings }) => {
 
           {data.links && data.links.length > 0 && (
             <section className="links-section">
-              <h2 style={{ color: themeColor }}>Links</h2>
+              <h2 style={{ color: themeColor }}>{labels?.links || 'Links'}</h2>
               {data.links.map((link, i) => (
                 <p key={i} className="link-item"><strong>{link.name}:</strong> {link.url}</p>
               ))}
@@ -135,7 +147,7 @@ const ModernTemplate = ({ data, settings }) => {
           
           {(hasItems(skills) || !personal.firstName) && (
             <section>
-              <h2 style={{ color: themeColor }}>Skills</h2>
+              <h2 style={{ color: themeColor }}>{labels?.skills || 'Skills'}</h2>
               <div className="skill-tags">
                 {hasItems(skills) ? skills.map((skill, i) => (
                   <span key={i} className="skill-tag">{skill}</span>
@@ -152,7 +164,7 @@ const ModernTemplate = ({ data, settings }) => {
 
           {data.languages && data.languages.length > 0 && (
             <section className="languages-section">
-              <h2 style={{ color: themeColor }}>Languages</h2>
+              <h2 style={{ color: themeColor }}>{labels?.languages || 'Languages'}</h2>
               <div className="language-list">
                 {data.languages.map((lang, i) => (
                     <div key={i} className="language-item" style={{ marginBottom: '4px' }}>
@@ -166,14 +178,14 @@ const ModernTemplate = ({ data, settings }) => {
 
           {data.hobbies && data.hobbies.length > 0 && (
             <section className="hobbies-section">
-              <h2 style={{ color: themeColor }}>Hobbies</h2>
+              <h2 style={{ color: themeColor }}>{labels?.hobbies || 'Hobbies'}</h2>
               <p>{data.hobbies.map(h => h.name).join(', ')}</p>
             </section>
           )}
 
           {data.references && data.references.length > 0 && (
             <section className="references-section">
-              <h2 style={{ color: themeColor }}>References</h2>
+              <h2 style={{ color: themeColor }}>{labels?.references || 'References'}</h2>
               {data.references.map((ref, i) => (
                 <div key={i} className="ref-item">
                   <p><strong>{ref.name}</strong></p>

@@ -230,8 +230,8 @@
 
 /* Custom Thin Scrollbar for the whole editor context */
 .cv-editor-design *::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px; /* Increased from 6px */
+  height: 8px;
 }
 
 .cv-editor-design *::-webkit-scrollbar-track {
@@ -239,7 +239,7 @@
 }
 
 .cv-editor-design *::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
+  background-color: #94a3b8; /* Darker for better visibility */
   border-radius: 10px;
   border: 2px solid transparent;
   background-clip: content-box;
@@ -1373,6 +1373,18 @@ input[type="month"]::-webkit-calendar-picker-indicator {
 .color-circle-mini.active {
     border: 3px solid white; /* Essential white border for active state */
     box-shadow: 0 0 0 1px rgba(0,0,0,0.1); /* Subtle definition */
+}
+
+.color-circle-mini.disabled, .custom-picker-sidebar.disabled {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+    filter: grayscale(0.8);
+    position: relative;
+}
+
+.color-circle-mini.disabled:hover, .custom-picker-sidebar.disabled:hover {
+    transform: none !important;
+    border-color: inherit !important;
 }
 /* Ensure the icon inside has no margin that offsets it */
 .color-circle-mini svg {

@@ -2,7 +2,7 @@ import React from 'react';
 import { User, Briefcase, GraduationCap, Megaphone, Phone, Mail, MapPin, Globe } from 'lucide-react';
 import { formatDate } from '../../../utils/formatters';
 
-const TimelineTemplate = ({ data, settings }) => {
+const TimelineTemplate = ({ data, settings, labels }) => {
   const { personal, experience, education, skills, languages, references } = data;
   const themeColor = settings?.themeColor || '#2563eb';
 
@@ -32,7 +32,7 @@ const TimelineTemplate = ({ data, settings }) => {
           </div>
 
           <div className="sidebar-section">
-            <h2 className="sidebar-title">Contact Details</h2>
+            <h2 className="sidebar-title">{labels?.contact || 'Contact Details'}</h2>
             <div className="sidebar-contact">
               <div className="contact-item">
                 <Mail size={14} />
@@ -77,7 +77,7 @@ const TimelineTemplate = ({ data, settings }) => {
 
           {hasItems(skills) && (
             <div className="sidebar-section">
-              <h2 className="sidebar-title">Skills</h2>
+              <h2 className="sidebar-title">{labels?.skills || 'Skills'}</h2>
               <div className="sidebar-list">
                 {skills.map((skill, idx) => (
                   <div key={idx} className="sidebar-list-item">{skill}</div>
@@ -88,7 +88,7 @@ const TimelineTemplate = ({ data, settings }) => {
 
           {hasItems(languages) && (
             <div className="sidebar-section">
-              <h2 className="sidebar-title">Languages</h2>
+              <h2 className="sidebar-title">{labels?.languages || 'Languages'}</h2>
               <div className="sidebar-list">
                 {languages.map((lang, idx) => (
                   <div key={idx} className="sidebar-list-item">
@@ -129,28 +129,33 @@ const TimelineTemplate = ({ data, settings }) => {
           
           {/* Summary Section */}
           <section className="main-section">
-            <h2 className="section-header-title">Summary</h2>
+            <h2 className="section-header-title">{labels?.summary || 'Summary'}</h2>
             <div className="section-content-text" 
                  dangerouslySetInnerHTML={{ __html: personal.summary || 'Professional summary goes here...' }} />
           </section>
 
           {/* Experience Section */}
           <section className="main-section">
-            <h2 className="section-header-title">Work Experience</h2>
+            <h2 className="section-header-title">{labels?.experience || 'Work Experience'}</h2>
             <div className="experience-list">
               {experience?.map((exp, idx) => (
                 <div key={idx} className="experience-item-box">
                   <h3 className="exp-title-bold">{exp.title}</h3>
                   <div className="exp-meta-row">
-                    <span className="exp-company-text">{exp.company}</span>
-                    <span className="exp-dots">•</span>
+                    {exp.company && <span className="exp-company-text">{exp.company}</span>}
+                    {exp.company && (exp.location || exp.startDate) && <span className="exp-dots"> | </span>}
                     {exp.location && (
                       <>
                         <span className="exp-location-text">{exp.location}</span>
-                        <span className="exp-dots">•</span>
+                        {exp.startDate && <span className="exp-dots"> | </span>}
                       </>
                     )}
-                    <span className="exp-date-text">{formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}</span>
+                    {(exp.startDate || exp.endDate || exp.current) && (
+                      <span className="exp-date-text">
+                        {formatDate(exp.startDate)}
+                        {(exp.endDate || exp.current) && ` - ${exp.current ? 'Present' : formatDate(exp.endDate)}`}
+                      </span>
+                    )}
                   </div>
                   {exp.description && (
                     <div className="exp-description-text" dangerouslySetInnerHTML={{ __html: exp.description }} />
@@ -162,21 +167,25 @@ const TimelineTemplate = ({ data, settings }) => {
 
           {/* Education Section */}
           <section className="main-section">
-            <h2 className="section-header-title">Education</h2>
+            <h2 className="section-header-title">{labels?.education || 'Education'}</h2>
             <div className="education-list">
               {education?.map((edu, idx) => (
                 <div key={idx} className="education-item-box">
                   <h3 className="edu-degree-bold">{edu.degree}</h3>
                   <div className="edu-meta-row">
-                    <span className="edu-school-text">{edu.school}</span>
-                    <span className="edu-dots">•</span>
+                    {edu.school && <span className="edu-school-text">{edu.school}</span>}
+                    {edu.school && (edu.location || edu.startDate) && <span className="edu-dots"> | </span>}
                     {edu.location && (
                       <>
                         <span className="edu-location-text">{edu.location}</span>
-                        <span className="edu-dots">•</span>
+                        {edu.startDate && <span className="edu-dots"> | </span>}
                       </>
                     )}
-                    <span className="edu-date-text">{formatDate(edu.startDate)} - {formatDate(edu.endDate)}</span>
+                    {(edu.startDate || edu.endDate) && (
+                      <span className="edu-date-text">
+                        {formatDate(edu.startDate)} {edu.endDate && ` - ${formatDate(edu.endDate)}`}
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}
@@ -186,12 +195,16 @@ const TimelineTemplate = ({ data, settings }) => {
           {/* References Section */}
           {hasItems(references) && (
             <section className="main-section">
-              <h2 className="section-header-title">References</h2>
+              <h2 className="section-header-title">{labels?.references || 'References'}</h2>
               <div className="references-list">
                 {references.map((ref, idx) => (
                   <div key={idx} className="reference-item-box">
-                    <strong>{ref.name}</strong>, {ref.relationship}
-                    <div className="ref-contact-small">{ref.email} | {ref.phone}</div>
+                    {ref.name && <strong>{ref.name}</strong>}{ref.name && ref.relationship && ', '}{ref.relationship}
+                    {(ref.email || ref.phone) && (
+                      <div className="ref-contact-small">
+                        {ref.email}{ref.email && ref.phone && ' | '}{ref.phone}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

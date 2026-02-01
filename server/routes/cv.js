@@ -26,8 +26,7 @@ router.get("/", auth, async (req, res) => {
     // Map CVs with a helper 'isPaid' flag
     const cvsWithStatus = cvs.map(cv => {
       const isPaid = purchases.some(p => 
-        p.cvDocument.toString() === cv._id.toString() && 
-        p.template.toString() === cv.templateId?._id?.toString()
+        p.cvDocument.toString() === cv._id.toString()
       );
       return {
         ...cv.toObject(),
@@ -204,10 +203,14 @@ router.get("/export/:id", auth, async (req, res) => {
       return res.status(401).json({ msg: "Not authorized" });
     }
 
+    // Ensure template exists to avoid crash
+    // If templateId is null/missing (e.g. broken reference), default to a safe value
+    const templateCategory = cv.templateId?.category || "Free";
+    
     // If template is Pro or Premium, check if a completed and unexpired purchase exists
-    if (cv.templateId.category === "Pro" || cv.templateId.category === "Premium") {
+    if (templateCategory === "Pro" || templateCategory === "Premium") {
       // Find ANY completed purchase for this user and this CV document
-      console.log(`[Export] Verifying purchase for User: ${req.user.id}, CV: ${cv._id}, Template: ${cv.templateId.key}`);
+      console.log(`[Export] Verifying purchase for User: ${req.user.id}, CV: ${cv._id}, Template: ${cv.templateId?.key || 'unknown'}`);
       
       const purchase = await Purchase.findOne({
         user: req.user.id,

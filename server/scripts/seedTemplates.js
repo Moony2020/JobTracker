@@ -32,6 +32,20 @@ const templates = [
     price: 1.5,
     thumbnail: "/images/templates/creative.png",
   },
+  {
+    name: "Executive (Maria)",
+    key: "executive",
+    category: "Pro",
+    price: 1.5,
+    thumbnail: "/images/templates/executive.png",
+  },
+  {
+    name: "Elegant",
+    key: "elegant",
+    category: "Pro",
+    price: 1.5,
+    thumbnail: "/images/templates/elegant.png",
+  },
 ];
 
 const seedTemplates = async () => {

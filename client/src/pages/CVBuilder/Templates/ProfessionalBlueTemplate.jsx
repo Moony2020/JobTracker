@@ -2,7 +2,7 @@ import React from 'react';
 import { formatDate } from '../../../utils/formatters';
 import './Templates.css';
 
-const ProfessionalBlueTemplate = ({ data, settings }) => {
+const ProfessionalBlueTemplate = ({ data, settings, labels }) => {
   const { personal, experience, education, skills, languages } = data;
   const themeColor = settings?.themeColor || '#2563eb';
 
@@ -36,7 +36,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
 
         {/* Contact Section */}
         <section className="pro-section">
-          <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)' }}>CONTACT</h2>
+          <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)', textTransform: 'uppercase' }}>{labels?.contact || 'Contact'}</h2>
           <div className="pro-contact-list">
              <div className="pro-contact-item">
                 <span className="pro-label">Email</span>
@@ -74,7 +74,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
         {/* Skills Section */}
         {hasItems(skills) && (
           <section className="pro-section">
-              <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)' }}>SKILLS</h2>
+              <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)', textTransform: 'uppercase' }}>{labels?.skills || 'Skills'}</h2>
               <ul className="pro-list">
                 {skills.map((skill, i) => (
                   <li key={i} className="pro-list-item">{skill}</li>
@@ -85,7 +85,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
 
         {/* Languages Section */}
         <section className="pro-section">
-            <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)' }}>LANGUAGES</h2>
+            <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)', textTransform: 'uppercase' }}>{labels?.languages || 'Languages'}</h2>
             <ul className="pro-list">
               {hasItems(languages) ? languages.map((lang, i) => (
                 <li key={i} className="pro-list-item">
@@ -104,7 +104,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
         {/* Links Section */}
         {data.links && data.links.length > 0 && (
           <section className="pro-section">
-            <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)' }}>LINKS</h2>
+            <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)', textTransform: 'uppercase' }}>{labels?.links || 'Links'}</h2>
             <div className="pro-contact-list">
               {data.links.map((link, i) => (
                 <div key={i} className="pro-contact-item">
@@ -119,7 +119,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
         {/* Hobbies Section */}
         {data.hobbies && data.hobbies.length > 0 && (
           <section className="pro-section">
-            <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)' }}>HOBBIES</h2>
+            <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)', textTransform: 'uppercase' }}>{labels?.hobbies || 'Hobbies'}</h2>
             <p className="pro-value" style={{ color: 'white', opacity: 0.9 }}>
               {data.hobbies.map(h => h.name).join(', ')}
             </p>
@@ -129,7 +129,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
         {/* References Section */}
         {data.references && data.references.length > 0 && (
           <section className="pro-section">
-            <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)' }}>REFERENCES</h2>
+            <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)', textTransform: 'uppercase' }}>{labels?.references || 'References'}</h2>
             {data.references.map((ref, i) => (
               <div key={i} className="pro-contact-item" style={{ marginBottom: '10px' }}>
                 <span className="pro-label">{ref.name}</span>
@@ -151,7 +151,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
         {/* Professional Summary */}
         {personal.summary && (
           <section className="pro-content-section">
-            <h2 className="pro-content-title" style={{ color: themeColor }}>PROFESSIONAL SUMMARY</h2>
+            <h2 className="pro-content-title" style={{ color: themeColor, textTransform: 'uppercase' }}>{labels?.summary || 'Professional Summary'}</h2>
             <div className="pro-summary" dangerouslySetInnerHTML={{ __html: personal.summary }} />
           </section>
         )}
@@ -159,7 +159,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
         {/* Work Experience */}
         {hasItems(experience) && (
           <section className="pro-content-section">
-            <h2 className="pro-content-title" style={{ color: themeColor }}>WORK EXPERIENCE</h2>
+            <h2 className="pro-content-title" style={{ color: themeColor, textTransform: 'uppercase' }}>{labels?.experience || 'Work Experience'}</h2>
             {experience.map((exp, i) => (
               <div key={i} className="pro-exp-item">
                 <div className="pro-exp-header">
@@ -168,14 +168,17 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
                     <span className="pro-exp-date">
                       {formatDate(exp.startDate)}
                       {(exp.startDate && (exp.endDate || exp.current)) && ' - '}
-                      {exp.current ? 'Present' : formatDate(exp.endDate)}
+                      {exp.current ? (labels?.present || 'Present') : formatDate(exp.endDate)}
                     </span>
                   )}
                 </div>
-                <p className="pro-exp-company">
-                  {exp.company}
-                  {exp.location && <span style={{ fontWeight: 400, opacity: 0.8 }}> | {exp.location}</span>}
-                </p>
+                {(exp.company || exp.location) && (
+                  <p className="pro-exp-company">
+                    {exp.company}
+                    {exp.company && exp.location && <span style={{ fontWeight: 400, opacity: 0.8 }}> | {exp.location}</span>}
+                    {!exp.company && exp.location}
+                  </p>
+                )}
                 {exp.description && <div className="pro-exp-desc" dangerouslySetInnerHTML={{ __html: exp.description }} />}
               </div>
             ))}
@@ -185,7 +188,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
         {/* Education */}
         {hasItems(education) && (
           <section className="pro-content-section">
-            <h2 className="pro-content-title" style={{ color: themeColor }}>EDUCATION</h2>
+            <h2 className="pro-content-title" style={{ color: themeColor, textTransform: 'uppercase' }}>{labels?.education || 'Education'}</h2>
             {education.map((edu, i) => (
               <div key={i} className="pro-exp-item">
                 <div className="pro-exp-header">
@@ -198,10 +201,13 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
                     </span>
                   )}
                 </div>
-                <p className="pro-exp-company">
-                  {edu.school}
-                  {edu.location && <span style={{ fontWeight: 400, opacity: 0.8 }}> | {edu.location}</span>}
-                </p>
+                {(edu.school || edu.location) && (
+                  <p className="pro-exp-company">
+                    {edu.school}
+                    {edu.school && edu.location && <span style={{ fontWeight: 400, opacity: 0.8 }}> | {edu.location}</span>}
+                    {!edu.school && edu.location}
+                  </p>
+                )}
                 {edu.description && <div className="pro-exp-desc" dangerouslySetInnerHTML={{ __html: edu.description }} />}
               </div>
             ))}
@@ -211,7 +217,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
         {/* Volunteering */}
         {data.volunteering && data.volunteering.length > 0 && (
           <section className="pro-content-section">
-            <h2 className="pro-content-title" style={{ color: themeColor }}>VOLUNTEERING</h2>
+            <h2 className="pro-content-title" style={{ color: themeColor, textTransform: 'uppercase' }}>{labels?.volunteering || 'Volunteering'}</h2>
             {data.volunteering.map((item, i) => (
               <div key={i} className="pro-exp-item">
                 <div className="pro-exp-header">
@@ -227,7 +233,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
         {/* Courses */}
         {data.courses && data.courses.length > 0 && (
           <section className="pro-content-section">
-            <h2 className="pro-content-title" style={{ color: themeColor }}>COURSES</h2>
+            <h2 className="pro-content-title" style={{ color: themeColor, textTransform: 'uppercase' }}>{labels?.courses || 'Courses'}</h2>
             {data.courses.map((item, i) => (
               <div key={i} className="pro-exp-item">
                 <h3 className="pro-exp-title">{item.name}</h3>
@@ -240,7 +246,7 @@ const ProfessionalBlueTemplate = ({ data, settings }) => {
         {/* Military Service */}
         {data.military && data.military.length > 0 && (
           <section className="pro-content-section">
-            <h2 className="pro-content-title" style={{ color: themeColor }}>MILITARY SERVICE</h2>
+            <h2 className="pro-content-title" style={{ color: themeColor, textTransform: 'uppercase' }}>{labels?.military || 'Military Service'}</h2>
             {data.military.map((item, i) => (
               <div key={i} className="pro-exp-item">
                 <h3 className="pro-exp-title">{item.role}</h3>
