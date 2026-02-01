@@ -218,7 +218,20 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
                   <TemplateRenderer 
                     templateKey={tpl.key} 
                     data={sampleData} 
-                    settings={{ font: "Inter", lineHeight: 1.5, isThumbnail: true }} 
+                    settings={{ 
+                      font: "Inter", 
+                      lineHeight: 1.5, 
+                      isThumbnail: true,
+                      themeColor: {
+                        modern: '#2563eb',
+                        classic: '#0f172a',
+                        executive: '#eab37a',
+                        creative: '#2563eb',
+                        professional: '#2563eb',
+                        elegant: '#475569',
+                        timeline: '#dc2626'
+                      }[tpl.key] || '#2563eb'
+                    }} 
                   />
                 </div>
                 {/* Badges restored - Visible always */}
@@ -237,12 +250,6 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
               </div>
             </div>
           ))}
-          <div className="create-blank-card" onClick={onCreate}>
-            <div className="plus-icon">
-              <Plus size={40} />
-            </div>
-            <span>{language === 'Arabic' ? 'بداية من الصفر' : 'Start from Blank'}</span>
-          </div>
         </div>
       </section>
 
