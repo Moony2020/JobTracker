@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import TemplateRenderer from './Templates/TemplateRenderer';
 import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
@@ -457,7 +457,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
       }
     };
     init();
-  }, [propCvId, activeCvId, location.state, location.search]);
+  }, [propCvId, activeCvId, location.state, location.search]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
   // Track canvas height for dynamic pagination
  
@@ -746,7 +746,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
   
   if (isPrintMode) {
     return (
-      <div className="cv-print-only">
+      <div className="cv-print-only resume-template">
         <TemplateRenderer 
           templateKey={cvData.templateKey}
           data={cvData.data}
@@ -1173,7 +1173,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                             />
                           </div>
                         </div>
-                        <div style={{ flex: 1, overflowY: 'auto', padding: '12px', minHeight: 0 }}>
+                        <div style={{ flex: 1, overflowY: 'auto', padding: '12px 12px 40px 12px', minHeight: 0 }}>
                           {SUMMARY_EXAMPLES
                             .filter(cat => 
                               cat.title.toLowerCase().includes(examplesSearch.toLowerCase()) ||
@@ -1202,8 +1202,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                                           key={eIdx} 
                                           className="example-item"
                                           onClick={() => {
-                                            updateNestedState('data.personal.summary', exText);
-                                            setIsExamplesOpen(false);
+                                            handleApplyExample(exText);
                                           }}
                                           style={{
                                             padding: '12px',
@@ -1245,7 +1244,9 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                                           }}>
                                             <Plus size={14} />
                                           </div>
-                                          <span>{exText}</span>
+                                          <div style={{ flex: 1, minWidth: 0 }}>
+                                            <span style={{ display: 'block', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>{exText}</span>
+                                          </div>
                                         </div>
                                       );
                                     })}
