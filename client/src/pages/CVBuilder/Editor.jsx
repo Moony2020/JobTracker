@@ -796,9 +796,9 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
               <span>{currentUI.templates}</span>
             </button>
           )}
-          <button className="download-btn-red" onClick={handleDownload}>
-            <Download size={18} />
-            <span>{currentUI.pdf}</span>
+          <button className="download-btn-red" onClick={handleDownload} disabled={isExporting}>
+            {isExporting ? <Loader2 className="spinner" size={18} /> : <Download size={18} />}
+            <span>{isExporting ? 'Downloading...' : currentUI.pdf}</span>
           </button>
         </div>
 
