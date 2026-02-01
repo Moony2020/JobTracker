@@ -35,7 +35,10 @@ const sampleData = {
     }
   ],
   skills: ["Technical Support", "Network Administration", "Software Troubleshooting"],
-  languages: ["English", "Spanish"],
+  languages: [
+    { name: "English", level: "Native" },
+    { name: "Spanish", level: "Proficient" }
+  ],
   projects: []
 };
 
