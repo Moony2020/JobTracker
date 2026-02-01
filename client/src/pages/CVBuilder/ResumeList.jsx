@@ -257,7 +257,7 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
                 </div>
                 <div className="resume-details">
                   <h3>{cv.title}</h3>
-                  <span className="template-name">{cv.templateId?.name || 'Custom Template'}</span>
+                  <span className="template-name">{cv.templateId?.name?.split(' ')[0] || 'Custom Template'}</span>
                   <span className="last-updated">Updated {new Date(cv.updatedAt).toLocaleString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })}</span>
                 </div>
                 <div className="resume-actions">

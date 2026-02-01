@@ -111,7 +111,7 @@ const AdminTemplates = ({ t }) => {
                            />
                         </div>
                       </div>
-                      <div style={{ color: 'white', fontSize: '14px', fontWeight: '500' }}>{template.name}</div>
+                      <div style={{ color: 'white', fontSize: '14px', fontWeight: '500' }}>{template.name.split(' ')[0]}</div>
                     </div>
                   </td>
                   <td>
