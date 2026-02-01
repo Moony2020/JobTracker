@@ -2849,9 +2849,170 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
 }
 
+/* Add Item Buttons Dark Mode */
+.dark-mode .cat-btn-add {
+  background: #334155;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+.dark-mode .cat-btn-add:hover {
+  background: #475569; /* Slightly lighter on hover */
+  border-color: #64748b;
+  color: white;
+}
+
+.dark-mode .cat-btn-add svg {
+  color: #94a3b8;
+}
+
+.dark-mode .cat-btn-add:hover svg {
+  color: white;
+}
+
+/* Add Item Header */
+.add-item-header {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 12px;
+}
+
+.dark-mode .add-item-header {
+  color: #cbd5e1; /* Lighter text for Dark Mode, matches labels */
+}
+
+/* Full Width Form Group */
+.form-group.full-width {
+  width: 100%;
+  display: block;
+}
+
+/* Rich Text Editor Fixes */
+.rich-text-editor-wrapper {
+  width: 100%;
+  display: block;
+  margin-top: 8px;
+}
+
+.rich-text-editor-wrapper .quill {
+  width: 100%;
+  background: white;
+  border-radius: 8px;
+}
+
+.rich-text-editor-wrapper .ql-toolbar {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  border-color: #e2e8f0;
+}
+
+.rich-text-editor-wrapper .ql-container,
+.rich-text-editor-container .ql-container {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-color: #e2e8f0;
+  min-height: 120px;
+  padding-top: 16px !important; /* Add padding to container */
+}
+
+.rich-text-editor-wrapper .ql-editor,
+.rich-text-editor-container .ql-editor {
+  min-height: 120px;
+  padding-top: 20px !important; /* Increased top padding for breathing room */
+  padding-bottom: 12px !important;
+}
+
+/* Extra specificity for stubborn cases */
+.form-section-card .rich-text-editor-container .ql-editor,
+.section-content-inner .rich-text-editor-container .ql-editor {
+  padding-top: 20px !important;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+}
+
+.dark-mode .rich-text-editor-wrapper .quill,
+.dark-mode .rich-text-editor-container .quill {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark-mode .rich-text-editor-wrapper .ql-toolbar,
+.dark-mode .rich-text-editor-container .ql-toolbar {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+.dark-mode .rich-text-editor-wrapper .ql-container,
+.dark-mode .rich-text-editor-container .ql-container {
+  border-color: #334155 !important;
+  background: #0f172a !important;
+}
+
+.dark-mode .rich-text-editor-wrapper .ql-editor,
+.dark-mode .rich-text-editor-container .ql-editor {
+  color: #f1f5f9 !important;
+  background: #0f172a !important;
+}
+
+/* Placeholder text in dark mode */
+.dark-mode .rich-text-editor-wrapper .ql-editor.ql-blank::before,
+.dark-mode .rich-text-editor-container .ql-editor.ql-blank::before {
+  color: #94a3b8 !important; /* Lighter gray for placeholder */
+  opacity: 0.7;
+}
+
+.dark-mode .ql-stroke {
+  stroke: #cbd5e1 !important;
+}
+
+.dark-mode .ql-fill {
+  fill: #cbd5e1 !important;
+}
+
+.dark-mode .ql-picker {
+  color: #cbd5e1 !important;
+}
+
+.dark-mode .ql-picker-options {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+.dark-mode .ql-picker-item {
+  color: #f1f5f9 !important;
+}
+
+.dark-mode .ql-picker-item:hover {
+  background: #334155 !important;
+  color: white !important;
+}
+
+
+/* Grid Fix for Full Width Inputs */
+.form-group.full {
+  grid-column: 1 / -1 !important;
+  width: 100% !important;
+}
+
+/* Ensure RTE takes full width in grid */
+.form-group.full .rich-text-editor-wrapper {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
 /* Mobile Adjustments for List */
 @media (max-width: 768px) {
   .resume-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* Dark mode for section toggle arrows */
+.dark-mode .form-section-card svg,
+.dark-mode .section-trigger svg,
+.dark-mode .collapse-icon {
+  color: #cbd5e1 !important;
+  stroke: #cbd5e1 !important;
 }

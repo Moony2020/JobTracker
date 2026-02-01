@@ -1497,16 +1497,10 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                                 <Trash2 size={16} />
                               </button>
                               <div className="form-grid">
-                                {config.itemFields.map(field => (
-                                  <div key={field} className={field === 'description' ? "form-group full" : "form-group"}>
+                                {config.itemFields.filter(field => field !== 'description').map(field => (
+                                  <div key={field} className="form-group">
                                     <label className="form-label">{field.charAt(0).toUpperCase() + field.slice(1)}</label>
-                                    {field === 'description' ? (
-                                      <RichTextEditor 
-                                        value={item[field] || ''} 
-                                        onChange={(val) => updateItem(key, idx, field, val)}
-                                        placeholder={`Describe your ${config.title.toLowerCase()}...`}
-                                      />
-                                    ) : field === 'level' && key === 'languages' ? (
+                                    {field === 'level' && key === 'languages' ? (
                                       <select 
                                         className="form-input"
                                         value={item[field] || ''}
@@ -1529,6 +1523,16 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                                   </div>
                                 ))}
                               </div>
+                              {config.itemFields.includes('description') && (
+                                <div className="form-group full-width" style={{ marginTop: '12px' }}>
+                                  <label className="form-label">Description</label>
+                                  <RichTextEditor 
+                                    value={item['description'] || ''} 
+                                    onChange={(val) => updateItem(key, idx, 'description', val)}
+                                    placeholder={`Describe your ${config.title.toLowerCase()}...`}
+                                  />
+                                </div>
+                              )}
                             </div>
                           ))}
                           <button className="btn-add-section" onClick={() => addItem(key)}>
@@ -1576,7 +1580,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
 
               {/* Add Category Section */}
               <div className="add-category-section" style={{ marginTop: '24px' }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: '#334155', marginBottom: '12px' }}>{currentUI.addItem}</h4>
+                <h4 className="add-item-header">{currentUI.addItem}</h4>
                 <div className="category-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                    
                    <button className="cat-btn-add" disabled={cvData.data.languages && cvData.data.languages.length > 0} onClick={() => addItem('languages')}>

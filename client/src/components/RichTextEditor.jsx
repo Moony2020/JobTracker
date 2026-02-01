@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useEffect } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { Bold, Italic, Underline, Link, List, AlignLeft, AlignCenter, AlignRight, Type } from 'lucide-react';
@@ -25,8 +25,30 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
     'link', 'align'
   ];
 
+  useEffect(() => {
+    // Inject global styles for Quill editor spacing
+    const styleId = 'quill-custom-spacing';
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.innerHTML = `
+        .rich-text-editor-container .ql-container {
+          padding-top: 16px !important;
+        }
+        .rich-text-editor-container .ql-editor {
+          padding-top: 20px !important;
+          padding-bottom: 12px !important;
+        }
+        .rich-text-editor-container .ql-toolbar {
+          margin-bottom: 0 !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  }, []);
+
   return (
-    <div className="rich-text-editor-container">
+    <div className="rich-text-editor-container" style={{ paddingTop: '8px' }}>
       <ReactQuill 
         ref={quillRef}
         theme="snow"
@@ -35,7 +57,10 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
         placeholder={placeholder}
         modules={modules}
         formats={formats}
-        style={{ height: 'auto', minHeight: '150px' }}
+        style={{ 
+          height: 'auto', 
+          minHeight: '150px'
+        }}
       />
     </div>
   );
