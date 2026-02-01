@@ -10,11 +10,7 @@ const ClassicTemplate = ({ data, settings, labels }) => {
   return (
     <div className="classic-template" style={{ '--theme-color': themeColor, fontFamily: settings?.font || 'Serif' }}>
       <div className="classic-header" style={{ display: 'flex', gap: '30px', alignItems: 'flex-start' }}>
-        {personal.photo && (
-          <div className="classic-photo-container">
-            <img src={personal.photo} alt="Profile" style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '4px' }} />
-          </div>
-        )}
+
         <div style={{ flex: 1 }}>
           <h1 style={{ color: themeColor, marginTop: 0 }}>{personal.firstName || 'First Name'} {personal.lastName || 'Last Name'}</h1>
           <div className="job-title" style={{ fontSize: '1.2rem', color: '#64748b', marginBottom: '8px' }}>{personal.jobTitle}</div>

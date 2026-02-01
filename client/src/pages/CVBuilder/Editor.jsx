@@ -261,6 +261,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
     title: ''
   });
   const [showMoreDetails, setShowMoreDetails] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false); // Safety flag
 
   // UTILITIES
   const updateNestedState = (path, value) => {
@@ -371,6 +372,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
           if (activeCvId && !propCvId && cvData.data.personal.firstName) {
                console.log("[Editor] Skipping re-fetch for newly created CV to preserve local state");
                setLoading(false);
+               setDataLoaded(true);
                return;
           }
 
@@ -380,11 +382,62 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
           const res = await api.get(`/cv/${idToFetch}`);
           console.log(`[Editor] CV data received:`, res.data ? 'Success' : 'Empty');
           if (res.data) {
-             // ... content ...
+             const templateOverride = location.state?.templateKey;
+             const tplKey = templateOverride || res.data.templateId?.key || res.data.templateKey || 'modern';
+             
+             const normalizedData = {
+               ...res.data,
+               templateKey: tplKey,
+               data: {
+                 personal: {
+                    firstName: '',
+                    lastName: '',
+                    jobTitle: '',
+                    email: '',
+                    phone: '',
+                    location: '',
+                    summary: '',
+                    photo: null,
+                    city: '',
+                    country: '',
+                    address: '',
+                    zipCode: '',
+                    idNumber: '',
+                    birthDate: '',
+                    nationality: '',
+                    driversLicense: '',
+                    ...(res.data.data?.personal || {})
+                 },
+                 experience: res.data.data?.experience || [],
+                 education: res.data.data?.education || [],
+                 skills: res.data.data?.skills || [],
+                 languages: res.data.data?.languages || [],
+                 projects: res.data.data?.projects || [],
+                 certifications: res.data.data?.certifications || [], // Ensure this exists if schema has it (schema didn't show it but state might)
+                 hobbies: res.data.data?.hobbies || [],
+                 links: res.data.data?.links || [],
+                 volunteering: res.data.data?.volunteering || [],
+                 courses: res.data.data?.courses || [],
+                 military: res.data.data?.military || [],
+                 references: res.data.data?.references || [],
+                 gdpr: res.data.data?.gdpr || [],
+                 customSections: res.data.data?.customSections || []
+               },
+               settings: {
+                  themeColor: TEMPLATE_DEFAULTS[tplKey] || '#2563eb',
+                  font: 'Inter',
+                  lineSpacing: 100,
+                  fontSize: 100,
+                  ...(res.data.settings || {})
+               }
+             };
              setCvData(normalizedData);
+             setDataLoaded(true);
           }
         } else {
              console.log(`[Editor] Initializing new CV`);
+             // New CV is considered "loaded" with default state
+             setDataLoaded(true);
              // Initialize from location state if creating new
              if (location.state && location.state.templateKey) {
                 setCvData(prev => ({
@@ -455,6 +508,13 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
         console.error("Error creating CV:", err);
       }
     } else {
+      // PREVENT OVERWRITE IF DATA NOT LOADED CORRECTLY
+      if (!dataLoaded) {
+          console.error("[Save Prevented] Attempted to save before data was fully loaded.");
+          if (showNotify) showNotify("Cannot save: CV data not fully loaded. Please refresh.", "error");
+          return null;
+      }
+
       try {
         await api.put(`/cv/${activeCvId}`, {
           data: cvData.data,
@@ -469,7 +529,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
       }
     }
     return activeCvId;
-  }, [activeCvId, cvData.data, cvData.settings, cvData.title, cvData.templateKey, cvData.templateId, availableTemplates]);
+  }, [activeCvId, cvData.data, cvData.settings, cvData.title, cvData.templateKey, cvData.templateId, availableTemplates, dataLoaded, showNotify]);
 
   // Calculate Pages & Track Scroll
   useEffect(() => {
@@ -673,6 +733,16 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
   ];
 
   if (loading) return <div className="cv-loading">Loading Editor...</div>;
+
+  if (!dataLoaded && (propCvId || activeCvId)) {
+    return (
+      <div className="cv-loading error" style={{ flexDirection: 'column', gap: '1rem' }}>
+        <h3>Failed to load CV data</h3>
+        <p>The requested CV could not be loaded. It may have been deleted or there is a connection issue.</p>
+        <button onClick={onBack} className="btn-secondary">Back to Dashboard</button>
+      </div>
+    );
+  }
   
   if (isPrintMode) {
     return (

@@ -15,17 +15,7 @@ const TimelineTemplate = ({ data, settings, labels }) => {
         
         {/* LEFT SIDEBAR */}
         <div className="timeline-sidebar">
-          {personal.photo && (
-            <div className="sidebar-photo-container" style={{ marginBottom: '30px', textAlign: 'center' }}>
-              <img src={personal.photo} alt="Profile" style={{ 
-                width: '120px', 
-                height: '120px', 
-                borderRadius: '8px', 
-                objectFit: 'cover',
-                border: '1px solid #e2e8f0' 
-              }} />
-            </div>
-          )}
+
           <div className="sidebar-header">
             <h1 className="name-display">{personal.firstName || 'Your'} {personal.lastName || 'Name'}</h1>
             <p className="job-title-display">{personal.jobTitle || 'Professional Title'}</p>
