@@ -113,7 +113,7 @@ const EditApplicationModal = ({ application, onClose, onUpdate, language }) => {
   if (!application) return null;
 
   return ReactDOM.createPortal(
-    <div className="modal" onClick={onClose} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 9999 }}>
+    <div className="modal" id="editModal" onClick={onClose} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 9999 }}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '750px', width: '95%', maxHeight: '90vh', overflowY: 'auto' }}>
         <div className="modal-header" style={{ marginBottom: '1rem' }}>
           <h2 style={{ margin: 0, fontSize: '1.2rem' }}>{t.edit_application}</h2>
@@ -214,7 +214,7 @@ const EditApplicationModal = ({ application, onClose, onUpdate, language }) => {
 
         {activeTab === 'general' && (
           <form onSubmit={handleSubmit}>
-            <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+            <div className="edit-modal-form-grid form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
               <div className="form-group">
                 <label htmlFor="jobTitle">{t.job_title} *</label>
                 <input type="text" id="jobTitle" className="form-control" value={formData.jobTitle} onChange={handleChange} required />
@@ -261,11 +261,11 @@ const EditApplicationModal = ({ application, onClose, onUpdate, language }) => {
                 <label htmlFor="offeredSalary">{t.offered_salary}</label>
                 <input type="text" id="offeredSalary" className="form-control" value={formData.offeredSalary} onChange={handleChange} />
               </div>
-              <div className="form-group">
+              <div className="form-group recruiter-name-group">
                 <label htmlFor="recruiterName">{t.recruiter_name}</label>
                 <input type="text" id="recruiterName" className="form-control" value={formData.recruiterName} onChange={handleChange} />
               </div>
-              <div className="form-group">
+              <div className="form-group recruiter-email-group">
                 <label htmlFor="recruiterEmail">{t.recruiter_email}</label>
                 <input type="email" id="recruiterEmail" className="form-control" value={formData.recruiterEmail} onChange={handleChange} />
               </div>

@@ -2687,6 +2687,29 @@ body:not(.dark-mode) .form-control::placeholder {
     gap: 0.3rem !important;
 }
 
+/* Prevent dashboard flex rules from affecting modal - force grid */
+.modal .form-grid,
+#editModal .form-grid,
+.edit-modal-form-grid {
+    display: grid !important;
+}
+
+/* Force 3-column grid for edit modal specifically */
+.edit-modal-form-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1rem !important;
+}
+
+/* Ensure recruiter fields don't have conflicting styles */
+#editModal .form-grid .form-group:nth-child(10),
+#editModal .form-grid .form-group:nth-child(11),
+.edit-modal-form-grid .form-group:nth-child(10),
+.edit-modal-form-grid .form-group:nth-child(11) {
+    max-width: none !important;
+    flex: none !important;
+    width: auto !important;
+}
+
 #editModal .form-group {
     margin-bottom: 0.3rem !important;
     /* Reduce space between form groups */
@@ -2980,11 +3003,7 @@ footer {
     .modal-content {
         max-height: 90vh;
     }
-
-    #editModal .form-grid {
-        grid-template-columns: 1fr;
-        gap: 0.65rem;
-    }
+}
 
     .modal .form-actions {
         flex-direction: row; /* Keep buttons on one line */
@@ -3017,6 +3036,42 @@ footer {
     }
 }
 
+/* Edit Modal Grid - Force 3-column layout on larger screens */
+@media (min-width: 601px) {
+    #editModal .form-grid,
+    .edit-modal-form-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+    
+    /* Ensure all form groups align properly in grid */
+    #editModal .form-grid .form-group,
+    .edit-modal-form-grid .form-group {
+        align-self: start !important;
+        margin-bottom: 0.3rem !important;
+    }
+
+    /* Specific tweaks for Recruiter fields alignment */
+    .edit-modal-form-grid .recruiter-email-group {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+        margin-top: 0 !important;
+    }
+
+    .edit-modal-form-grid .recruiter-name-group {
+        margin-top: -5px !important; /* Move Name field UP slightly */
+        margin-bottom: 0 !important;
+        align-self: start !important;
+    }
+}
+
+/* Edit Modal Grid - Single column on small screens */
+@media (max-width: 600px) {
+    #editModal .form-grid,
+    .edit-modal-form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.65rem;
+    }
+}
 
 
 @media (max-width: 480px) {
