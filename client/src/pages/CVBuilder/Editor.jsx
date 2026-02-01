@@ -265,8 +265,31 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
 
   // UTILITIES
   const updateNestedState = (path, value) => {
-    setIsSaved(false);
     const keys = path.split('.');
+    
+    // 1. Get current value to compare and avoid redundant "dirty" flags
+    let currentVal = cvData;
+    for (const key of keys) {
+      if (currentVal === undefined || currentVal === null) break;
+      currentVal = currentVal[key];
+    }
+    
+    // Normalize empty values for comparison (null/undefined/empty string vs empty Quill HTML)
+    const normalize = (v) => {
+      if (!v) return '';
+      if (typeof v === 'string') {
+        const trimmed = v.replace(/<[^>]*>/g, '').trim();
+        return trimmed === '' ? '' : v;
+      }
+      return v;
+    };
+
+    if (normalize(currentVal) === normalize(value)) {
+      console.log(`[Editor] Skipping redundant update for ${path}`);
+      return;
+    }
+
+    setIsSaved(false);
     setCvData(prev => {
       const newState = { ...prev };
       let current = newState;
@@ -492,6 +515,29 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
     const templateIdToSave = currentTemplate?._id || cvData.templateId;
 
     if (!activeCvId) {
+      // VALIDATION: Don't create a new CV if it's completely empty
+      const hasName = cvData.data.personal.firstName?.trim() || cvData.data.personal.lastName?.trim();
+      const hasSummary = cvData.data.personal.summary?.replace(/<[^>]*>/g, '').trim().length > 0;
+      
+      const hasAnyContent = hasName || hasSummary || 
+        ['experience', 'education', 'skills', 'languages', 'projects', 'volunteering', 'courses', 'military']
+        .some(section => {
+          const sectionData = cvData.data[section];
+          if (!sectionData || sectionData.length === 0) return false;
+          // Check if at least one item has some text content
+          return sectionData.some(item => {
+            if (typeof item === 'string') return item.trim().length > 0;
+            return Object.values(item).some(val => 
+              typeof val === 'string' && val.replace(/<[^>]*>/g, '').trim().length > 0
+            );
+          });
+        });
+
+      if (!hasAnyContent) {
+        console.log("[Save Prevented] New CV is empty, skipping DB creation.");
+        return null;
+      }
+
       try {
         const res = await api.post('/cv', {
           title: cvData.data.personal.firstName ? `${cvData.data.personal.firstName}'s CV` : 'New CV',
