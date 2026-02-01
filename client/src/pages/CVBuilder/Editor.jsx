@@ -1676,10 +1676,19 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
                        value={cvData.settings.font}
                        onChange={(e) => updateNestedState('settings.font', e.target.value)}
                     >
-                       <option value="Inter">Inter (clean)</option>
+                       <option value="Inter">Inter (Clean)</option>
+                       <option value="Arial">Arial (Standard)</option>
+                       <option value="Times New Roman">Times New Roman (Classic)</option>
                        <option value="Roboto">Roboto (Modern)</option>
+                       <option value="Open Sans">Open Sans (Friendly)</option>
+                       <option value="Lato">Lato (Neutral)</option>
+                       <option value="Montserrat">Montserrat (Geometric)</option>
+                       <option value="Raleway">Raleway (Elegant)</option>
+                       <option value="Ubuntu">Ubuntu (Tech)</option>
+                       <option value="Oswald">Oswald (Bold)</option>
+                       <option value="Playfair Display">Playfair (Classic Serif)</option>
                        <option value="Merriweather">Merriweather (Serif)</option>
-                       <option value="Poppins">Poppins (Geometric)</option>
+                       <option value="Poppins">Poppins (Popular)</option>
                     </select>
                     <ChevronDown className="select-arrow-sidebar" size={14} />
                   </div>
