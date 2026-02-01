@@ -22,8 +22,14 @@ router.post("/stripe/create-session", auth, async (req, res) => {
 
   try {
     const template = await Template.findById(templateId);
+    const cv = await CVDocument.findById(cvId);
+    
     if (!template) return res.status(404).json({ msg: "Template not found" });
 
+    // Clean up template name (remove placeholder names like "Executive (Maria)")
+    const cleanTemplateName = template.name.replace(/\s*\(.*?\)\s*/g, '').trim();
+    const userName = cv?.data?.personal?.firstName || 'User';
+    
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
@@ -31,7 +37,7 @@ router.post("/stripe/create-session", auth, async (req, res) => {
           price_data: {
             currency: "usd",
             product_data: {
-              name: `Premium CV Export - ${template.name}`,
+              name: `Premium CV Export - ${cleanTemplateName} (${userName})`,
             },
             unit_amount: Math.round(template.price * 100),
           },
