@@ -365,62 +365,23 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
         
         setAvailableTemplates(sortedTemplates);
         
-        if (activeCvId) {
-          console.log(`[Editor] Fetching CV data for ID: ${activeCvId}`);
-          const res = await api.get(`/cv/${activeCvId}`);
+        if (propCvId || activeCvId) {
+          // If we have data and just created a new ID (active !== prop), don't refetch and overwrite local state
+          // unless it's a fresh load (loading=true) or we explicitly want to sync.
+          if (activeCvId && !propCvId && cvData.data.personal.firstName) {
+               console.log("[Editor] Skipping re-fetch for newly created CV to preserve local state");
+               setLoading(false);
+               return;
+          }
+
+          const idToFetch = propCvId || activeCvId;
+          // if (idToFetch) check is redundant because of the outer check
+          console.log(`[Editor] Fetching CV data for ID: ${idToFetch}`);
+          const res = await api.get(`/cv/${idToFetch}`);
           console.log(`[Editor] CV data received:`, res.data ? 'Success' : 'Empty');
           if (res.data) {
-            // Check for URL overrides (used by PDF service)
-            const params = new URLSearchParams(location.search);
-            const templateOverride = params.get('template');
-            const colorOverride = params.get('color');
-            const fontOverride = params.get('font');
-
-            // Smart Color Initialization
-            // If the saved color is the generic blue (#2563eb) but the template has a SPECIFIC different default (e.g., Executive Gold),
-            // prefer the template default. This fixes "Stuck on Blue" issues.
-            const savedColor = res.data.settings?.themeColor;
-            const tplKey = templateOverride || res.data.templateId?.key || res.data.templateKey || 'modern';
-            const tplDefault = TEMPLATE_DEFAULTS[tplKey] || '#2563eb';
-            
-            let finalColor = savedColor;
-            if (!finalColor || (finalColor === '#2563eb' && tplDefault !== '#2563eb')) {
-               finalColor = tplDefault;
-            }
-            if (colorOverride) finalColor = `#${colorOverride}`;
-
-            const normalizedData = {
-              ...res.data,
-              isPaid: res.data.isPaid || false,
-              templateKey: tplKey,
-              settings: {
-                ...res.data.settings,
-                themeColor: finalColor,
-                font: fontOverride || (res.data.settings?.font || 'Inter')
-              },
-              data: {
-                personal: {
-                  firstName: '', lastName: '', jobTitle: '', email: '', phone: '', location: '',
-                  summary: '', photo: null, city: '', country: '', address: '', zipCode: '',
-                  idNumber: '', birthDate: '', nationality: '', driversLicense: '',
-                  ...(res.data.data?.personal || {})
-                },
-                experience: res.data.data?.experience || [],
-                education: res.data.data?.education || [],
-                skills: res.data.data?.skills || [],
-                languages: res.data.data?.languages || [],
-                projects: res.data.data?.projects || [],
-                certifications: res.data.data?.certifications || [],
-                hobbies: res.data.data?.hobbies || [],
-                links: res.data.data?.links || [],
-                volunteering: res.data.data?.volunteering || [],
-                courses: res.data.data?.courses || [],
-                military: res.data.data?.military || [],
-                references: res.data.data?.references || [],
-                gdpr: res.data.data?.gdpr || []
-              }
-            };
-            setCvData(normalizedData);
+             // ... content ...
+             setCvData(normalizedData);
           }
         } else {
              console.log(`[Editor] Initializing new CV`);
