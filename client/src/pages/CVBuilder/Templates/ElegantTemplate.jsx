@@ -4,7 +4,15 @@ import { Mail, Phone, MapPin, Globe, Linkedin, Github, User } from 'lucide-react
 import './Templates.css';
 
 const ElegantTemplate = ({ data, settings, labels }) => {
-  const { personal, experience, education, skills, languages, references, links } = data;
+  const { 
+    personal = {}, 
+    experience = [], 
+    education = [], 
+    skills = [], 
+    languages = [], 
+    references = [], 
+    links = [] 
+  } = data || {};
   const themeColor = settings?.themeColor || '#475569'; 
 
   const hasItems = (arr) => arr && arr.length > 0;

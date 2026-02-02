@@ -2,7 +2,12 @@ import React from 'react';
 import { formatDate } from '../../../utils/formatters';
 
 const ModernTemplate = ({ data, settings, labels }) => {
-  const { personal, experience, education, skills } = data;
+  const { 
+    personal = {}, 
+    experience = [], 
+    education = [], 
+    skills = [] 
+  } = data || {};
   const themeColor = settings?.themeColor || '#10b981';
 
   // Helper to check if array has valid items

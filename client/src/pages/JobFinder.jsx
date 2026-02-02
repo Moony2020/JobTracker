@@ -95,7 +95,7 @@ const JobFinder = ({ language, user }) => {
 
             {/* Discover Engine */}
             <div className="discovery-engine" style={{ marginBottom: '2rem' }}>
-                <div className="section-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.2rem' }}>
+                <div className="section-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px', marginBottom: '1.2rem' }}>
                     <Globe size={20} color="var(--primary-color)" />
                     <h2 style={{ fontSize: '1.2rem', margin: 0 }}>Discover Engine</h2>
                 </div>
@@ -138,7 +138,7 @@ const JobFinder = ({ language, user }) => {
 
             {/* Recommendations Section */}
             <div className="ai-recommendations" style={{ marginBottom: '2rem' }}>
-                <div className="section-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+                <div className="section-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px', marginBottom: '1rem' }}>
                     <Sparkles size={20} color="var(--primary-color)" />
                     <h2 style={{ fontSize: '1.2rem', margin: 0 }}>Tailored Recommendations</h2>
                 </div>

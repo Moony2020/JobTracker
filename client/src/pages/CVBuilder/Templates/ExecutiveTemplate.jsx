@@ -4,7 +4,14 @@ import { Mail, Phone, MapPin, User } from 'lucide-react';
 import './Templates.css';
 
 const ExecutiveTemplate = ({ data, settings, labels }) => {
-  const { personal, experience, education, skills, languages, references } = data;
+  const { 
+    personal = {}, 
+    experience = [], 
+    education = [], 
+    skills = [], 
+    languages = [], 
+    references = [] 
+  } = data || {};
   const themeColor = settings?.themeColor || '#eab37a'; 
 
   const hasItems = (arr) => arr && arr.length > 0;

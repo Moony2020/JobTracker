@@ -3,7 +3,13 @@ import { formatDate } from '../../../utils/formatters';
 import './Templates.css';
 
 const ProfessionalBlueTemplate = ({ data, settings, labels }) => {
-  const { personal, experience, education, skills, languages } = data;
+  const { 
+    personal = {}, 
+    experience = [], 
+    education = [], 
+    skills = [], 
+    languages = [] 
+  } = data || {};
   const themeColor = settings?.themeColor || '#2563eb';
 
   // Helper to check if array has valid items

@@ -50,6 +50,7 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [resumeToDelete, setResumeToDelete] = useState(null);
   const [downloadingId, setDownloadingId] = useState(null);
+  const [showAllTemplates, setShowAllTemplates] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -194,6 +195,39 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
     }
   };
 
+  const getSimplifiedName = (name) => {
+    if (!name) return '';
+    if (name.includes('Classic')) return 'Classic';
+    if (name.includes('Modern')) return 'Modern';
+    if (name.includes('Creative')) return 'Creative';
+    if (name.includes('Timeline')) return 'Timeline';
+    if (name.includes('Executive')) return 'Executive';
+    if (name.includes('Elegant')) return 'Elegant';
+    return name;
+  };
+
+  /* New Helper for relative time */
+  const timeAgo = (date) => {
+    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+    let interval = seconds / 31536000;
+    if (interval > 1) return Math.floor(interval) + " years ago";
+    interval = seconds / 2592000;
+    if (interval > 1) return Math.floor(interval) + " months ago";
+    interval = seconds / 86400;
+    if (interval > 1) return Math.floor(interval) + " days ago";
+    interval = seconds / 3600;
+    if (interval > 1) return Math.floor(interval) + " hours ago";
+    interval = seconds / 60;
+    if (interval > 1) return Math.floor(interval) + " minutes ago";
+    return "Just now";
+  };
+
+  const [activeTab, setActiveTab] = useState('draft'); // 'draft' | 'completed'
+
+  // Filter resumes into Drafts and Completed based on payment status
+  const completed = resumes.filter(r => r.isPaid); 
+  const drafts = resumes.filter(r => !r.isPaid);
+
   if (loading) {
     return (
       <div className="cv-loading-container">
@@ -207,103 +241,198 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
 
   return (
     <div className="resume-list-container">
-      <div className="list-header">
-
-        <h1>{language === 'Arabic' ? 'السير الذاتية' : 'My Resumes'}</h1>
-        <p>{language === 'Arabic' ? 'قم بإنشاء وتعديل سيرتك الذاتية باحترافية' : 'Create and manage your professional resumes'}</p>
+      {/* 1. Top Header */}
+      <div className="dashboard-header-row">
+        <div>
+          <h1>{language === 'Arabic' ? 'منشئ السيرة الذاتية' : 'Resume Builder'}</h1>
+          <p>{language === 'Arabic' ? 'قم بإنشاء سيرتك الذاتية الخاصة للتقدم للوظائف' : 'Create your own custom resume to apply for jobs'}</p>
+        </div>
+        <button className="btn-primary-large" onClick={() => {
+          const blankTpl = templates.find(t => t.key === 'classic') || templates[0];
+          if (blankTpl) onCreate(blankTpl);
+        }}>
+          <Plus size={18} />
+          {language === 'Arabic' ? 'بدء سيرة ذاتية جديدة' : 'Start New Resume'}
+        </button>
       </div>
 
-      <section className="templates-section">
-        <div className="section-title-wrapper">
-          <h2>{language === 'Arabic' ? 'القوالب المتاحة' : 'Available Templates'}</h2>
+      {/* 2. Sample Resume Section */}
+      <section className="dashboard-section" id="templates-section">
+        <div className="section-header">
+           <h2>{language === 'Arabic' ? 'نماذج السير الذاتية' : 'Sample Resume'}</h2>
+           <button className="btn-link" onClick={() => setShowAllTemplates(!showAllTemplates)}>
+             {language === 'Arabic' ? 'عرض الكل' : (showAllTemplates ? 'Show Less' : 'See All')} 
+             <span style={{ marginLeft: 5 }}>{showAllTemplates ? '↑' : '→'}</span>
+           </button>
         </div>
-        <div className="template-grid">
-          {templates.map(tpl => (
-            <div key={tpl._id} className="template-card" onClick={() => onCreate(tpl)}>
-              <div className="template-preview-live">
-                <div className="template-preview-wrapper">
-                  <TemplateRenderer 
-                    templateKey={tpl.key} 
-                    data={sampleData} 
-                    settings={{ 
-                      font: "Inter", 
-                      lineHeight: 1.5, 
-                      isThumbnail: true,
-                      themeColor: {
-                        modern: '#2563eb',
-                        classic: '#0f172a',
-                        executive: '#eab37a',
-                        creative: '#2563eb',
-                        professional: '#2563eb',
-                        elegant: '#475569',
-                        timeline: '#dc2626'
-                      }[tpl.key] || '#2563eb'
-                    }} 
-                  />
+        
+        <div className="samples-grid">
+           {/* Create Blank Card */}
+           <div className="create-blank-card" onClick={() => {
+              const blankTpl = templates.find(t => t.key === 'classic') || templates[0];
+              onCreate(blankTpl);
+           }}>
+              <div className="plus-circle">
+                 <Plus size={24} color="#94a3b8" />
+              </div>
+              <span>{language === 'Arabic' ? 'إنشاء سيرة ذاتية فارغة' : 'Create Blank Resume'}</span>
+           </div>
+
+           {/* Templates List */}
+           {templates.slice(0, showAllTemplates ? templates.length : 4).map(tpl => (
+             <div key={tpl._id} className="sample-template-card" onClick={() => onCreate(tpl)}>
+                <div className="sample-preview-wrapper">
+                    <div className="sample-mini-scale">
+                      <TemplateRenderer 
+                        templateKey={tpl.key} 
+                        data={sampleData} 
+                        settings={{ 
+                          isThumbnail: true,
+                          themeColor: {
+                            modern: '#2563eb',
+                            classic: '#0f172a',
+                            executive: '#eab37a',
+                            creative: '#2563eb',
+                            professional: '#2563eb',
+                            elegant: '#475569',
+                            timeline: '#dc2626'
+                          }[tpl.key] || '#2563eb'
+                        }} 
+                      />
+                    </div>
+                    {/* Lock / Pro Icon Mockup */}
+                    {(tpl.category === 'Pro' || tpl.category === 'Premium') && (
+                       <div className="lock-icon-badge"><Crown size={12} /></div>
+                    )}
                 </div>
-                {/* Badges restored - Visible always */}
-                {tpl.category === 'Pro' && (
-                  <div className="premium-badge">
-                    <Crown size={14} />
-                    <span>PRO</span>
-                  </div>
-                )}
-                {tpl.price === 0 && (
-                  <div className="free-badge">FREE</div>
-                )}
-              </div>
-              <div className="template-info">
-                <h3>{tpl.name.split(' ')[0]}</h3>
-              </div>
-            </div>
-          ))}
+                <div className="sample-info">
+                   <h3>{getSimplifiedName(tpl.name)}</h3>
+                   {/* User count removed as requested */}
+                </div>
+             </div>
+           ))}
         </div>
       </section>
 
-      <section className="saved-resumes-section">
-        <h2 style={{ color: 'var(--text-color)' }}>{language === 'Arabic' ? 'سيري الذاتية المحفوظة' : 'My Saved Resumes'}</h2>
-        {resumes.length > 0 ? (
-          <div className="resume-grid">
-            {resumes.map(cv => (
-              <div key={cv._id} className="resume-item-card">
-                <div className="resume-icon">
-                  <FileText size={32} />
-                </div>
-                <div className="resume-details">
-                  <h3>{cv.title}</h3>
-                  <span className="template-name">{cv.templateId?.name?.split(' ')[0] || 'Custom Template'}</span>
-                  <span className="last-updated">Updated {new Date(cv.updatedAt).toLocaleString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })}</span>
-                </div>
-                <div className="resume-actions">
-                  <button className="action-btn edit" title="Edit" onClick={() => onEdit(cv)}>
-                    <Edit3 size={18} />
-                  </button>
-                  <button 
-                    className="action-btn download" 
-                    title="Download" 
-                    onClick={(e) => handleDownload(e, cv)}
-                    disabled={downloadingId === cv._id}
-                    style={downloadingId === cv._id ? { cursor: 'wait', opacity: 0.7 } : {}}
-                  >
-                    {downloadingId === cv._id ? (
-                      <Loader2 size={18} className="spinner" style={{ animation: 'spin 1s linear infinite' }} />
-                    ) : (
-                      <Download size={18} />
-                    )}
-                  </button>
-                  <button className="action-btn delete" title="Delete" onClick={(e) => handleDelete(e, cv)}>
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
+      {/* 3. My Resume Section */}
+      <section className="dashboard-section">
+        <div className="section-header">
+           <h2>{language === 'Arabic' ? 'سيري الذاتية' : 'My Resumes'}</h2>
+        </div>
+        
+        <div className="tabs-toolbar">
+           <div className="tabs-group">
+              <button 
+                className={`tab-btn ${activeTab === 'draft' ? 'active' : ''}`} 
+                onClick={() => setActiveTab('draft')}
+              >
+                {language === 'Arabic' ? 'مسودة' : 'Draft'} <span className="count-badge">{drafts.length}</span>
+              </button>
+              <button 
+                className={`tab-btn ${activeTab === 'completed' ? 'active' : ''}`} 
+                onClick={() => setActiveTab('completed')}
+              >
+                {language === 'Arabic' ? 'مكتمل' : 'Completed'} <span className="count-badge">{completed.length}</span>
+              </button>
+           </div>
+           
+           {/* Reminder button removed as requested */}
+        </div>
 
-          <div style={{ textAlign: 'center', padding: '40px', background: 'transparent', borderRadius: '12px', border: '2px dashed var(--light-border)' }}>
-             <p style={{ color: 'var(--text-muted)' }}>{language === 'Arabic' ? 'لا توجد سير ذاتية محفوظة حاليا' : 'No saved resumes found. Start by selecting a template above!'}</p>
-          </div>
-        )}
+        <div className="my-resumes-grid">
+           {activeTab === 'draft' && drafts.map(cv => (
+              <div key={cv._id} className="my-resume-card">
+                 <div className="resume-card-preview-area">
+                    {/* Render actual CV content as thumbnail */}
+                    <div className="resume-mini-scale">
+                      <TemplateRenderer 
+                        templateKey={cv.templateId?.key || 'classic'} 
+                        data={cv.data || {}} 
+                        settings={{ isThumbnail: true, themeColor: cv.settings?.themeColor }} 
+                      />
+                    </div>
+                 </div>
+                  <div className="resume-card-footer">
+                     <h3>{cv.title || 'Untitled Resume'}</h3>
+                     <p>{language === 'Arabic' ? 'آخر تحديث' : 'Last Updated'}: {timeAgo(cv.updatedAt)}</p>
+                     
+                     <div className="resume-card-actions">
+                        <span className="template-name-label">{getSimplifiedName(cv.templateId?.key || cv.templateKey)}</span>
+                        <div className="resume-card-actions-icons">
+                           <button onClick={(e) => { e.stopPropagation(); onEdit(cv); }} title="Edit"><Edit3 size={16} /></button>
+                           <button 
+                             onClick={(e) => handleDownload(e, cv)} 
+                             title="Download"
+                             disabled={downloadingId === cv._id}
+                             style={downloadingId === cv._id ? { cursor: 'wait', opacity: 0.7 } : {}}
+                           >
+                             {downloadingId === cv._id ? (
+                               <Loader2 size={16} className="spinner" style={{ animation: 'spin 1s linear infinite' }} />
+                             ) : (
+                               <Download size={16} />
+                             )}
+                           </button>
+                           <button className="text-red" onClick={(e) => handleDelete(e, cv)} title="Delete"><Trash2 size={16} /></button>
+                        </div>
+                     </div>
+                  </div>
+              </div>
+           ))}
+
+           {activeTab === 'completed' && completed.map(cv => (
+              <div key={cv._id} className="my-resume-card">
+                 <div className="resume-card-preview-area">
+                    {/* Render actual CV content as thumbnail */}
+                    <div className="resume-mini-scale">
+                      <TemplateRenderer 
+                        templateKey={cv.templateId?.key || 'classic'} 
+                        data={cv.data || {}} 
+                        settings={{ isThumbnail: true, themeColor: cv.settings?.themeColor }} 
+                      />
+                    </div>
+                 </div>
+                  <div className="resume-card-footer">
+                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h3>{cv.title || 'Untitled Resume'}</h3>
+                        <span style={{ fontSize: '0.7rem', background: '#d1fae5', color: '#059669', padding: '2px 6px', borderRadius: '4px' }}>Paid</span>
+                     </div>
+                     <p>{language === 'Arabic' ? 'آخر تحديث' : 'Last Updated'}: {timeAgo(cv.updatedAt)}</p>
+                     
+                     <div className="resume-card-actions">
+                        <span className="template-name-label">{getSimplifiedName(cv.templateId?.key || cv.templateKey || 'Resume')}</span>
+                        <div className="resume-card-actions-icons">
+                           <button onClick={(e) => { e.stopPropagation(); onEdit(cv); }} title="Edit"><Edit3 size={16} /></button>
+                           <button 
+                             onClick={(e) => handleDownload(e, cv)} 
+                             title="Download"
+                             disabled={downloadingId === cv._id}
+                             style={downloadingId === cv._id ? { cursor: 'wait', opacity: 0.7 } : {}}
+                           >
+                             {downloadingId === cv._id ? (
+                               <Loader2 size={16} className="spinner" style={{ animation: 'spin 1s linear infinite' }} />
+                             ) : (
+                               <Download size={16} />
+                             )}
+                           </button>
+                           <button className="text-red" onClick={(e) => handleDelete(e, cv)} title="Delete"><Trash2 size={16} /></button>
+                        </div>
+                     </div>
+                  </div>
+              </div>
+           ))}
+           
+           {activeTab === 'draft' && drafts.length === 0 && (
+              <div className="empty-state-card">
+                 <p>{language === 'Arabic' ? 'لا توجد مسودات حاليا' : 'No drafts yet. Create one from the templates above!'}</p>
+              </div>
+           )}
+
+           {activeTab === 'completed' && completed.length === 0 && (
+              <div className="empty-state-card">
+                 <p>{language === 'Arabic' ? 'لا توجد سير ذاتية مكتملة' : 'No completed (paid) resumes found.'}</p>
+              </div>
+           )}
+        </div>
       </section>
 
       <DeleteConfirmationModal 
