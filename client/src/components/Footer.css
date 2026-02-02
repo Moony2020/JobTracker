@@ -1,0 +1,83 @@
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0;
+    min-height: 40px;
+}
+
+.footer-copyright {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.footer-cta {
+    position: relative;
+    padding: 6px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #4c83fa !important;
+    background: transparent;
+    border: 2px solid #4c83fa;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Allow stars to go outside bounds */
+    overflow: visible; 
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 3px 5px -1px rgba(99, 102, 241, 0.3);
+    line-height: 1;
+}
+
+.footer-cta:hover {
+    background: rgba(76, 131, 250, 0.05);
+    box-shadow: 0 0 10px rgba(76, 131, 250, 0.2);
+    transform: translateY(-1px);
+}
+
+/* Star SVG styling */
+.star-icon {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    color: #4c83fa;
+    fill: #4c83fa;
+    z-index: -1;
+    opacity: 0;
+    transition: all 0.6s ease;
+    filter: drop-shadow(0 0 2px #4c83fa);
+    pointer-events: none;
+}
+
+/* Default State (Hidden/Centered) */
+.star-1 { top: 20%; left: 20%; width: 35px; transition: all 1s cubic-bezier(0.05, 0.83, 0.43, 0.96); }
+.star-2 { top: 45%; left: 45%; width: 10px; transition: all 1s cubic-bezier(0, 0.4, 0, 1.01); }
+.star-3 { top: 40%; left: 40%; width: 5px;  transition: all 1s cubic-bezier(0, 0.4, 0, 1.01); }
+.star-4 { top: 20%; left: 40%; width: 8px;  transition: all 0.8s cubic-bezier(0, 0.4, 0, 1.01); }
+.star-5 { top: 25%; left: 45%; width: 12px; transition: all 0.6s cubic-bezier(0, 0.4, 0, 1.01); }
+.star-6 { top: 5%; left: 50%;  width: 5px;  transition: all 0.8s ease; }
+
+/* Hidden state */
+.footer-cta .star-icon { opacity: 0; transform: scale(0); }
+
+/* Hover State (Explode) */
+.footer-cta:hover .star-icon { opacity: 1; transform: scale(1); z-index: 2; }
+
+.footer-cta:hover .star-1 { top: -60%; left: -20%; }
+.footer-cta:hover .star-2 { top: 10%; left: 105%; } 
+.footer-cta:hover .star-3 { top: 110%; left: 20%; }
+.footer-cta:hover .star-4 { top: 50%; left: -30%; }
+.footer-cta:hover .star-5 { top: 90%; left: 90%; }
+.footer-cta:hover .star-6 { top: -40%; left: 60%; }
+
+@media (max-width: 600px) {
+    .footer-cta {
+        padding: 5px 15px;
+        font-size: 14px;
+    }
+}

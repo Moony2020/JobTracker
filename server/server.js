@@ -45,6 +45,7 @@ app.use("/api/reports", require("./routes/reports"));
 app.use("/api/cv", require("./routes/cv"));
 app.use("/api/payment", require("./routes/payment"));
 app.use("/api/admin", require("./routes/admin"));
+app.use("/api/contact", require("./routes/contact"));
 
 // Serve React app
 app.get("*", (req, res) => {

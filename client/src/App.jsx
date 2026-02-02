@@ -6,13 +6,16 @@ import Statistics from './pages/Statistics';
 import JobFinder from './pages/JobFinder';
 import CVBuilder from './pages/CVBuilder/CVBuilder';
 import AdminDashboard from './pages/AdminDashboard';
+import Contact from './pages/Contact';
 import AdminLogin from './components/AdminLogin';
 import Login from './components/Login';
 import Register from './components/Register';
 import api from './services/api';
-import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, useNavigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './index.css';
+import './components/Footer.css';
+import { Sparkles } from 'lucide-react';
 import ChangePassword from './components/ChangePassword';
 import ResetPassword from './components/ResetPassword';
 import EditApplicationModal from './components/EditApplicationModal';
@@ -329,6 +332,7 @@ const AppContent = () => {
           <Route path="/jobs" element={
             <JobFinder language={language} user={user} />
           } />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/admin/*" element={
              user?.role === 'admin' ? <AdminDashboard /> : <AdminLogin />
           } />
@@ -385,8 +389,44 @@ const AppContent = () => {
       
       {!isFullScreen && (
         <footer>
-          <div className="container">
-            <p>&copy; 2026 JobTracker. All rights reserved.</p>
+          <div className="container footer-container">
+            <p className="footer-copyright">&copy; 2026 JobTracker. All rights reserved.</p>
+            <div style={{ display: 'flex', gap: '1.5rem', position: 'relative' }}>
+              <Link to="/contact" className="footer-cta">
+                <span style={{ position: 'relative', zIndex: 10 }}>Get in Touch</span>
+                {/* Custom 4-point Star SVGs */}
+                <div className="star-icon star-1">
+                  <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '100%', height: '100%' }}>
+                    <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+                  </svg>
+                </div>
+                <div className="star-icon star-2">
+                  <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '100%', height: '100%' }}>
+                    <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+                  </svg>
+                </div>
+                <div className="star-icon star-3">
+                  <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '100%', height: '100%' }}>
+                    <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+                  </svg>
+                </div>
+                <div className="star-icon star-4">
+                  <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '100%', height: '100%' }}>
+                    <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+                  </svg>
+                </div>
+                <div className="star-icon star-5">
+                  <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '100%', height: '100%' }}>
+                    <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+                  </svg>
+                </div>
+                <div className="star-icon star-6">
+                  <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '100%', height: '100%' }}>
+                    <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+                  </svg>
+                </div>
+              </Link>
+            </div>
           </div>
         </footer>
       )}
