@@ -3487,17 +3487,22 @@ body.dark-mode .section-header h2,
 }
 
 .empty-state-card p {
-  color: #94a3b8; /* Professional silver-gray */
-  font-size: 1rem;
-  font-weight: 500;
+  color: #475569; /* Much darker for light mode */
+  font-size: 1.1rem; /* Slightly larger */
+  font-weight: 600; /* Bolder */
   margin: 0;
   line-height: 1.6;
 }
 
-/* Ensure visibility in both light/dark contexts if color is too faint */
+/* Ensure high visibility in both light/dark contexts */
 .dark-mode .empty-state-card p, 
 [data-theme='dark'] .empty-state-card p {
-  color: #cbd5e1;
+  color: #ffffff !important; /* Pure white for dark mode */
+  opacity: 0.9;
+}
+
+[data-theme='light'] .empty-state-card p {
+  color: #1e293b !important;
 }
 
 

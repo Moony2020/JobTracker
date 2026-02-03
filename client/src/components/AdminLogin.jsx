@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Lock, Eye, EyeOff, ChevronRight, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ChevronRight, ShieldCheck, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import '../pages/AdminDashboard.css';
@@ -12,6 +12,17 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Auto-dismiss timer
+  React.useEffect(() => {
+    if (error || success) {
+      const timer = setTimeout(() => {
+        setError('');
+        setSuccess('');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, success]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,22 +60,19 @@ const AdminLogin = () => {
 
         {error && (
           <div className="login-error-badge">
-            {error}
+            <span>{error}</span>
+            <button type="button" onClick={() => setError('')} className="close-badge-btn">
+              <X size={16} />
+            </button>
           </div>
         )}
 
         {success && (
-          <div className="login-success-badge" style={{
-            background: 'rgba(34, 197, 94, 0.1)',
-            border: '1px solid rgba(34, 197, 94, 0.2)',
-            color: '#4ADE80',
-            padding: '12px',
-            borderRadius: '12px',
-            fontSize: '14px',
-            fontWeight: '600',
-            marginBottom: '24px'
-          }}>
-            {success}
+          <div className="login-success-badge">
+            <span>{success}</span>
+            <button type="button" onClick={() => setSuccess('')} className="close-badge-btn">
+              <X size={16} />
+            </button>
           </div>
         )}
 
