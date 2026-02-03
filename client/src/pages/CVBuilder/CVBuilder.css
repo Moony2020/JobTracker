@@ -3471,4 +3471,33 @@ body.dark-mode .section-header h2,
   color: #f1f5f9 !important;
 }
 
+/* Empty State Card */
+.empty-state-card {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  margin-top: 10px;
+  width: 100%;
+  max-width: 450px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.empty-state-card p {
+  color: #94a3b8; /* Professional silver-gray */
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Ensure visibility in both light/dark contexts if color is too faint */
+.dark-mode .empty-state-card p, 
+[data-theme='dark'] .empty-state-card p {
+  color: #cbd5e1;
+}
+
 
