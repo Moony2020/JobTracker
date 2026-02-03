@@ -39,140 +39,129 @@ const Contact = () => {
 
   return (
     <div className="contact-page fade-in">
-      
-      {/* Header Section */}
       <div className="contact-header">
         <h1 className="contact-title">Get in Touch</h1>
         <p className="contact-subtitle">
-          Have a project in mind or just want to say hi? I'd love to hear from you.
+          Have a question about the CV Builder, JobTracker features, or your job search? 
+          We're here to support you every step of the way.
         </p>
       </div>
 
       <div className="contact-grid">
-        
-        {/* Contact Info (Left) */}
-        <div className="contact-info-card">
-          <h2 className="contact-info-title">Contact Information</h2>
-          <p className="contact-info-text">
-            Feel free to reach out directly through email or connect with me on social media.
-          </p>
+        {/* Left: Info Panel */}
+        <div className="glass-panel contact-info-glass">
+          <div>
+            <h2 className="info-title-glass">Contact Info</h2>
+            <p className="info-desc-glass">
+              Need assistance with our premium CV tools or your profile?
+              Our team is ready to help you succeed.
+            </p>
 
-          <div className="info-list">
-            <div className="info-item">
-              <div className="icon-wrapper">
-                <Mail size={20} color="white" />
+            <div className="info-items-glass">
+              <div className="info-item-glass">
+                <div className="icon-wrap-glass">
+                  <Mail size={22} />
+                </div>
+                <div className="info-text-glass">
+                  <h4>Email</h4>
+                  <p>contact@jobtracker-portfolio.com</p>
+                </div>
               </div>
-              <div className="info-details">
-                <span>Email</span>
-                <span>contact@jobtracker-portfolio.com</span>
-              </div>
-            </div>
 
-            <div className="info-item">
-               <div className="icon-wrapper">
-                <MapPin size={20} color="white" />
-               </div>
-               <div className="info-details">
-                 <span>Location</span>
-                 <span>Sweden</span>
-               </div>
+              <div className="info-item-glass">
+                <div className="icon-wrap-glass">
+                  <MapPin size={22} />
+                </div>
+                <div className="info-text-glass">
+                  <h4>Location</h4>
+                  <p>Sweden</p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="social-section">
-            <h3 className="social-links-title">Follow Me</h3>
-            <div className="social-links">
-              <a href="#" className="contact-social-link">
-                <Github size={20} />
-              </a>
-              <a href="#" className="contact-social-link">
-                <Linkedin size={20} />
-              </a>
-            </div>
+          <div className="socials-glass">
+            <a href="#" className="social-link-glass" aria-label="GitHub"><Github size={20} /></a>
+            <a href="#" className="social-link-glass" aria-label="LinkedIn"><Linkedin size={20} /></a>
           </div>
         </div>
 
-        {/* Contact Form (Right) */}
-        <div className="contact-form-card">
+        {/* Right: Form Panel */}
+        <div className="glass-panel contact-form-glass">
           {success ? (
-            <div style={{ textAlign: 'center', padding: '2rem' }}>
-              <div style={{ display: 'inline-flex', padding: '1rem', background: '#dcfce7', borderRadius: '50%', marginBottom: '1rem' }}>
-                <CheckCircle size={48} color="#16a34a" />
+            <div className="success-glass">
+              <div className="success-icon-wrap">
+                <CheckCircle size={40} />
               </div>
-              <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', color: '#166534' }}>Message Sent!</h3>
-              <p style={{ color: '#64748b' }}>Thank you for reaching out. I'll get back to you shortly.</p>
-              <button 
-                onClick={() => setSuccess(false)}
-                className="btn-submit-contact"
-                style={{ width: 'auto', margin: '1.5rem auto' }}
-              >
-                Send Another Message
+              <h3 className="info-title-glass">Message Sent!</h3>
+              <p className="info-desc-glass">Thank you for your message. I will get back to you soon.</p>
+              <button onClick={() => setSuccess(false)} className="btn-glass-submit">
+                Send Another
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <form onSubmit={handleSubmit} className="contact-form">
               <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Name</label>
+                <div className="form-group-glass">
+                  <label className="label-glass">Name</label>
                   <input 
                     type="text" 
                     name="name" 
                     value={formData.name} 
                     onChange={handleChange}
                     required
-                    className="form-input-contact" 
+                    className="input-glass" 
                     placeholder="John Doe"
                   />
                 </div>
-                <div className="form-group">
-                  <label className="form-label">Email</label>
+                <div className="form-group-glass">
+                  <label className="label-glass">Email</label>
                   <input 
                     type="email" 
                     name="email" 
                     value={formData.email} 
                     onChange={handleChange}
                     required
-                    className="form-input-contact" 
+                    className="input-glass" 
                     placeholder="john@example.com"
                   />
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Subject</label>
+              <div className="form-group-glass">
+                <label className="label-glass">Subject</label>
                 <input 
                   type="text" 
                   name="subject" 
                   value={formData.subject} 
                   onChange={handleChange}
-                  className="form-input-contact" 
+                  className="input-glass" 
                   placeholder="Project Inquiry"
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Message</label>
+              <div className="form-group-glass">
+                <label className="label-glass">Message</label>
                 <textarea 
                   name="message" 
                   value={formData.message} 
                   onChange={handleChange}
                   required
                   rows="5"
-                  className="form-textarea-contact" 
-                  placeholder="Hello, I'd like to talk about..."
-                  style={{ resize: 'vertical' }}
+                  className="input-glass textarea-glass" 
+                  placeholder="How can I help you?"
                 />
               </div>
 
-              {error && <p style={{ color: '#dc2626', fontSize: '0.9rem' }}>{error}</p>}
+              {error && <p className="error-message">{error}</p>}
 
               <button 
                 type="submit" 
                 disabled={loading}
-                className="btn-submit-contact"
+                className="btn-glass-submit"
               >
                 {loading ? <Loader2 size={20} className="spinner" /> : <Send size={20} />}
-                {loading ? 'Sending...' : 'Send Message'}
+                <span>{loading ? 'Sending...' : 'Send Message'}</span>
               </button>
             </form>
           )}

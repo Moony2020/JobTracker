@@ -12,6 +12,7 @@ import {
   TrendingUp,
   LogOut,
   User as UserIcon,
+  MessageSquare,
   Menu,
   X
 } from "lucide-react";
@@ -20,6 +21,7 @@ import { useAuth } from "../context/AuthContext";
 import AdminProfileModal from "../components/AdminProfileModal";
 import AdminOverview from "./Admin/AdminOverview";
 import AdminUsers from "./Admin/AdminUsers";
+import AdminMessages from "./Admin/AdminMessages";
 import AdminPayments from "./Admin/AdminPayments";
 import AdminTemplates from "./Admin/AdminTemplates";
 import AdminDownloads from "./Admin/AdminDownloads";
@@ -140,7 +142,7 @@ const translations = {
   }
 };
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ showNotify }) => {
   const { user, logout, setUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -223,7 +225,7 @@ const AdminDashboard = () => {
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
 
-    return stats.recentPayments
+    const paymentNotifs = stats.recentPayments
       .filter(p => {
         const pDate = new Date(p.createdAt);
         return pDate >= startOfToday && pDate.getTime() > lastClearedAt.getTime();
@@ -236,7 +238,23 @@ const AdminDashboard = () => {
         time: new Date(p.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         link: "/admin/payments"
       }));
-  }, [stats.recentPayments, lastClearedAt]);
+
+    const messageNotifs = (stats.recentMessages || [])
+      .filter(m => {
+        const mDate = new Date(m.createdAt);
+        return mDate >= startOfToday && mDate.getTime() > lastClearedAt.getTime();
+      })
+      .map(m => ({
+        id: m._id,
+        type: "message",
+        title: `New Inquiry`,
+        user: m.name || "Visitor",
+        time: new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        link: "/admin/messages"
+      }));
+
+    return [...paymentNotifs, ...messageNotifs].sort((a, b) => b.time.localeCompare(a.time));
+  }, [stats.recentPayments, stats.recentMessages, lastClearedAt]);
 
   const paymentNotifsCount = useMemo(() => 
     notifications.filter(n => n.type === 'payment').length
@@ -244,6 +262,10 @@ const AdminDashboard = () => {
 
   const userNotifsCount = useMemo(() => 
     notifications.filter(n => n.type === 'user').length
+  , [notifications]);
+
+  const inquiryNotifsCount = useMemo(() => 
+    notifications.filter(n => n.type === 'message').length
   , [notifications]);
 
   useEffect(() => {
@@ -322,6 +344,12 @@ const AdminDashboard = () => {
               <LayoutDashboard size={18} />
               <span>{t.dashboard}</span>
               <div className="active-glow" />
+            </NavLink>
+
+            <NavLink to="/admin/messages" style={{ textDecoration: 'none' }} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+              <MessageSquare size={18} />
+              <span>Inquiries</span>
+              {inquiryNotifsCount > 0 && <span className="notification-badge-sidebar">{inquiryNotifsCount}</span>}
             </NavLink>
 
             <NavLink to="/admin/users" style={{ textDecoration: 'none' }} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
@@ -431,7 +459,7 @@ const AdminDashboard = () => {
                       notifications.map(n => (
                         <button key={n.id} className="notif-item" onClick={() => handleNotifClick(n.link)}>
                           <div className={`notif-icon ${n.type}`}>
-                            {n.type === 'payment' ? <CreditCard size={14} /> : <UserIcon size={14} />}
+                            {n.type === 'payment' ? <CreditCard size={14} /> : n.type === 'message' ? <MessageSquare size={14} /> : <UserIcon size={14} />}
                           </div>
                           <div className="notif-content">
                             <span className="notif-title">{n.title}</span>
@@ -486,6 +514,7 @@ const AdminDashboard = () => {
         {/* Nested Content Rendering */}
         <Routes>
           <Route index element={<AdminOverview stats={stats} t={t} />} />
+          <Route path="messages" element={<AdminMessages t={t} showNotify={showNotify} />} />
           <Route path="users" element={<AdminUsers t={t} />} />
           <Route path="payments" element={<AdminPayments t={t} />} />
           <Route path="templates" element={<AdminTemplates t={t} />} />

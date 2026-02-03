@@ -151,6 +151,13 @@ body::before {
 }
 
 
+/* Table Responsiveness */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
 /* Wrapper for custom select with icon */
 .select-wrapper {
     position: relative;
@@ -2905,9 +2912,9 @@ footer {
     backdrop-filter: blur(20px);
     border-top: 1px solid var(--glass-border);
     color: var(--text-color);
-    padding: 2rem 0;
+    padding: 0; /* Cleared obstructive padding */
     text-align: center;
-    margin-top: 4rem;
+    margin-top: 4rem; /* Restored full substantial margin */
 }
 
 /* Utility Classes */
@@ -3003,7 +3010,6 @@ footer {
     .modal-content {
         max-height: 90vh;
     }
-}
 
     .modal .form-actions {
         flex-direction: row; /* Keep buttons on one line */
@@ -3035,6 +3041,7 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
 
 /* Edit Modal Grid - Force 3-column layout on larger screens */
 @media (min-width: 601px) {
@@ -4201,17 +4208,18 @@ footer {
 
 @media (max-width: 768px) {
     .scroll-to-top-btn {
-        width: 35px;
-        height: 35px;
-        bottom: 80px; /* Higher on mobile to avoid nav bar if present, or just safe area */
-        right: 20px;
+        width: 40px; 
+        height: 40px;
+        bottom: 80px; /* Moves up to clear footer/lower scroller */
+        right: 20px; /* Always on the right */
+        left: auto;
         box-shadow: 0 4px 10px rgba(99, 102, 241, 0.5);
     }
     
     .scroll-to-top-btn svg {
-        width: 20px;
-        height: 20px;
-        stroke-width: 3px; /* Thicker icon for better visibility */
+        width: 22px;
+        height: 22px;
+        stroke-width: 3px; 
     }
 }
 

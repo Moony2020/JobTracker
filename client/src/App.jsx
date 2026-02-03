@@ -334,7 +334,7 @@ const AppContent = () => {
           } />
           <Route path="/contact" element={<Contact />} />
           <Route path="/admin/*" element={
-             user?.role === 'admin' ? <AdminDashboard /> : <AdminLogin />
+             user?.role === 'admin' ? <AdminDashboard showNotify={showNotify} /> : <AdminLogin />
           } />
           <Route path="/cv-builder/*" element={
             <CVBuilder 

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
 const path = require('path');
+const Message = require('../models/Message');
 
 // POST /api/contact
 router.post('/', async (req, res) => {
@@ -12,6 +13,20 @@ router.post('/', async (req, res) => {
     }
 
     try {
+        // 1. Save Message to Database
+        const newMessage = new Message({
+            name,
+            email,
+            subject,
+            message,
+            meta: {
+                ip: req.ip,
+                userAgent: req.get('User-Agent'),
+                pageUrl: req.headers.referer
+            }
+        });
+        await newMessage.save();
+
         const transporter = nodemailer.createTransport({
              // Reuse existing config from auth.js
             host: 'smtp.gmail.com',

@@ -4,8 +4,10 @@
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    padding: 0;
-    min-height: 40px;
+    padding: 0.75rem 1.5rem; /* Substantial but not excessive */
+    min-height: 64px; /* Professional meaty height */
+    z-index: 2000;
+    position: relative;
 }
 
 .footer-copyright {
@@ -16,7 +18,7 @@
 
 .footer-cta {
     position: relative;
-    padding: 6px 20px;
+    padding: 8px 22px; /* Substantial button */
     font-size: 15px;
     font-weight: 700;
     color: #4c83fa !important;
@@ -27,11 +29,24 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    /* Allow stars to go outside bounds */
     overflow: visible; 
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 3px 5px -1px rgba(99, 102, 241, 0.3);
     line-height: 1;
+}
+
+/* Shift CTA left only on desktop to avoid scroller */
+@media (min-width: 769px) {
+    .footer-cta {
+        margin-right: 5rem;
+    }
+}
+
+/* Return to right on tablet since scroller moves up */
+@media (max-width: 768px) and (min-width: 481px) {
+    .footer-cta {
+        margin-right: 0;
+    }
 }
 
 .footer-cta:hover {
@@ -79,5 +94,27 @@
     .footer-cta {
         padding: 5px 15px;
         font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-container {
+        flex-direction: column-reverse; /* Reorder: CTA on top, Copyright below */
+        gap: 0.8rem; /* Breathing room */
+        text-align: center;
+        padding: 1.2rem 1rem; /* Substantial mobile height */
+    }
+    
+    .footer-copyright {
+        font-size: 0.8rem;
+        margin: 0.25rem 0 0; 
+        padding: 0;
+    }
+
+    .footer-cta {
+        margin: 0 auto;
+        padding: 8px 20px; /* Stronger mobile button presence */
+        font-size: 14px;
+        min-height: 38px;
     }
 }
