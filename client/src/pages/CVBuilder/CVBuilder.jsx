@@ -4,7 +4,7 @@ import ResumeList from './ResumeList';
 import Editor from './Editor';
 import SuccessPage from './SuccessPage';
 
-const CVBuilder = ({ language, onExit, setFullScreen, showNotify, isPrinting }) => {
+const CVBuilder = ({ language, onExit, setFullScreen, showNotify, isPrinting, onLoginClick, onRegisterClick }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -82,6 +82,8 @@ const CVBuilder = ({ language, onExit, setFullScreen, showNotify, isPrinting }) 
           cvId={selectedCV?._id} 
           onBack={handleBackToList}
           language={language}
+          onLoginClick={onLoginClick}
+          onRegisterClick={onRegisterClick}
         />
       )}
     </div>

@@ -347,6 +347,8 @@ const AppContent = () => {
               setFullScreen={setIsFullScreen}
               showNotify={showNotify}
               isPrinting={isPrinting}
+              onLoginClick={() => setShowLogin(true)}
+              onRegisterClick={() => setShowRegister(true)}
             />
           } />
           <Route path="*" element={<Navigate to="/" replace />} />

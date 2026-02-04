@@ -7,7 +7,8 @@ import RichTextEditor from '../../components/RichTextEditor';
 import { 
   Bold, Italic, Underline, Link as LinkIcon, List, AlignLeft, AlignCenter, AlignRight,
   CheckCircle, Trash2, Plus, Minus, ChevronUp, ChevronDown, Layout, X, ChevronLeft, Download,
-  User, Briefcase, GraduationCap, Globe, Code, Heart, Type, ArrowLeft, Palette, Save, Eye, FileText, HelpCircle, Check, Camera, Upload, Loader2, Calendar, Search as SearchIcon
+  User, Briefcase, GraduationCap, Globe, Code, Heart, Type, ArrowLeft, Palette, Save, Eye, FileText, HelpCircle, Check, Camera, Upload, Loader2, Calendar, Search as SearchIcon,
+  AlertCircle, LogIn
 } from 'lucide-react';
 import { TRANSLATIONS } from './Translations';
 import { SUMMARY_EXAMPLES } from './Examples';
@@ -172,7 +173,7 @@ const TEMPLATE_DEFAULTS = {
   timeline: '#dc2626'     // Red (New Distinct Default)
 };
 
-const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
+const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick, onRegisterClick, language }) => {
   const { user } = useAuth();
   const location = useLocation();
 
@@ -262,6 +263,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
   });
   const [showMoreDetails, setShowMoreDetails] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false); // Safety flag
+  const isMigrating = useRef(false); // Guard against duplicate POSTs during login transition
 
   // UTILITIES
   const updateNestedState = (path, value) => {
@@ -457,6 +459,25 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
              setCvData(normalizedData);
              setDataLoaded(true);
           }
+        } else if (!user) {
+          // GUEST MODE: Check for local draft
+          const guestDraft = localStorage.getItem('cv_guest_draft');
+          if (guestDraft) {
+            try {
+              const parsedJSON = JSON.parse(guestDraft);
+              console.log("[Editor] Loading guest draft from localStorage");
+              setCvData(prev => ({
+                ...prev,
+                ...parsedJSON,
+                // Ensure template key matches location state if just selected
+                templateKey: location.state?.templateKey || parsedJSON.templateKey || 'modern'
+              }));
+            } catch (e) {
+              console.error("[Editor] Error parsing guest draft:", e);
+              localStorage.removeItem('cv_guest_draft');
+            }
+          }
+          setDataLoaded(true);
         } else {
              console.log(`[Editor] Initializing new CV`);
              // New CV is considered "loaded" with default state
@@ -480,7 +501,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
       }
     };
     init();
-  }, [propCvId, activeCvId, location.state, location.search]); // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [propCvId, activeCvId, location.state, location.search, user, cvData.data.personal.firstName]); // Include user and firstName to trigger refetch/init correctly
 
   // Track canvas height for dynamic pagination
  
@@ -514,6 +535,25 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
     const currentTemplate = availableTemplates.find(t => t.key === cvData.templateKey);
     const templateIdToSave = currentTemplate?._id || cvData.templateId;
 
+    if (!user) {
+      // GUEST SAVE: Persist to localStorage
+      console.log("[Editor] Saving guest draft to localStorage");
+      localStorage.setItem('cv_guest_draft', JSON.stringify({
+        data: cvData.data,
+        settings: cvData.settings,
+        templateKey: cvData.templateKey,
+        title: cvData.title // Preserve title if they changed it
+      }));
+      setIsSaved(true);
+      return null;
+    }
+
+    // AUTHENTICATED SAVE
+    if (isMigrating.current) {
+        console.log("[Editor] Save deferred: Migration in progress");
+        return null;
+    }
+
     if (!activeCvId) {
       // VALIDATION: Don't create a new CV if it's completely empty
       const hasName = cvData.data.personal.firstName?.trim() || cvData.data.personal.lastName?.trim();
@@ -539,8 +579,9 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
       }
 
       try {
+        isMigrating.current = true;
         const res = await api.post('/cv', {
-          title: cvData.data.personal.firstName ? `${cvData.data.personal.firstName}'s CV` : 'New CV',
+          title: cvData.title || 'New CV',
           data: cvData.data,
           settings: cvData.settings,
           templateId: templateIdToSave
@@ -552,6 +593,8 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
         }
       } catch (err) {
         console.error("Error creating CV:", err);
+      } finally {
+        isMigrating.current = false;
       }
     } else {
       // PREVENT OVERWRITE IF DATA NOT LOADED CORRECTLY
@@ -575,7 +618,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
       }
     }
     return activeCvId;
-  }, [activeCvId, cvData.data, cvData.settings, cvData.title, cvData.templateKey, cvData.templateId, availableTemplates, dataLoaded, showNotify]);
+  }, [activeCvId, cvData.data, cvData.settings, cvData.title, cvData.templateKey, cvData.templateId, availableTemplates, dataLoaded, showNotify, user]);
 
   // Calculate Pages & Track Scroll
   useEffect(() => {
@@ -626,6 +669,60 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
     }
   }, [handleSave, isSaved]);
 
+  // Migration Logic: Move guest draft to account after login
+  useEffect(() => {
+    const migrateDraft = async () => {
+      // Only migrate if we have a user, no active CV ID (new draft), and availableTemplates are loaded
+      if (user && !activeCvId && availableTemplates.length > 0 && dataLoaded && !isMigrating.current) {
+        const guestDraft = localStorage.getItem('cv_guest_draft');
+        if (guestDraft) {
+          try {
+            const parsed = JSON.parse(guestDraft);
+            
+            // VALIDATION: Only migrate if there's actual content
+            const hasContent = parsed.data?.personal?.firstName?.trim() || 
+                             parsed.data?.personal?.lastName?.trim() ||
+                             parsed.data?.personal?.summary?.replace(/<[^>]*>/g, '').trim().length > 0;
+            
+            if (!hasContent) {
+                console.log("[Editor] Skipping migration of empty guest draft");
+                localStorage.removeItem('cv_guest_draft');
+                return;
+            }
+
+            isMigrating.current = true;
+            console.log("[Editor] Migrating guest draft to account...");
+            
+            const currentTemplate = availableTemplates.find(t => t.key === parsed.templateKey);
+            const templateIdToSave = currentTemplate?._id || parsed.templateId;
+
+            const res = await api.post('/cv', {
+              title: parsed.title || (parsed.data?.personal?.firstName ? `${parsed.data.personal.firstName}'s CV` : 'My Resume'),
+              data: parsed.data,
+              settings: parsed.settings,
+              templateId: templateIdToSave
+            });
+
+            if (res.data?._id) {
+              setActiveCvId(res.data._id);
+              // Also update local state to match title if needed
+              if (parsed.title) {
+                  setCvData(prev => ({ ...prev, title: parsed.title }));
+              }
+              localStorage.removeItem('cv_guest_draft');
+              if (showNotify) showNotify('Your local draft has been synced to your account!', 'success');
+            }
+          } catch (err) {
+            console.error("[Editor] Migration failed:", err);
+          } finally {
+            isMigrating.current = false;
+          }
+        }
+      }
+    };
+    migrateDraft();
+  }, [user, activeCvId, availableTemplates, dataLoaded, showNotify]);
+
 
 
   const confirmDeleteCategory = () => {
@@ -645,6 +742,12 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
   };
 
   const handleDownload = async () => {
+    if (!user) {
+      if (showNotify) showNotify('Please login to download your CV', 'info');
+      onLoginClick?.();
+      return;
+    }
+
     // 1. Force Save First to ensure Backend has latest Template Key and we have a valid ID
     if (showNotify) showNotify('Saving latest changes...', 'info');
     const savedId = await handleSave();
@@ -804,6 +907,29 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode }) => {
 
   return (
     <div className={`cv-editor-design ${viewMode === 'design' ? 'mode-design' : 'mode-content'}`}>
+      {/* Guest Banner */}
+      {!user && (
+        <div className="guest-awareness-banner">
+          <div className="banner-content">
+            <AlertCircle size={18} />
+            <p>
+              {language === 'Arabic' 
+                ? 'أنت في وضع الضيف. تقدمك محفوظ محلياً. قم بالتسجيل للحفظ بشكل دائم.' 
+                : 'You are in Guest Mode. Your progress is saved locally. Sign in to save permanently.'}
+            </p>
+          </div>
+          <div className="banner-auth-btns">
+            <button className="banner-auth-btn" onClick={() => onLoginClick?.()}>
+              <LogIn size={14} />
+              {language === 'Arabic' ? 'تسجيل الدخول' : 'Sign In'}
+            </button>
+            <button className="banner-auth-btn secondary" onClick={() => onRegisterClick?.()}>
+              {language === 'Arabic' ? 'إنشاء حساب' : 'Sign Up'}
+            </button>
+          </div>
+        </div>
+      )}
+
       {isExporting && (
         <div className="pdf-export-overlay">
           <div className="export-loader-card">

@@ -81,11 +81,67 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
 
         // 2. Fetch resumes only if logged in
         if (user) {
+          // MIGRATION: If guest draft exists, move to account
+          const guestDraft = localStorage.getItem('cv_guest_draft');
+          if (guestDraft) {
+            try {
+              const parsed = JSON.parse(guestDraft);
+              
+              // VALIDATION: Only migrate if there's actual content
+              const hasContent = parsed.data?.personal?.firstName?.trim() || 
+                               parsed.data?.personal?.lastName?.trim() ||
+                               parsed.data?.personal?.summary?.replace(/<[^>]*>/g, '').trim().length > 0;
+              
+              if (hasContent) {
+                console.log("[ResumeList] Migrating guest draft to account...");
+                const currentTemplate = finalTemplates.find(t => t.key === parsed.templateKey);
+                const templateIdToSave = currentTemplate?._id || parsed.templateId;
+
+                await api.post('/cv', {
+                  title: parsed.title || (parsed.data?.personal?.firstName ? `${parsed.data.personal.firstName}'s CV` : 'My Resume'),
+                  data: parsed.data,
+                  settings: parsed.settings,
+                  templateId: templateIdToSave
+                });
+                if (showNotify) showNotify('Your local draft has been synced to your account!', 'success');
+              } else {
+                console.log("[ResumeList] Clearing empty guest draft");
+              }
+              
+              localStorage.removeItem('cv_guest_draft');
+            } catch (migrateErr) {
+              console.error("[ResumeList] Migration failed:", migrateErr);
+            }
+          }
+
           try {
             const resumesRes = await api.get('/cv');
             setResumes(Array.isArray(resumesRes.data) ? resumesRes.data : []);
           } catch (cvErr) {
             console.error("Error fetching CVs:", cvErr);
+            setResumes([]);
+          }
+        } else {
+          // GUEST MODE: Check for local draft to display
+          const guestDraft = localStorage.getItem('cv_guest_draft');
+          if (guestDraft) {
+            try {
+              const parsed = JSON.parse(guestDraft);
+              // Mock a CV object for the list
+              const mockCV = {
+                _id: 'guest_draft',
+                title: parsed.data?.personal?.firstName ? `${parsed.data.personal.firstName}'s CV` : 'Local Draft',
+                data: parsed.data,
+                settings: parsed.settings,
+                templateKey: parsed.templateKey,
+                updatedAt: new Date().toISOString(), // Or store actual date in draft
+                isGuest: true
+              };
+              setResumes([mockCV]);
+            } catch (e) {
+              console.error("[ResumeList] Error parsing guest draft:", e);
+            }
+          } else {
             setResumes([]);
           }
         }
@@ -98,7 +154,7 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
     };
 
     fetchData();
-  }, [user]);
+  }, [user, showNotify]);
 
   const handleDelete = (e, cv) => {
     e.stopPropagation(); 
@@ -349,14 +405,19 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
                     {/* Render actual CV content as thumbnail */}
                     <div className="resume-mini-scale">
                       <TemplateRenderer 
-                        templateKey={cv.templateId?.key || 'classic'} 
+                        templateKey={cv.templateId?.key || cv.templateKey || 'classic'} 
                         data={cv.data || {}} 
                         settings={{ isThumbnail: true, themeColor: cv.settings?.themeColor }} 
                       />
                     </div>
                  </div>
                   <div className="resume-card-footer">
-                     <h3>{cv.title || 'Untitled Resume'}</h3>
+                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h3>{cv.title || 'Untitled Resume'}</h3>
+                        {cv.isGuest && (
+                          <span style={{ fontSize: '0.7rem', background: '#fef3c7', color: '#92400e', padding: '2px 6px', borderRadius: '4px' }}>Local Draft</span>
+                        )}
+                     </div>
                      <p>{language === 'Arabic' ? 'آخر تحديث' : 'Last Updated'}: {timeAgo(cv.updatedAt)}</p>
                      
                      <div className="resume-card-actions">
@@ -375,7 +436,15 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
                                <Download size={16} />
                              )}
                            </button>
-                           <button className="text-red" onClick={(e) => handleDelete(e, cv)} title="Delete"><Trash2 size={16} /></button>
+                           <button className="text-red" onClick={(e) => {
+                             if (cv.isGuest) {
+                               localStorage.removeItem('cv_guest_draft');
+                               setResumes([]);
+                               if (showNotify) showNotify('Local draft removed', 'success');
+                             } else {
+                               handleDelete(e, cv);
+                             }
+                           }} title="Delete"><Trash2 size={16} /></button>
                         </div>
                      </div>
                   </div>
