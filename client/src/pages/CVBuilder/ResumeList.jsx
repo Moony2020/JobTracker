@@ -424,18 +424,19 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
               </div>
            ))}
            
-           {activeTab === 'draft' && drafts.length === 0 && (
-              <div className="empty-state-card">
-                 <p>{language === 'Arabic' ? 'لا توجد مسودات حاليا' : 'No drafts yet. Create one from the templates above!'}</p>
-              </div>
-           )}
-
-           {activeTab === 'completed' && completed.length === 0 && (
-              <div className="empty-state-card">
-                 <p>{language === 'Arabic' ? 'لا توجد سير ذاتية مكتملة' : 'No completed (paid) resumes found.'}</p>
-              </div>
-           )}
         </div>
+
+        {activeTab === 'draft' && drafts.length === 0 && (
+           <div className="empty-state-card">
+              <p>{language === 'Arabic' ? 'لا توجد مسودات حاليا' : 'No drafts yet. Create one from the templates above!'}</p>
+           </div>
+        )}
+
+        {activeTab === 'completed' && completed.length === 0 && (
+           <div className="empty-state-card">
+              <p>{language === 'Arabic' ? 'لا توجد سير ذاتية مكتملة' : 'No completed (paid) resumes found.'}</p>
+           </div>
+        )}
       </section>
 
       <DeleteConfirmationModal 

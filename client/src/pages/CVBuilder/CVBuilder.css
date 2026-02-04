@@ -46,7 +46,7 @@
 .resume-list-container {
   padding: 0 15px 40px 15px; /* Reduced side padding */
   max-width: 1400px; 
-  margin: 0; /* REMOVE AUTO MARGIN */
+  margin: 0 auto !important; /* RESTORE AUTO MARGIN FOR CENTERING ON LARGE SCREENS */
 }
 
 .resume-list-header {
@@ -3040,7 +3040,7 @@ input[type="month"]::-webkit-calendar-picker-indicator {
 
 .resume-list-container {
   max-width: 1400px;
-  margin: 0 auto;
+  margin: 0 auto !important;
   padding: 40px;
   font-family: 'Inter', sans-serif;
   color: #1e293b;
@@ -3131,7 +3131,7 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   display: grid;
   grid-template-columns: repeat(auto-fill, 225px); /* Fixed width */
   gap: 24px;
-  justify-content: flex-start !important; /* ABSOLUTE LEFT */
+  justify-content: center !important; /* CENTER THE CARDS GLOBALLY */
 }
 
 /* Create Blank Card */
@@ -3483,18 +3483,15 @@ body.dark-mode .section-header h2,
 
 /* Empty State Card */
 .empty-state-card {
-  grid-column: 1 / -1;
-  text-align: left !important; /* Global layout */
-  padding: 4px 0 !important; /* Minimal padding for density */
+  text-align: left !important; /* PIN TO LEFT */
+  padding: 0 !important; /* Zero padding for density */
   background: transparent !important;
   border: none !important;
   border-radius: 0 !important;
-  margin: 0 !important; /* tight margin */
+  margin: 0 !important; 
   width: 100% !important;
-  max-width: none !important;
-  box-shadow: none !important;
   display: flex !important;
-  justify-content: flex-start !important; /* Desktop left */
+  justify-content: flex-start !important; /* PIN CONTENT TO LEFT EDGE */
 }
 
 .empty-state-card p {
@@ -3504,11 +3501,11 @@ body.dark-mode .section-header h2,
   margin: 0 !important;
   padding: 0 !important;
   line-height: 1.5;
-  text-align: left !important; /* Desktop left */
-  white-space: nowrap !important; /* PREVENT PREMATURE WRAPPING ON DESKTOP/TABLET */
-  width: auto !important; 
+  text-align: left !important; /* FORCE LEFT ALIGNMENT */
+  white-space: nowrap !important; /* FORCE ONE ROW GLOBALLY */
+  width: max-content !important; 
   max-width: none !important;
-  display: inline-block !important; /* Force single line behavior */
+  display: inline-block !important;
 }
 
 /* Ensure high visibility in both light/dark contexts */
@@ -3522,8 +3519,8 @@ body.dark-mode .section-header h2,
   color: #1e293b !important;
 }
 
-/* --- Aggressive CV Dashboard Mobile Polish --- */
-@media (max-width: 768px) {
+/* --- Aggressive CV Dashboard Mobile/Tablet Polish (< 786px) --- */
+@media (max-width: 786px) {
   .dashboard-header-row {
     margin-bottom: 24px !important;
     display: flex !important;
@@ -3552,28 +3549,39 @@ body.dark-mode .section-header h2,
     white-space: normal !important;
   }
 
-  /* ABSOLUTE CENTER-ALIGN ON MOBILE */
+  /* ABSOLUTE CENTER-ALIGN GRIDS ON MOBILE/TABLET */
   .samples-grid, .my-resumes-grid {
     justify-content: center !important; 
     gap: 16px !important;
   }
 
+  /* EMPTY STATE: KEEP TEXT LEFT UNDER TABS */
   .empty-state-card {
-    padding: 8px 0 !important;
-    margin: 0 auto !important;
-    justify-content: center !important; /* Center the message */
-    text-align: center !important;
+    padding: 0 !important;
+    margin: 12px 0 0 0 !important; /* Slight top gap from tabs */
+    justify-content: flex-start !important; /* Force content to left edge */
+    text-align: left !important;
+    display: flex !important;
   }
 
   .empty-state-card p {
     font-size: 0.85rem !important;
     font-weight: 400 !important; 
     color: #64748b !important;
-    text-align: center !important; /* Center the text */
-    width: 100% !important;
+    text-align: left !important; /* Align text to left */
+    width: max-content !important;
     max-width: none !important;
-    white-space: normal !important; /* Allow internal wrapping only if really needed */
-    display: block !important;
+    white-space: nowrap !important; /* Force one row */
+    display: inline-block !important;
+  }
+
+  /* WRAP ONLY FOR TINY SCREENS AS LAST RESORT */
+  @media (max-width: 380px) {
+    .empty-state-card p {
+      white-space: normal !important;
+      width: 100% !important;
+      text-align: left !important;
+    }
   }
 }
 
