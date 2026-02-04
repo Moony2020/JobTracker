@@ -46,7 +46,7 @@
 .resume-list-container {
   padding: 0 15px 40px 15px; /* Reduced side padding */
   max-width: 1400px; 
-  margin: 0 auto;
+  margin: 0; /* REMOVE AUTO MARGIN */
 }
 
 .resume-list-header {
@@ -70,7 +70,16 @@
   grid-template-columns: repeat(auto-fill, 302px); /* Matches scale(0.38) * 794px */
   gap: 20px;
   width: 100%;
-  justify-content: center;
+  justify-content: flex-start; /* FORCE LEFT */
+}
+
+.samples-grid, .my-resumes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  width: 100%;
+  justify-content: flex-start !important; /* GLOBAL LEFT ALIGN */
+  margin-top: 20px;
 }
 
 .template-card {
@@ -3091,6 +3100,7 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 40px; /* Increase space between resume sections */
   margin-bottom: 24px;
 }
 
@@ -3121,7 +3131,7 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   display: grid;
   grid-template-columns: repeat(auto-fill, 225px); /* Fixed width */
   gap: 24px;
-  justify-content: center; /* Center the grid if extra space */
+  justify-content: flex-start !important; /* ABSOLUTE LEFT */
 }
 
 /* Create Blank Card */
@@ -3474,24 +3484,31 @@ body.dark-mode .section-header h2,
 /* Empty State Card */
 .empty-state-card {
   grid-column: 1 / -1;
-  text-align: center;
-  padding: 40px 20px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 2px dashed rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  margin-top: 10px;
-  width: 100%;
-  max-width: 450px;
-  margin-left: auto;
-  margin-right: auto;
+  text-align: left !important; /* Global layout */
+  padding: 4px 0 !important; /* Minimal padding for density */
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important; /* tight margin */
+  width: 100% !important;
+  max-width: none !important;
+  box-shadow: none !important;
+  display: flex !important;
+  justify-content: flex-start !important; /* Desktop left */
 }
 
 .empty-state-card p {
-  color: #475569; /* Much darker for light mode */
-  font-size: 1.1rem; /* Slightly larger */
-  font-weight: 600; /* Bolder */
-  margin: 0;
-  line-height: 1.6;
+  color: #475569; 
+  font-size: 1.1rem !important; /* Global size */
+  font-weight: 400 !important; /* Regular weight */
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.5;
+  text-align: left !important; /* Desktop left */
+  white-space: nowrap !important; /* PREVENT PREMATURE WRAPPING ON DESKTOP/TABLET */
+  width: auto !important; 
+  max-width: none !important;
+  display: inline-block !important; /* Force single line behavior */
 }
 
 /* Ensure high visibility in both light/dark contexts */
@@ -3503,6 +3520,61 @@ body.dark-mode .section-header h2,
 
 [data-theme='light'] .empty-state-card p {
   color: #1e293b !important;
+}
+
+/* --- Aggressive CV Dashboard Mobile Polish --- */
+@media (max-width: 768px) {
+  .dashboard-header-row {
+    margin-bottom: 24px !important;
+    display: flex !important;
+    flex-direction: column !important; /* STACK VERTICAL */
+    justify-content: center !important;
+    align-items: center !important; 
+    gap: 16px !important;
+    text-align: center !important;
+  }
+
+  .dashboard-header-row h1 {
+    font-size: 1.5rem !important; 
+    margin-bottom: 4px !important;
+    white-space: normal !important; 
+    line-height: 1.2 !important;
+    text-align: center !important;
+  }
+
+  .dashboard-header-row p {
+    font-size: 0.9rem !important;
+    line-height: 1.4 !important;
+    color: #64748b;
+    margin: 0 !important;
+    max-width: 100% !important;
+    text-align: center !important;
+    white-space: normal !important;
+  }
+
+  /* ABSOLUTE CENTER-ALIGN ON MOBILE */
+  .samples-grid, .my-resumes-grid {
+    justify-content: center !important; 
+    gap: 16px !important;
+  }
+
+  .empty-state-card {
+    padding: 8px 0 !important;
+    margin: 0 auto !important;
+    justify-content: center !important; /* Center the message */
+    text-align: center !important;
+  }
+
+  .empty-state-card p {
+    font-size: 0.85rem !important;
+    font-weight: 400 !important; 
+    color: #64748b !important;
+    text-align: center !important; /* Center the text */
+    width: 100% !important;
+    max-width: none !important;
+    white-space: normal !important; /* Allow internal wrapping only if really needed */
+    display: block !important;
+  }
 }
 
 

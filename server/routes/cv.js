@@ -43,8 +43,8 @@ router.get("/", auth, async (req, res) => {
 
 // @route   GET api/cv/templates
 // @desc    Get all available templates
-// @access  Private
-router.get("/templates", auth, async (req, res) => {
+// @access  Public
+router.get("/templates", async (req, res) => {
   try {
     const templates = await Template.find({ isActive: true });
     res.json(templates);

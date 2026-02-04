@@ -53,49 +53,52 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
   const [showAllTemplates, setShowAllTemplates] = useState(false);
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const [resumesRes, templatesRes] = await Promise.all([
-        api.get('/cv'),
-        api.get('/cv/templates')
-      ]);
-      setResumes(resumesRes.data);
-      // Re-order and Filter templates as requested
-      // Order: Timeline (Free), Classic (Free), Modern (Free), Creative (Pro)
-      const rawTemplates = templatesRes.data;
-      
-      const orderedKeys = ['timeline', 'classic', 'modern', 'creative'];
-      let finalTemplates = [];
-
-      // Build final list in specific order: Timeline, Classic, Modern, Creative
-      orderedKeys.forEach(key => {
-        const tpl = rawTemplates.find(t => t.key === key);
-        if (tpl) {
-          // Force Creative to be Pro for the badge and payment logic if category is Premium
-          if (key === 'creative' || tpl.category === 'Premium') {
-             tpl.category = 'Pro';
+    const fetchData = async () => {
+      try {
+        // 1. Always fetch templates (Publicly accessible now)
+        const templatesRes = await api.get('/cv/templates');
+        const rawTemplates = Array.isArray(templatesRes.data) ? templatesRes.data : [];
+        
+        // Define a stable order for keys
+        const orderedKeys = ['timeline', 'classic', 'modern', 'creative'];
+        
+        // Categorize and sort templates
+        const processedTemplates = rawTemplates.map(tpl => {
+          const processed = { ...tpl };
+          if (processed.key === 'creative' || processed.category === 'Premium' || processed.category === 'Pro') {
+            processed.category = 'Pro';
           }
-          finalTemplates.push(tpl);
-        }
-      });
+          return processed;
+        });
 
-      // 3. Add any other templates that weren't in the primary list
-      rawTemplates.forEach(t => {
-        if (!orderedKeys.includes(t.key)) {
-          finalTemplates.push(t);
-        }
-      });
+        const finalTemplates = [
+          ...processedTemplates.filter(t => orderedKeys.includes(t.key))
+            .sort((a, b) => orderedKeys.indexOf(a.key) - orderedKeys.indexOf(b.key)),
+          ...processedTemplates.filter(t => !orderedKeys.includes(t.key))
+        ];
 
-      setTemplates(finalTemplates);
-    } catch (err) {
-      console.error("Error fetching CV data:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+        setTemplates(finalTemplates);
+
+        // 2. Fetch resumes only if logged in
+        if (user) {
+          try {
+            const resumesRes = await api.get('/cv');
+            setResumes(Array.isArray(resumesRes.data) ? resumesRes.data : []);
+          } catch (cvErr) {
+            console.error("Error fetching CVs:", cvErr);
+            setResumes([]);
+          }
+        }
+        console.log(`[ResumeList] Loaded ${finalTemplates.length} templates. User:`, user?.email || 'Anonymous');
+      } catch (err) {
+        console.error("Error fetching templates:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user]);
 
   const handleDelete = (e, cv) => {
     e.stopPropagation(); 

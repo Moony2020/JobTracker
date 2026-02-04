@@ -12,6 +12,17 @@ const Login = ({ onClose }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  // Auto-dismiss notifications after 3.5 seconds
+  React.useEffect(() => {
+    if (error || success) {
+      const timer = setTimeout(() => {
+        setError('');
+        setSuccess('');
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [error, success]);
+
   const handleBackdropClick = (e) => {
     if (e.target.className === 'modal') {
       onClose();
@@ -96,8 +107,70 @@ const Login = ({ onClose }) => {
           </button>
         </div>
         
-        {error && <div className="notification error show" style={{ position: 'relative', top: 0, right: 0, marginBottom: '1rem', width: '100%', borderRadius: '8px' }}>{error}</div>}
-        {success && <div className="notification success show" style={{ position: 'relative', top: 0, right: 0, marginBottom: '1rem', width: '100%', borderRadius: '8px' }}>{success}</div>}
+        {error && (
+          <div className="notification error show" style={{ 
+            position: 'relative', 
+            top: 0, 
+            right: 0, 
+            marginBottom: '1rem', 
+            width: '100%', 
+            borderRadius: '8px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingRight: '10px'
+          }}>
+            <span>{error}</span>
+            <button 
+              type="button" 
+              onClick={() => setError('')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'inherit',
+                cursor: 'pointer',
+                padding: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                opacity: 0.7
+              }}
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
+        {success && (
+          <div className="notification success show" style={{ 
+            position: 'relative', 
+            top: 0, 
+            right: 0, 
+            marginBottom: '1rem', 
+            width: '100%', 
+            borderRadius: '8px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingRight: '10px'
+          }}>
+            <span>{success}</span>
+            <button 
+              type="button" 
+              onClick={() => setSuccess('')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'inherit',
+                cursor: 'pointer',
+                padding: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                opacity: 0.7
+              }}
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
