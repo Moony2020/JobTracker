@@ -26,11 +26,7 @@ const auth = async (req, res, next) => {
     req.token = token;
     next();
   } catch (error) {
-    if (error.name === 'JsonWebTokenError') {
-      console.warn(`[Auth] Invalid token: ${error.message}`);
-    } else {
-      console.error("Auth middleware error:", error);
-    }
+    // Silently handle invalid tokens to reduce terminal noise
     res.status(401).json({
       message: "Token is not valid",
     });
