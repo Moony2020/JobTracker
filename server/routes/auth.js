@@ -85,7 +85,9 @@ router.post('/register', validate(RegisterSchema), async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                role: user.role
+                role: user.role,
+                isPremium: user.isPremium,
+                premiumUntil: user.premiumUntil
             }
         });
     } catch (error) {
@@ -134,7 +136,9 @@ router.post('/login', validate(LoginSchema), async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                role: user.role
+                role: user.role,
+                isPremium: user.isPremium,
+                premiumUntil: user.premiumUntil
             }
         });
     } catch (error) {

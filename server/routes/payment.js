@@ -101,6 +101,13 @@ router.get("/stripe/session/:id", async (req, res) => {
 
         await purchase.save();
         
+        // Update user premium status
+        if (expiresAt) {
+          await User.findByIdAndUpdate(session.metadata.userId, {
+            $set: { isPremium: true, premiumUntil: expiresAt }
+          });
+        }
+        
         await CVDocument.findByIdAndUpdate(session.metadata.cvId, {
           $set: { lastDownloaded: new Date() }
         });
@@ -190,6 +197,13 @@ router.post("/paypal/capture-order", auth, async (req, res) => {
 
       await purchase.save();
 
+      // Update user premium status
+      if (expiresAt) {
+        await User.findByIdAndUpdate(userId, {
+          $set: { isPremium: true, premiumUntil: expiresAt }
+        });
+      }
+
       await CVDocument.findByIdAndUpdate(cvId, {
         $set: { lastDownloaded: new Date() }
       });
@@ -204,59 +218,5 @@ router.post("/paypal/capture-order", auth, async (req, res) => {
   }
 });
 
-// @route   GET api/payment/stripe/session/:id
-// @desc    Get Stripe session details for verification + Synchronous Fulfillment fallback
-// @access  Public (Session ID serves as token)
-router.get("/stripe/session/:id", async (req, res) => {
-  try {
-    const session = await stripe.checkout.sessions.retrieve(req.params.id);
-    
-    // Check if we already have the purchase recorded
-    let purchase = await Purchase.findOne({ paymentId: session.id });
-    
-    // SYNC FULFILLMENT FALLBACK:
-    // If Stripe says it's paid but our DB is behind (webhook lag), fulfill now!
-    if (!purchase && session.payment_status === 'paid') {
-        console.log(`[Sync Fulfillment] Fulfilling session ${session.id} during redirect`);
-        const template = await Template.findById(session.metadata.templateId);
-        
-        let expiresAt = null;
-        if (template && template.category === "Pro") {
-          expiresAt = new Date();
-          expiresAt.setDate(expiresAt.getDate() + 7);
-        }
-
-        purchase = new Purchase({
-          user: session.metadata.userId,
-          cvDocument: session.metadata.cvId,
-          template: session.metadata.templateId,
-          amount: session.amount_total / 100,
-          provider: "stripe",
-          paymentId: session.id,
-          status: "completed",
-          expiresAt: expiresAt
-        });
-
-        await purchase.save();
-        
-        await CVDocument.findByIdAndUpdate(session.metadata.cvId, {
-          $set: { lastDownloaded: new Date() }
-        });
-    }
-
-    const cv = await CVDocument.findById(session.metadata.cvId);
-
-    res.json({
-      cvId: session.metadata.cvId,
-      cvTitle: cv?.title || "Your CV",
-      status: session.payment_status,
-      isFulfilled: !!purchase,
-      customer_email: session.customer_details?.email
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Server Error");
-  }
-});
 
 module.exports = router;

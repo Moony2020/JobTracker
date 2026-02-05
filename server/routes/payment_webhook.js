@@ -3,6 +3,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const Purchase = require("../models/Purchase");
 const CVDocument = require("../models/CVDocument");
 const Template = require("../models/Template");
+const User = require("../models/User");
 
 module.exports = async (req, res) => {
   const sig = req.headers["stripe-signature"];
@@ -41,6 +42,14 @@ module.exports = async (req, res) => {
 
         await purchase.save();
         console.log(`[Webhook] Purchase created for user ${session.metadata.userId}`);
+        
+        // Update user premium status
+        if (expiresAt) {
+          await User.findByIdAndUpdate(session.metadata.userId, {
+            $set: { isPremium: true, premiumUntil: expiresAt }
+          });
+          console.log(`[Webhook] User ${session.metadata.userId} set to Premium until ${expiresAt}`);
+        }
         
         await CVDocument.findByIdAndUpdate(session.metadata.cvId, {
           $set: { lastDownloaded: new Date() }

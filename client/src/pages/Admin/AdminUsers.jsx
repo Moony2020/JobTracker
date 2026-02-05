@@ -99,16 +99,24 @@ const AdminUsers = ({ t }) => {
                     </span>
                   </td>
                   <td>
-                     <span style={{ 
-                      padding: '4px 10px', 
-                      borderRadius: '20px', 
-                      background: user.isPremium ? 'rgba(234, 179, 8, 0.2)' : 'rgba(255,255,255,0.05)',
-                      color: user.isPremium ? '#fde047' : 'rgba(255,255,255,0.7)',
-                      fontSize: '11px',
-                      fontWeight: '500'
-                    }}>
-                      {user.isPremium ? 'PRO' : 'FREE'}
-                    </span>
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <span style={{ 
+                        padding: '4px 10px', 
+                        borderRadius: '20px', 
+                        background: user.isPremium ? 'rgba(234, 179, 8, 0.2)' : 'rgba(255,255,255,0.05)',
+                        color: user.isPremium ? '#fde047' : 'rgba(255,255,255,0.7)',
+                        fontSize: '11px',
+                        fontWeight: '500',
+                        width: 'fit-content'
+                      }}>
+                        {user.isPremium ? 'PRO' : 'FREE'}
+                      </span>
+                      {user.isPremium && user.premiumUntil && (
+                        <span style={{ color: 'rgba(255,180,0,0.6)', fontSize: '10px' }}>
+                           Expires: {new Date(user.premiumUntil).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td>
                     {new Date(user.createdAt).toLocaleDateString()}
