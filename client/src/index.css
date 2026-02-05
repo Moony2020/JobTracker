@@ -452,21 +452,21 @@ header {
 }
 
 .lang-selector-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--glass-bg);
+    width: 36px;
+    height: 36px;
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border: 1px solid var(--light-border);
+    border: none;
     transition: all 0.3s ease;
+    border-radius: 8px; /* Slightly rounded corners for hover state */
 }
 
 .lang-selector-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: scale(1.05);
+    background: rgba(99, 102, 241, 0.1);
+    transform: scale(1.1);
 }
 
 .dark-mode .lang-selector-btn:hover {
@@ -477,7 +477,7 @@ header {
     position: absolute;
     top: calc(100% + 10px);
     right: 0;
-    width: 220px; /* Increased to fit text on one line */
+    width: 180px; /* Narrower default for mobile/tablet */
     background: var(--bg-color); /* Use theme bg color instead of transparent glass */
     border: 1px solid var(--primary-color); /* Primary color border to make it pop */
     border-radius: 12px;
@@ -608,6 +608,7 @@ header {
     white-space: nowrap;
 }
 
+/* Increase dropdown width only for large desktop screens */
 /* Primary Button - Solid Purple (Login, Change Password) */
 .dropdown-btn-primary {
     background: var(--primary-gradient);

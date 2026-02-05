@@ -133,7 +133,7 @@ const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLo
                 className="lang-selector-btn"
                 onClick={() => setActiveDropdown(activeDropdown === 'lang' ? null : 'lang')} 
               >
-                <Globe size={18} />
+                <Globe size={22} />
               </div>
               {activeDropdown === 'lang' && (
                 <div className="dropdown-menu lang-dropdown" style={{ display: 'flex', top: '40px', right: '0' }}>
