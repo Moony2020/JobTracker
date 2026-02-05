@@ -52,30 +52,30 @@ const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLo
               <Briefcase size={22} className="logo-icon" />
               <span className="logo-text">JobTracker</span>
             </div>
-          </div>
 
-          <nav className="desktop-nav">
-            <ul>
-              {navItems.map((item) => (
-                <li key={item.id}>
-                  <a 
-                    href="#" 
-                    className={`nav-link ${activePage === item.id ? 'active' : ''}`} 
-                    onClick={(e) => { e.preventDefault(); onOpenPage(item.id); }}
-                  >
-                    {item.label}
-                    {activePage === item.id && (
-                      <motion.div 
-                        layoutId="nav-indicator"
-                        className="nav-indicator"
-                        transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
-                      />
-                    )}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
+            <nav className="desktop-nav">
+              <ul>
+                {navItems.map((item) => (
+                  <li key={item.id}>
+                    <a 
+                      href="#" 
+                      className={`nav-link ${activePage === item.id ? 'active' : ''}`} 
+                      onClick={(e) => { e.preventDefault(); onOpenPage(item.id); }}
+                    >
+                      {item.label}
+                      {activePage === item.id && (
+                        <motion.div 
+                          layoutId="nav-indicator"
+                          className="nav-indicator"
+                          transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                        />
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
 
           <div className="header-right">
             {!user ? (
