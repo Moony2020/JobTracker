@@ -264,6 +264,8 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
   const [showMoreDetails, setShowMoreDetails] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false); // Safety flag
   const isMigrating = useRef(false); // Guard against duplicate POSTs during login transition
+  const [renewalModalOpen, setRenewalModalOpen] = useState(false);
+  const [isSwitchingTemplate, setIsSwitchingTemplate] = useState(false);
 
   // UTILITIES
   const updateNestedState = (path, value) => {
@@ -615,10 +617,49 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
         return activeCvId; // Return existing ID
       } catch (err) {
         console.error("Error updating CV:", err);
+        if (err.response?.status === 403 && err.response?.data?.code === "PREMIUM_EXPIRED") {
+          setRenewalModalOpen(true);
+        }
       }
     }
     return activeCvId;
   }, [activeCvId, cvData.data, cvData.settings, cvData.title, cvData.templateKey, cvData.templateId, availableTemplates, dataLoaded, showNotify, user]);
+
+  const handleSwitchToFree = async () => {
+    const freeTemplate = availableTemplates.find(t => t.category === 'Free') || availableTemplates[0];
+    if (!freeTemplate) return;
+
+    try {
+      setIsSwitchingTemplate(true);
+      // Update local state first for instant feedback
+      setCvData(prev => ({
+        ...prev,
+        templateKey: freeTemplate.key,
+        settings: {
+          ...prev.settings,
+          themeColor: TEMPLATE_DEFAULTS[freeTemplate.key] || '#2563eb'
+        }
+      }));
+
+      // If already has an ID, update backend
+      if (activeCvId) {
+        await api.put(`/cv/${activeCvId}`, {
+          data: cvData.data,
+          settings: cvData.settings,
+          title: cvData.title,
+          templateId: freeTemplate._id
+        });
+      }
+      
+      setRenewalModalOpen(false);
+      if (showNotify) showNotify(`Switched to ${freeTemplate.name} (Free)`, 'success');
+    } catch (err) {
+      console.error("Error switching to free template:", err);
+      if (showNotify) showNotify("Failed to switch template", "error");
+    } finally {
+      setIsSwitchingTemplate(false);
+    }
+  };
 
   // Calculate Pages & Track Scroll
   useEffect(() => {
@@ -819,7 +860,11 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
       if (showNotify) showNotify('PDF downloaded successfully!', 'success');
     } catch (err) {
       console.error("Error downloading CV:", err);
-      if (showNotify) showNotify(err.message || 'Error downloading PDF', 'error');
+      if (err.response?.status === 403 && err.response?.data?.code === "PREMIUM_EXPIRED") {
+        setRenewalModalOpen(true);
+      } else {
+        if (showNotify) showNotify(err.message || 'Error downloading PDF', 'error');
+      }
     } finally {
       setIsExporting(false);
     }
@@ -2019,6 +2064,64 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
         itemType="category"
         message={`Are you sure you want to delete this ${deleteModal.title}?`}
       />
+
+      {/* Premium Renewal Modal */}
+      {renewalModalOpen && (
+        <div className="delete-modal-overlay">
+          <div className="delete-modal-card" style={{ maxWidth: '450px' }}>
+            <div className="delete-modal-header" style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
+              <div style={{ background: '#fef9c3', p: '10px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '16px', width: '48px', height: '48px' }}>
+                <AlertTriangle size={24} color="#ca8a04" />
+              </div>
+              <div>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b', margin: 0 }}>Premium Expired</h3>
+                <p style={{ fontSize: '14px', color: '#64748b', marginTop: '4px' }}>Your PRO access for this resume has expired.</p>
+              </div>
+            </div>
+
+            <div className="delete-modal-body" style={{ py: '20px' }}>
+              <p style={{ fontSize: '14px', color: '#475569', lineHeight: 1.6 }}>
+                To continue editing or downloading this resume with the <strong>{cvData.templateKey}</strong> template, you'll need to renew your premium access. Alternatively, you can switch to a free template.
+              </p>
+              
+              <div style={{ marginTop: '20px', background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <p style={{ fontSize: '12px', color: '#64748b', margin: 0 }}>
+                   <strong>Note:</strong> Free templates are always accessible and don't require an active subscription.
+                </p>
+              </div>
+            </div>
+
+            <div className="delete-modal-footer" style={{ gap: '12px', flexWrap: 'wrap' }}>
+              <button 
+                className="btn-secondary" 
+                onClick={() => setRenewalModalOpen(false)}
+                style={{ flex: 1, minWidth: '100px' }}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn-outline" 
+                onClick={handleSwitchToFree}
+                disabled={isSwitchingTemplate}
+                style={{ flex: 1, minWidth: '150px' }}
+              >
+                {isSwitchingTemplate ? 'Switching...' : 'Switch to Free'}
+              </button>
+              <button 
+                className="btn-primary" 
+                onClick={() => {
+                   // Reuse download flow which triggers payment
+                   setRenewalModalOpen(false);
+                   handleDownload();
+                }}
+                style={{ flex: 2, minWidth: '150px', background: '#eab308', borderColor: '#eab308' }}
+              >
+                Renew Access
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* MOBILE DESIGN DRAWER */}
       <div className={`mobile-design-drawer ${viewMode === 'design' ? 'open' : ''}`}>

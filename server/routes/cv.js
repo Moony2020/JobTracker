@@ -140,6 +140,20 @@ router.put("/:id", auth, async (req, res) => {
       return res.status(401).json({ msg: "Not authorized" });
     }
 
+    // PREMIUM ENFORCEMENT
+    const template = await Template.findById(templateId || cv.templateId);
+    if (template && template.category === "Pro") {
+      const now = new Date();
+      const isPremium = req.user.isPremium && req.user.premiumUntil && new Date(req.user.premiumUntil) > now;
+      
+      if (!isPremium) {
+          return res.status(403).json({ 
+              msg: "Renew Premium for edit access to Pro templates",
+              code: "PREMIUM_EXPIRED"
+          });
+      }
+    }
+
     const updatedCV = {};
     if (title) updatedCV.title = title;
     if (settings) updatedCV.settings = settings;
@@ -207,30 +221,17 @@ router.get("/export/:id", auth, async (req, res) => {
     // If templateId is null/missing (e.g. broken reference), default to a safe value
     const templateCategory = cv.templateId?.category || "Free";
     
-    // If template is Pro or Premium, check if a completed and unexpired purchase exists
-    if (templateCategory === "Pro" || templateCategory === "Premium") {
-      // Find ANY completed purchase for this user and this CV document
-      console.log(`[Export] Verifying purchase for User: ${req.user.id}, CV: ${cv._id}, Template: ${cv.templateId?.key || 'unknown'}`);
+    // PREMIUM ENFORCEMENT
+    if (templateCategory === "Pro") {
+      const now = new Date();
+      const isPremium = req.user.isPremium && req.user.premiumUntil && new Date(req.user.premiumUntil) > now;
       
-      const purchase = await Purchase.findOne({
-        user: req.user.id,
-        cvDocument: cv._id,
-        status: "completed"
-      }).sort({ createdAt: -1 });
-
-      if (!purchase) {
-        console.log(`[Export] 402: No purchase found matching User: ${req.user.id} and CV: ${cv._id}`);
-        // Log all completed purchases for this user for debugging
-        const allUserPurchases = await Purchase.find({ user: req.user.id, status: "completed" });
-        console.log(`[Export] User ${req.user.id} has ${allUserPurchases.length} total completed purchases.`);
-        allUserPurchases.forEach(p => console.log(` - Purchase ${p._id} for CV: ${p.cvDocument}`));
-        
-        return res.status(402).json({ msg: "Payment required for Pro template" });
-      }
-
-      // Check if access has expired (only for Pro, Premium is lifetime)
-      if (purchase.expiresAt && new Date() > purchase.expiresAt) {
-        return res.status(403).json({ msg: "Access to this Pro template download has expired (7-day window)" });
+      if (!isPremium) {
+        console.log(`[Export] 403: Premium expired for User: ${req.user.id}`);
+        return res.status(403).json({ 
+            msg: "Access to this Pro template has expired. Please renew your premium.",
+            code: "PREMIUM_EXPIRED"
+        });
       }
     }
     // Ensure template exists to avoid crash

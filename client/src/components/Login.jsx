@@ -220,20 +220,23 @@ const Login = ({ onClose }) => {
               </div>
             </div>
           )}
-          <button 
-            type="submit" 
-            className="btn-submit" 
-            disabled={loading}
-          >
-            {loading ? (
-              'Processing...'
-            ) : (
-              <>
-                <LogIn size={18} style={{ marginRight: '8px' }} /> 
-                {view === 'login' ? 'Login' : 'Send Reset Link'}
-              </>
-            )}
-          </button>
+          <div className="form-actions" style={{ marginTop: '0.5rem', border: 'none', borderTop: 'none', boxShadow: 'none' }}>
+            <button 
+              type="submit" 
+              className="btn-submit" 
+              disabled={loading}
+              style={{ width: '100%', borderRadius: '12px' }}
+            >
+              {loading ? (
+                'Processing...'
+              ) : (
+                <>
+                  <LogIn size={18} style={{ marginRight: '8px' }} /> 
+                  {view === 'login' ? 'Login' : 'Send Reset Link'}
+                </>
+              )}
+            </button>
+          </div>
 
           {view === 'forgot' && (
             <div style={{ textAlign: 'center', marginTop: '1rem' }}>

@@ -2546,7 +2546,7 @@ body:not(.dark-mode) .form-control::placeholder {
     padding: 1rem;
     margin: 0.5rem;
     width: 100%;
-    max-width: 370px; /* Reduced by 10px for a tighter look */
+    max-width: 350px; /* Reduced further for a tighter, premium look */
     max-height: 85vh;
     overflow-y: auto;
     box-shadow: var(--shadow-lg);
@@ -2554,7 +2554,14 @@ body:not(.dark-mode) .form-control::placeholder {
 }
 
 .modal form .form-group:last-of-type {
-    margin-bottom: 0.8rem !important;
+    margin-bottom: 0.5rem !important; /* Reduced bottom margin of last input */
+}
+
+.modal .form-actions {
+    border: none !important;
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+    width: 100%;
 }
 
 .modal .btn-submit {
@@ -3884,7 +3891,7 @@ footer {
 /* Specific Mobile/Tablet Fixes for Modal */
 @media (max-width: 575px) {
     .modal-content {
-        max-width: 380px !important; /* Slightly wider for a better balance */
+        max-width: 350px !important; /* Matched to desktop preference */
         width: 94% !important;
         padding: 1rem 0.8rem !important;
         margin: 0.5rem auto !important;
@@ -4321,4 +4328,27 @@ footer {
     border-color: var(--primary-color);
 }
 
+
+
+/* NUCLEAR OVERRIDE: Ensure no borders in auth modals */
+.modal .form-actions,
+.modal form .form-actions,
+.modal form .form-group,
+.modal form .form-group:last-of-type,
+.modal form .input-with-icon {
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+}
+
+/* Ensure no pseudo-elements creating borders */
+.modal .form-actions::before,
+.modal .form-actions::after,
+.modal form .form-group::after,
+.modal form .form-group::before {
+    display: none !important;
+    content: none !important;
+    border: none !important;
+}
 

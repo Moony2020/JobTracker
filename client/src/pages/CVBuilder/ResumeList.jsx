@@ -89,8 +89,8 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
               
               // VALIDATION: Only migrate if there's actual content
               const hasContent = parsed.data?.personal?.firstName?.trim() || 
-                               parsed.data?.personal?.lastName?.trim() ||
-                               parsed.data?.personal?.summary?.replace(/<[^>]*>/g, '').trim().length > 0;
+                                parsed.data?.personal?.lastName?.trim() ||
+                                parsed.data?.personal?.summary?.replace(/<[^>]*>/g, '').trim().length > 0;
               
               if (hasContent) {
                 console.log("[ResumeList] Migrating guest draft to account...");
@@ -207,6 +207,24 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
        return;
     }
 
+    // Check if user is premium but EXPIRED (frontend check for immediate feedback)
+    const now = new Date();
+    const isExpired = isUserPremium && user.premiumUntil && new Date(user.premiumUntil) < now;
+    if (isPremiumTemplate && isExpired && !cv.isPaid) {
+        if (showNotify) showNotify('Premium access expired. Please renew to download.', 'warning');
+        // Trigger same payment flow
+        try {
+            const res = await api.post('/payment/stripe/create-session', {
+                cvId: cv._id,
+                templateId: cv.templateId?._id
+            });
+            if (res.data.url) window.location.href = res.data.url;
+        } catch (err) {
+            console.error('[Payment] Error:', err);
+        }
+        return;
+    }
+
     try {
       setDownloadingId(cv._id);
       const response = await api.get(`/cv/export/${cv._id}`, {
@@ -243,7 +261,9 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
     } catch (err) {
       console.error("Error downloading CV:", err);
       if (showNotify) {
-        if (err.response && err.response.status === 402) {
+        if (err.response?.status === 403 && err.response?.data?.code === "PREMIUM_EXPIRED") {
+          showNotify("Premium access expired. Please renew.", "error");
+        } else if (err.response && err.response.status === 402) {
           showNotify("Payment required for premium template", "error");
         } else {
           showNotify("Failed to download PDF", "error");
@@ -417,6 +437,14 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
                         {cv.isGuest && (
                           <span style={{ fontSize: '0.7rem', background: '#fef3c7', color: '#92400e', padding: '2px 6px', borderRadius: '4px' }}>Local Draft</span>
                         )}
+                        {(() => {
+                           const isPro = cv.templateId?.category === 'Pro';
+                           const isExpired = user?.isPremium && user.premiumUntil && new Date(user.premiumUntil) < new Date();
+                           if (isPro && (!user?.isPremium || isExpired) && !cv.isPaid) {
+                               return <span style={{ fontSize: '0.7rem', background: '#fee2e2', color: '#b91c1c', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px' }}>Renew Required</span>
+                           }
+                           return null;
+                        })()}
                      </div>
                      <p>{language === 'Arabic' ? 'آخر تحديث' : 'Last Updated'}: {timeAgo(cv.updatedAt)}</p>
                      
@@ -426,14 +454,23 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
                            <button onClick={(e) => { e.stopPropagation(); onEdit(cv); }} title="Edit"><Edit3 size={16} /></button>
                            <button 
                              onClick={(e) => handleDownload(e, cv)} 
-                             title="Download"
+                             title={(() => {
+                               const isPro = cv.templateId?.category === 'Pro';
+                               const isExpired = user?.isPremium && user.premiumUntil && new Date(user.premiumUntil) < new Date();
+                               if (isPro && (!user?.isPremium || isExpired) && !cv.isPaid) return "Renew Premium to Download";
+                               return "Download";
+                             })()}
                              disabled={downloadingId === cv._id}
                              style={downloadingId === cv._id ? { cursor: 'wait', opacity: 0.7 } : {}}
                            >
                              {downloadingId === cv._id ? (
                                <Loader2 size={16} className="spinner" style={{ animation: 'spin 1s linear infinite' }} />
                              ) : (
-                               <Download size={16} />
+                               <Download size={16} color={(() => {
+                                 const isPro = cv.templateId?.category === 'Pro';
+                                 const isExpired = user?.isPremium && user.premiumUntil && new Date(user.premiumUntil) < new Date();
+                                 return (isPro && (!user?.isPremium || isExpired) && !cv.isPaid) ? '#ca8a04' : 'currentColor';
+                               })()} />
                              )}
                            </button>
                            <button className="text-red" onClick={(e) => {
@@ -467,6 +504,14 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <h3>{cv.title || 'Untitled Resume'}</h3>
                         <span style={{ fontSize: '0.7rem', background: '#d1fae5', color: '#059669', padding: '2px 6px', borderRadius: '4px' }}>Paid</span>
+                        {(() => {
+                           const isPro = cv.templateId?.category === 'Pro';
+                           const isExpired = user?.isPremium && user.premiumUntil && new Date(user.premiumUntil) < new Date();
+                           if (isPro && (!user?.isPremium || isExpired) && !cv.isPaid) {
+                               return <span style={{ fontSize: '0.7rem', background: '#fee2e2', color: '#b91c1c', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px' }}>Renew Required</span>
+                           }
+                           return null;
+                        })()}
                      </div>
                      <p>{language === 'Arabic' ? 'آخر تحديث' : 'Last Updated'}: {timeAgo(cv.updatedAt)}</p>
                      
@@ -476,14 +521,23 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
                            <button onClick={(e) => { e.stopPropagation(); onEdit(cv); }} title="Edit"><Edit3 size={16} /></button>
                            <button 
                              onClick={(e) => handleDownload(e, cv)} 
-                             title="Download"
+                             title={(() => {
+                               const isPro = cv.templateId?.category === 'Pro';
+                               const isExpired = user?.isPremium && user.premiumUntil && new Date(user.premiumUntil) < new Date();
+                               if (isPro && (!user?.isPremium || isExpired) && !cv.isPaid) return "Renew Premium to Download";
+                               return "Download";
+                             })()}
                              disabled={downloadingId === cv._id}
                              style={downloadingId === cv._id ? { cursor: 'wait', opacity: 0.7 } : {}}
                            >
                              {downloadingId === cv._id ? (
                                <Loader2 size={16} className="spinner" style={{ animation: 'spin 1s linear infinite' }} />
                              ) : (
-                               <Download size={16} />
+                               <Download size={16} color={(() => {
+                                 const isPro = cv.templateId?.category === 'Pro';
+                                 const isExpired = user?.isPremium && user.premiumUntil && new Date(user.premiumUntil) < new Date();
+                                 return (isPro && (!user?.isPremium || isExpired) && !cv.isPaid) ? '#ca8a04' : 'currentColor';
+                               })()} />
                              )}
                            </button>
                            <button className="text-red" onClick={(e) => handleDelete(e, cv)} title="Delete"><Trash2 size={16} /></button>
