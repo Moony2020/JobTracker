@@ -35,13 +35,28 @@ self.addEventListener('activate', (event) => {
 
 // Fetch Event
 self.addEventListener('fetch', (event) => {
+  // Bypass caching for dev server internal requests and non-GET requests
+  if (
+    event.request.url.includes('/@vite/') || 
+    event.request.url.includes('/src/') ||
+    event.request.method !== 'GET'
+  ) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((response) => {
       // Cache hit - return response
       if (response) {
         return response;
       }
-      return fetch(event.request);
+      return fetch(event.request).catch(() => {
+        // Return a basic offline response or just let it fail silently
+        return new Response('Network error occurred', {
+          status: 408,
+          statusText: 'Network error occurred'
+        });
+      });
     })
   );
 });
