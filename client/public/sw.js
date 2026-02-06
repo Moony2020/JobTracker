@@ -1,10 +1,11 @@
-const CACHE_NAME = 'job-tracker-v1';
+const CACHE_NAME = 'job-tracker-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png'
+  '/manifest.json?v=3',
+  '/icon-192.png?v=3',
+  '/icon-512.png?v=3',
+  '/favicon.png?v=3'
 ];
 
 // Install Event
@@ -35,13 +36,14 @@ self.addEventListener('activate', (event) => {
 
 // Fetch Event
 self.addEventListener('fetch', (event) => {
-  // Bypass caching for dev server internal requests and non-GET requests
+  // Bypass caching for dev server internal requests, non-GET, and Vite HMR
   if (
     event.request.url.includes('/@vite/') || 
     event.request.url.includes('/src/') ||
+    event.request.url.includes('hot-update') ||
     event.request.method !== 'GET'
   ) {
-    return;
+    return; // Browser handles these natively
   }
 
   event.respondWith(
