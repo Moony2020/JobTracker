@@ -451,9 +451,8 @@ header {
     align-items: center;
 }
 
+/* Initial basic styles for both */
 .lang-selector-btn {
-    width: 36px;
-    height: 36px;
     background: transparent;
     display: flex;
     align-items: center;
@@ -461,7 +460,36 @@ header {
     cursor: pointer;
     border: none;
     transition: all 0.3s ease;
-    border-radius: 8px; /* Slightly rounded corners for hover state */
+    border-radius: 8px;
+}
+
+.lang-icon-responsive {
+    transition: all 0.3s ease;
+}
+
+/* DECOUPLED SIZING */
+@media (min-width: 576px) {
+    .lang-selector-btn {
+        width: 44px !important;
+        height: 44px !important;
+    }
+    .lang-icon-responsive {
+        width: 32px !important;
+        height: 32px !important;
+        stroke-width: 2px !important;
+    }
+}
+
+@media (max-width: 575px) {
+    .lang-selector-btn {
+        width: 32px !important;
+        height: 32px !important;
+    }
+    .lang-icon-responsive {
+        width: 20px !important;
+        height: 20px !important;
+        stroke-width: 2px !important;
+    }
 }
 
 .lang-selector-btn:hover {
@@ -477,7 +505,7 @@ header {
     position: absolute;
     top: calc(100% + 10px);
     right: 0;
-    width: 180px; /* Narrower default for mobile/tablet */
+    width: 210px; /* Increased to fit "Change Password" perfectly */
     background: var(--bg-color); /* Use theme bg color instead of transparent glass */
     border: 1px solid var(--primary-color); /* Primary color border to make it pop */
     border-radius: 12px;
@@ -3278,15 +3306,6 @@ footer {
         font-size: 1.15rem !important;
     }
 
-    .lang-selector-btn {
-        width: 28px !important;
-        height: 28px !important;
-    }
-
-    .lang-selector-btn svg {
-        width: 15px !important;
-        height: 15px !important;
-    }
 
     .switch {
         transform: scale(0.75) !important; /* Slightly smaller scale */

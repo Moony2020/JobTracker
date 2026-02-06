@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { LogOut, User, LogIn, UserPlus, FileText, Globe, Briefcase, Lock } from 'lucide-react';
 import translations from '../utils/translations';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLoginClick, onRegisterClick, onChangePasswordClick, onProfileClick, activePage }) => {
   const t = translations[language];
@@ -48,10 +48,15 @@ const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLo
       <div className="container">
         <div className="header-content">
           <div className="header-left">
-            <div className="logo" onClick={() => onOpenPage('dashboard')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <motion.div 
+              className="logo" 
+              onClick={() => onOpenPage('dashboard')} 
+              style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+              whileHover={{ scale: 1.05 }}
+            >
               <Briefcase size={22} className="logo-icon" />
               <span className="logo-text">JobTracker</span>
-            </div>
+            </motion.div>
 
             <nav className="desktop-nav">
               <ul>
@@ -133,7 +138,7 @@ const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLo
                 className="lang-selector-btn"
                 onClick={() => setActiveDropdown(activeDropdown === 'lang' ? null : 'lang')} 
               >
-                <Globe size={22} />
+                <Globe className="lang-icon-responsive" />
               </div>
               {activeDropdown === 'lang' && (
                 <div className="dropdown-menu lang-dropdown" style={{ display: 'flex', top: '40px', right: '0' }}>
