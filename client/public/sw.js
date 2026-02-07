@@ -1,64 +1,51 @@
-const CACHE_NAME = 'job-tracker-v5';
+const CACHE_NAME = 'job-tracker-v25';
+
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/manifest.json?v=5',
+  '/jobtracker.webmanifest',
+  '/pwa-icon-512x512.png',
   '/pwa-icon-192.png',
   '/pwa-icon-512.png',
   '/pwa-favicon.png'
 ];
 
-// Install Event
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('Opened cache');
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
   );
 });
 
-// Activate Event
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    Promise.all([
+      caches.keys().then((cacheNames) =>
+        Promise.all(
+          cacheNames.map((cacheName) => {
+            if (cacheName !== CACHE_NAME) return caches.delete(cacheName);
+          })
+        )
+      ),
+      self.clients.claim()
+    ])
   );
 });
 
-// Fetch Event
 self.addEventListener('fetch', (event) => {
-  // Bypass caching for dev server internal requests, non-GET, and Vite HMR
   if (
-    event.request.url.includes('/@vite/') || 
+    event.request.url.includes('/@vite/') ||
     event.request.url.includes('/src/') ||
     event.request.url.includes('hot-update') ||
     event.request.method !== 'GET'
   ) {
-    return; // Browser handles these natively
+    return;
   }
 
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      // Cache hit - return response
-      if (response) {
-        return response;
-      }
-      return fetch(event.request).catch(() => {
-        // Return a basic offline response or just let it fail silently
-        return new Response('Network error occurred', {
-          status: 408,
-          statusText: 'Network error occurred'
-        });
-      });
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+      return fetch(event.request);
     })
   );
 });
