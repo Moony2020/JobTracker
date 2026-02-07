@@ -1,11 +1,11 @@
-const CACHE_NAME = 'job-tracker-v3';
+const CACHE_NAME = 'job-tracker-v5';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/manifest.json?v=3',
-  '/icon-192.png?v=3',
-  '/icon-512.png?v=3',
-  '/favicon.png?v=3'
+  '/manifest.json?v=5',
+  '/pwa-icon-192.png',
+  '/pwa-icon-512.png',
+  '/pwa-favicon.png'
 ];
 
 // Install Event
