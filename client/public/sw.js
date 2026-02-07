@@ -1,10 +1,9 @@
-const CACHE_NAME = 'job-tracker-v25';
+const CACHE_NAME = 'job-tracker-v27';
 
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/jobtracker.webmanifest',
-  '/pwa-icon-512x512.png',
   '/pwa-icon-192.png',
   '/pwa-icon-512.png',
   '/pwa-favicon.png'
