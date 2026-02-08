@@ -459,8 +459,8 @@
   }
   
   .info-item-glass svg {
-    width: 20px;
-    height: 20px;
+    width: 16px; /* Discrete SVGs */
+    height: 16px;
   }
   
   .info-text-glass h4 {
@@ -468,17 +468,17 @@
   }
   
   .info-text-glass p {
-    font-size: 1.05rem;
+    font-size: 0.88rem; /* Scaled down to prevent email wrapping */
   }
   
   .info-item-glass {
-    gap: 1rem;
+    gap: 0.75rem; /* Reduced gap between icon and text */
   }
   
   .icon-wrap-glass {
-    width: 52px; /* Extra large, meaty info icons */
-    height: 52px;
-    border-radius: 14px;
+    width: 32px; /* Even smaller, more discrete icons */
+    height: 32px;
+    border-radius: 8px;
   }
 
   .socials-glass {
@@ -488,14 +488,14 @@
   }
 
   .social-link-glass {
-    width: 56px; /* Extra large social icons */
-    height: 56px;
-    border-radius: 16px;
+    width: 44px; /* Smaller social icons */
+    height: 44px;
+    border-radius: 12px;
   }
 
   .social-link-glass svg {
-    width: 26px;
-    height: 26px;
+    width: 20px;
+    height: 20px;
   }
 }
 
