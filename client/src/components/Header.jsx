@@ -1,14 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, User, LogIn, UserPlus, FileText, Globe, Briefcase, Lock } from 'lucide-react';
+import { LogOut, User, LogIn, UserPlus, FileText, Globe, Briefcase, Lock, LayoutDashboard, ClipboardList, PieChart, Search, X } from 'lucide-react';
 import translations from '../utils/translations';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLoginClick, onRegisterClick, onChangePasswordClick, onProfileClick, activePage }) => {
   const t = translations[language];
   const { user, logout } = useAuth();
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Close mobile menu on resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1000 && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [mobileMenuOpen]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -36,15 +47,16 @@ const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLo
   };
 
   const navItems = [
-    { id: 'dashboard', label: t.dashboard },
-    { id: 'applications', label: t.applications },
-    { id: 'cv-builder', label: t.cv_builder },
-    { id: 'statistics', label: t.statistics },
-    { id: 'jobs', label: t.jobs },
+    { id: 'dashboard', label: t.dashboard, icon: LayoutDashboard },
+    { id: 'applications', label: t.applications, icon: ClipboardList },
+    { id: 'cv-builder', label: t.cv_builder, icon: FileText },
+    { id: 'statistics', label: t.statistics, icon: PieChart },
+    { id: 'jobs', label: t.jobs, icon: Search },
   ];
 
   return (
-    <header>
+    <>
+      <header className={mobileMenuOpen ? 'mobile-menu-active' : ''}>
       <div className="container">
         <div className="header-content">
           <div className="header-left">
@@ -182,42 +194,104 @@ const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLo
             </label>
           </div>
 
-          <button className={`hamburger ${mobileMenuOpen ? 'active' : ''}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-            <div className="grid-dot"></div>
-            <div className="grid-dot"></div>
-            <div className="grid-dot"></div>
-            <div className="grid-dot"></div>
+          <button 
+            className={`hamburger-elegant ${mobileMenuOpen ? 'active' : ''}`} 
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Menu"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
           </button>
         </div>
       </div>
       
-      {/* Mobile Nav */}
-      <div className={`mobile-nav ${mobileMenuOpen ? 'active' : ''}`}>
-        <nav>
-          <ul>
-            <li><a href="#" className={`mobile-nav-link ${activePage === 'dashboard' ? 'active' : ''}`} onClick={() => { onOpenPage('dashboard'); setMobileMenuOpen(false); }}>{t.dashboard}</a></li>
-            <li><a href="#" className={`mobile-nav-link ${activePage === 'applications' ? 'active' : ''}`} onClick={() => { onOpenPage('applications'); setMobileMenuOpen(false); }}>{t.applications}</a></li>
-            <li><a href="#" className={`mobile-nav-link ${activePage === 'cv-builder' ? 'active' : ''}`} onClick={() => { onOpenPage('cv-builder'); setMobileMenuOpen(false); }}>{t.cv_builder}</a></li>
-            <li><a href="#" className={`mobile-nav-link ${activePage === 'statistics' ? 'active' : ''}`} onClick={() => { onOpenPage('statistics'); setMobileMenuOpen(false); }}>{t.statistics}</a></li>
-            <li><a href="#" className={`mobile-nav-link ${activePage === 'jobs' ? 'active' : ''}`} onClick={() => { onOpenPage('jobs'); setMobileMenuOpen(false); }}>{t.jobs}</a></li>
-          </ul>
-        </nav>
-
-        {!user ? (
-          <div className="mobile-auth-buttons">
-            <button className="btn btn-primary full-width" onClick={() => { onLoginClick(); setMobileMenuOpen(false); }}>{t.login}</button>
-            <button className="btn btn-outline full-width" onClick={() => { onRegisterClick(); setMobileMenuOpen(false); }}>{t.register}</button>
-          </div>
-        ) : (
-          <div className="mobile-user-menu">
-            <div className="mobile-user-info">{t.welcome}, {user.name}</div>
-            <button className="btn logout-btn" onClick={logout}>
-              <LogOut size={18} /> {t.logout}
-            </button>
-          </div>
-        )}
-      </div>
     </header>
+
+    <AnimatePresence>
+      {mobileMenuOpen && (
+        <div className="mobile-nav-root">
+          <motion.div 
+            className="mobile-nav-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          
+          <motion.div 
+            className="mobile-nav-overlay"
+            initial={{ x: '-100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '-100%' }}
+            transition={{ type: "spring", damping: 30, stiffness: 250 }}
+          >
+            <div className="mobile-drawer-header">
+              <button className="mobile-close-btn" onClick={() => setMobileMenuOpen(false)}>
+                <X size={16} />
+              </button>
+            </div>
+            <div className="mobile-nav-content">
+
+              <nav className="mobile-nav-links">
+                {navItems.map((item, index) => (
+                  <motion.a
+                    key={item.id}
+                    href="#"
+                    className={`mobile-nav-item ${activePage === item.id ? 'active' : ''}`}
+                    onClick={(e) => { e.preventDefault(); onOpenPage(item.id); setMobileMenuOpen(false); }}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + index * 0.1 }}
+                  >
+                    <item.icon size={22} className="nav-icon" />
+                    <span className="nav-label">{item.label}</span>
+                    {activePage === item.id && <motion.div layoutId="mobile-active" className="active-glow" />}
+                  </motion.a>
+                ))}
+              </nav>
+
+              <div className="mobile-menu-separator"></div>
+
+              {!user ? (
+                <motion.div 
+                  className="mobile-auth-section"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  <button className="mobile-auth-btn primary" onClick={() => { onLoginClick(); setMobileMenuOpen(false); }}>
+                    <LogIn size={20} /> {t.login}
+                  </button>
+                  <button className="mobile-auth-btn secondary" onClick={() => { onRegisterClick(); setMobileMenuOpen(false); }}>
+                    <UserPlus size={20} /> {t.register}
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.div 
+                  className="mobile-user-section"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  <div className="mobile-user-header">
+                    <div className="mobile-user-avatar">{getInitials(user.name)}</div>
+                    <div className="mobile-user-details">
+                      <span className="welcome-text">{t.welcome}</span>
+                      <span className="user-name">{user.name}</span>
+                    </div>
+                  </div>
+                  <button className="mobile-logout-btn" onClick={logout}>
+                    <LogOut size={20} /> {t.logout}
+                  </button>
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  </>
   );
 };
 
