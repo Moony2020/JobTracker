@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, User, LogIn, UserPlus, FileText, Globe, Briefcase, Lock, LayoutDashboard, ClipboardList, PieChart, Search, X } from 'lucide-react';
+import { LogOut, User, LogIn, UserPlus, FileText, Globe, Briefcase, Lock, LayoutDashboard, ClipboardList, PieChart, Search, X, ChevronDown } from 'lucide-react';
 import translations from '../utils/translations';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -9,6 +9,7 @@ const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLo
   const { user, logout } = useAuth();
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileUserExpanded, setMobileUserExpanded] = useState(false);
 
   // Close mobile menu on resize to desktop
   useEffect(() => {
@@ -128,16 +129,13 @@ const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLo
                         <span>{user.name}</span>
                       </div>
                       <button className="dropdown-item dropdown-btn-primary" onClick={() => { onChangePasswordClick(); setActiveDropdown(null); }}>
-                        <Lock size={18} /> {t.change_password}
+                        <Lock size={21} strokeWidth={2.0} className="dropdown-icon" /> {t.change_password}
                       </button>
                       <button className="dropdown-item dropdown-btn-secondary" onClick={() => { onProfileClick(); setActiveDropdown(null); }}>
-                        <FileText size={18} /> {t.settings}
+                        <FileText size={18} strokeWidth={2.0} className="dropdown-icon" /> {t.settings}
                       </button>
-                      <button className="logout-btn-animated" onClick={logout}>
-                        <div className="sign">
-                          <LogOut size={18} />
-                        </div>
-                        <div className="text">{t.logout}</div>
+                      <button className="dropdown-item logout-item-direct" onClick={logout}>
+                        <LogOut size={18} className="dropdown-icon" /> {t.logout}
                       </button>
                     </div>
                   )}
@@ -226,11 +224,9 @@ const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLo
             exit={{ x: '-100%' }}
             transition={{ type: "spring", damping: 30, stiffness: 250 }}
           >
-            <div className="mobile-drawer-header">
-              <button className="mobile-close-btn" onClick={() => setMobileMenuOpen(false)}>
-                <X size={16} />
-              </button>
-            </div>
+            <button className="mobile-close-btn" onClick={() => setMobileMenuOpen(false)}>
+              <X size={18} />
+            </button>
             <div className="mobile-nav-content">
 
               <nav className="mobile-nav-links">
@@ -274,16 +270,39 @@ const Header = ({ darkMode, toggleTheme, language, setLanguage, onOpenPage, onLo
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 }}
                 >
-                  <div className="mobile-user-header">
+                  <button 
+                    className={`mobile-user-header-btn ${mobileUserExpanded ? 'expanded' : ''}`}
+                    onClick={() => setMobileUserExpanded(!mobileUserExpanded)}
+                  >
                     <div className="mobile-user-avatar">{getInitials(user.name)}</div>
                     <div className="mobile-user-details">
                       <span className="welcome-text">{t.welcome}</span>
                       <span className="user-name">{user.name}</span>
                     </div>
-                  </div>
-                  <button className="mobile-logout-btn" onClick={logout}>
-                    <LogOut size={20} /> {t.logout}
+                    <ChevronDown size={20} className={`expand-icon ${mobileUserExpanded ? 'rotated' : ''}`} />
                   </button>
+                  
+                  <AnimatePresence>
+                    {mobileUserExpanded && (
+                      <motion.div 
+                        className="mobile-user-actions"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <button className="mobile-user-action-btn primary" onClick={() => { onChangePasswordClick(); setMobileMenuOpen(false); }}>
+                          <Lock size={24} strokeWidth={2.2} /> {t.change_password}
+                        </button>
+                        <button className="mobile-user-action-btn secondary" onClick={() => { onProfileClick(); setMobileMenuOpen(false); }}>
+                          <FileText size={24} strokeWidth={2.2} /> {t.settings}
+                        </button>
+                        <button className="mobile-logout-btn" onClick={logout}>
+                          <LogOut size={22} /> {t.logout}
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
               )}
             </div>
