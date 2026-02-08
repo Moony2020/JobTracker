@@ -2,7 +2,7 @@
   "name": "JobTracker Professional",
   "short_name": "JobTracker",
   "description": "Professional Job Application Tracking System",
-  "start_url": "/?v=28",
+  "start_url": "/?v=30",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
