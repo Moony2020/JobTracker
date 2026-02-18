@@ -480,17 +480,7 @@ header {
     }
 }
 
-@media (max-width: 575px) {
-    .lang-selector-btn {
-        width: 32px !important;
-        height: 32px !important;
-    }
-    .lang-icon-responsive {
-        width: 20px !important;
-        height: 20px !important;
-        stroke-width: 2px !important;
-    }
-}
+
 
 .lang-selector-btn:hover {
     background: rgba(99, 102, 241, 0.1);
@@ -1086,7 +1076,8 @@ i, .field-icon, .toggle-password {
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
-    width: 100%;
+    width: 75% !important; /* Centered narrow width for elegant look */
+    margin: 0.6rem auto !important; /* Centered in drawer */
     padding: 0.8rem;
     border-radius: 12px;
     font-size: 0.95rem;
@@ -3517,46 +3508,7 @@ footer {
 }
 
 /* Extra small screens refinements */
-@media (max-width: 575px) {
-    .user-badge, .guest-badge {
-        width: 30px !important; /* Slightly smaller */
-        height: 30px !important;
-    }
 
-    .user-badge span {
-        font-size: 0.7rem !important;
-    }
-
-    .guest-badge i {
-        font-size: 0.9rem !important;
-    }
-
-    .logo {
-        font-size: 1.15rem !important;
-    }
-
-
-    .switch {
-        transform: scale(0.75) !important; /* Slightly smaller scale */
-        margin: 0 !important;
-    }
-
-    .hamburger {
-        transform: scale(0.8) !important; /* Consistently smaller */
-        transform-origin: center center !important;
-        margin-left: 0 !important;
-        margin-right: 0.2rem !important;
-        align-self: center !important;
-    }
-
-    .header-right {
-        gap: 0.4rem !important; /* Unified internal gap */
-    }
-
-    .header-content {
-        gap: 0.4rem !important; /* Unified gap between group and hamburger */
-    }
-}
 
 /* Skeleton Loader Animation */
 .skeleton-loader {
@@ -4601,3 +4553,25 @@ footer {
     border: none !important;
 }
 
+
+@media (max-width: 768px) { 
+    .header-right { gap: 0.25rem !important; }
+    .hamburger-elegant { width: 20px !important; height: 15px !important; } 
+    .hamburger-elegant span { height: 1.5px !important; } 
+    .user-badge, .guest-badge { margin: 0 !important; width: 32px !important; height: 32px !important; box-shadow: 0 2px 10px rgba(99, 102, 241, 0.2) !important; } 
+    .user-badge span { font-size: 0.8rem !important; } 
+    .guest-badge svg { width: 16px !important; height: 16px !important; } 
+    .lang-selector-btn { margin: 0 !important; width: 32px !important; height: 32px !important; } 
+    .lang-icon-responsive { width: 20px !important; height: 20px !important; stroke-width: 2px !important; } 
+    .switch { transform: scale(0.75) !important; margin: 0 -6px !important; } /* Negative margin removes scaling dead space */
+}
+
+@media (max-width: 575px) {
+    .header-content {
+        gap: 0.8rem !important; /* Relaxed gap for standard "little bit" of space */
+    }
+    
+    .logo {
+        font-size: 1.2rem !important; /* Smaller logo for mobile */
+    }
+}
