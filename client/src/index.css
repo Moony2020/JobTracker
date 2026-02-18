@@ -1073,6 +1073,56 @@ i, .field-icon, .toggle-password {
     margin: 1.2rem 0;
 }
 
+.mobile-auth-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.mobile-auth-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    box-sizing: border-box;
+}
+
+.mobile-auth-btn.primary {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.mobile-auth-btn.secondary {
+    background: transparent;
+    border: 2px solid var(--primary-color) !important;
+    color: var(--primary-color);
+}
+
+.mobile-auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(99, 102, 241, 0.3);
+}
+
+.mobile-auth-btn.primary:hover {
+    opacity: 0.9;
+}
+
+.mobile-auth-btn.secondary:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
 .mobile-user-section {
     display: flex;
     flex-direction: column;
