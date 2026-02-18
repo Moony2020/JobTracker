@@ -404,8 +404,8 @@ header {
 }
 
 .user-badge, .guest-badge {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     background: var(--primary-gradient);
     border-radius: 50%;
     display: flex;
@@ -453,6 +453,8 @@ header {
 
 /* Initial basic styles for both */
 .lang-selector-btn {
+    width: 32px;
+    height: 32px;
     background: transparent;
     display: flex;
     align-items: center;
@@ -880,6 +882,7 @@ i, .field-icon, .toggle-password {
     border: none;
     padding: 0;
     z-index: 1001;
+    margin-right: 8px; /* Push slightly left on desktop (away from edge) */
 }
 
 .hamburger-elegant span {
@@ -3560,6 +3563,8 @@ footer {
     flex-shrink: 0;
     margin: 0 5px;
     vertical-align: middle;
+    transform: scale(0.85);
+    transform-origin: center;
 }
 
 .switch input {
@@ -4568,9 +4573,14 @@ footer {
 
 @media (max-width: 575px) {
     .header-content {
-        gap: 0.8rem !important; /* Relaxed gap for standard "little bit" of space */
+        gap: 0.4rem !important; /* Further reduced from 0.6rem */
     }
     
+    .switch {
+        margin-left: -8px !important; /* Move closer to language icon */
+        margin-right: 2px !important; /* Increase space from hamburger */
+    }
+
     .logo {
         font-size: 1.2rem !important; /* Smaller logo for mobile */
     }
