@@ -48,7 +48,13 @@ export const TRANSLATIONS = {
       searchExamples: "Search for examples by Job Title",
       summaryPlaceholder: "e.g Experienced engineer with 10+ years of experience, looking for...",
       generatingPDF: "Generating your PDF...",
-      secondsWait: "This will only take a few seconds."
+      secondsWait: "This will only take a few seconds.",
+      premiumExpiredTitle: "Premium Expired",
+      premiumExpiredDesc: "Your PRO access for this resume has expired.",
+      premiumExpiredAction: "To continue editing or downloading this resume with the Pro template, you'll need to renew your premium access. Alternatively, you can switch to a free template.",
+      premiumExpiredNote: "Note: Free templates are always accessible and don't require an active subscription.",
+      renewAccess: "Renew Access",
+      switchToFree: "Switch to Free"
     }
   },
   Swedish: {
@@ -152,7 +158,13 @@ export const TRANSLATIONS = {
       searchExamples: "بحث عن أمثلة حسب المسمى الوظيفي",
       summaryPlaceholder: "على سبيل المثال، مهندس ذو خبرة تزيد عن 10 سنوات، يبحث عن...",
       generatingPDF: "جاري إنشاء ملف PDF...",
-      secondsWait: "سيستغرق هذا بضع ثوانٍ فقط."
+      secondsWait: "سيستغرق هذا بضع ثوانٍ فقط.",
+      premiumExpiredTitle: "انتهت صلاحية الاشتراك",
+      premiumExpiredDesc: "لقد انتهت صلاحية وصولك الاحترافي (PRO) لهذه السيرة الذاتية.",
+      premiumExpiredAction: "لمتابعة تعديل أو تحميل هذه السيرة الذاتية باستخدام القالب الاحترافي، ستحتاج إلى تجديد اشتراكك. بدلاً من ذلك، يمكنك التبديل إلى قالب مجاني.",
+      premiumExpiredNote: "ملاحظة: القوالب المجانية يمكن الوصول إليها دائماً ولا تتطلب اشتراكاً نشطاً.",
+      renewAccess: "تجديد الاشتراك",
+      switchToFree: "تبديل إلى قالب مجاني"
     }
   }
   // ... (Remaining 16 languages will be added similarly in a full implementation)

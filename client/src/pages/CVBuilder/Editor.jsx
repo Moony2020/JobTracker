@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import TemplateRenderer from './Templates/TemplateRenderer';
@@ -8,7 +9,7 @@ import {
   Bold, Italic, Underline, Link as LinkIcon, List, AlignLeft, AlignCenter, AlignRight,
   CheckCircle, Trash2, Plus, Minus, ChevronUp, ChevronDown, Layout, X, ChevronLeft, Download,
   User, Briefcase, GraduationCap, Globe, Code, Heart, Type, ArrowLeft, Palette, Save, Eye, FileText, HelpCircle, Check, Camera, Upload, Loader2, Calendar, Search as SearchIcon,
-  AlertCircle, LogIn
+  AlertCircle, LogIn, AlertTriangle
 } from 'lucide-react';
 import { TRANSLATIONS } from './Translations';
 import { SUMMARY_EXAMPLES } from './Examples';
@@ -635,6 +636,13 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
       setCvData(prev => ({
         ...prev,
         templateKey: freeTemplate.key,
+        data: {
+          ...prev.data,
+          personal: {
+            ...prev.data.personal,
+            photo: null
+          }
+        },
         settings: {
           ...prev.settings,
           themeColor: TEMPLATE_DEFAULTS[freeTemplate.key] || '#2563eb'
@@ -802,27 +810,13 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
     const templateCategory = currentTemplate?.category;
     const isPremiumTemplate = templateCategory === 'Premium' || templateCategory === 'Pro';
     const isUserPremium = user?.isPremium || false;
+    const now = new Date();
+    const isExpired = isUserPremium && user.premiumUntil && new Date(user.premiumUntil) < now;
     
-    console.log('[Download] Checking Template:', currentTemplate?.key, 'User Premium:', isUserPremium, 'CV Paid:', cvData.isPaid);
+    console.log('[Download] Checking Template:', currentTemplate?.key, 'User Premium:', isUserPremium, 'Expired:', isExpired, 'CV Paid:', cvData.isPaid);
 
-    if (isPremiumTemplate && !isUserPremium && !cvData.isPaid) {
-       if (showNotify) showNotify('Initiating payment for Premium template...', 'info');
-       
-       try {
-           const res = await api.post('/payment/stripe/create-session', {
-               cvId: savedId,
-               templateId: currentTemplate._id
-           });
-           
-           if (res.data.url) {
-               window.location.href = res.data.url;
-           } else {
-               throw new Error('No checkout URL received');
-           }
-       } catch (err) {
-           console.error('[Payment] Error:', err);
-           if (showNotify) showNotify('Failed to start payment processing. Please try again.', 'error');
-       }
+    if (isPremiumTemplate && (!isUserPremium || isExpired) && !cvData.isPaid) {
+       setRenewalModalOpen(true);
        return;
      }
 
@@ -867,6 +861,31 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
       }
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  const handleRenewAccess = async () => {
+    const currentTemplate = availableTemplates.find(t => t.key === cvData.templateKey);
+    const savedId = activeCvId || propCvId;
+    
+    if (!savedId) return;
+
+    if (showNotify) showNotify('Redirecting to secure payment...', 'info');
+    
+    try {
+        const res = await api.post('/payment/stripe/create-session', {
+            cvId: savedId,
+            templateId: currentTemplate?._id
+        });
+        
+        if (res.data.url) {
+            window.location.href = res.data.url;
+        } else {
+            throw new Error('No checkout URL received');
+        }
+    } catch (err) {
+        console.error('[Payment] Error:', err);
+        if (showNotify) showNotify('Failed to start payment processing. Please try again.', 'error');
     }
   };
 
@@ -975,14 +994,15 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
         </div>
       )}
 
-      {isExporting && (
-        <div className="pdf-export-overlay">
-          <div className="export-loader-card">
-            <Loader2 className="spinner" size={48} />
-            <h3>Generating your PDF...</h3>
-            <p>This will only take a few seconds.</p>
+      {isExporting && ReactDOM.createPortal(
+        <div className="delete-modal-overlay">
+          <div className="delete-modal-card" style={{ maxWidth: '350px', textAlign: 'center' }}>
+            <div className="cv-loading-spinner" style={{ margin: '0 auto 20px' }}></div>
+            <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#1e293b' }}>{currentUI.generatingPDF}</h3>
+            <p style={{ fontSize: '14px', color: '#64748b', marginTop: '8px' }}>{currentUI.secondsWait || 'This will only take a few seconds.'}</p>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
       <div className="editor-global-header">
         <div className="header-left">
@@ -1130,29 +1150,27 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
                 </button>
                 {activeSection === 'personal' && (
                   <div className="section-content-inner">
-                    {/* Photo Upload Row - Always visible, upload restricted to premium (Creative only) */}
-                    <div className="photo-upload-container" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '20px' }}>
-                      <div className="photo-preview-box" style={{ 
-                        width: '80px', 
-                        height: '80px', 
-                        borderRadius: '50%', 
-                        background: '#f1f5f9', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        overflow: 'hidden',
-                        border: '2px solid #e2e8f0',
-                        opacity: ['creative', 'professional-blue', 'executive', 'elegant'].includes(cvData.templateKey) ? 1 : 0.6
-                      }}>
-                        {cvData.data.personal.photo ? (
-                          <img src={cvData.data.personal.photo} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        ) : (
-                          <User size={40} color="#94a3b8" />
-                        )}
-                      </div>
-                      <div className="photo-actions">
-                        {['creative', 'professional-blue', 'executive', 'elegant'].includes(cvData.templateKey) ? (
-                          <>
+                    {/* Photo Upload Row - Only visible if template supports photos */}
+                    {['creative', 'professional-blue', 'executive', 'elegant'].includes(cvData.templateKey) && (
+                      <div className="photo-upload-container" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '20px' }}>
+                        <div className="photo-preview-box" style={{ 
+                          width: '80px', 
+                          height: '80px', 
+                          borderRadius: '50%', 
+                          background: '#f1f5f9', 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          overflow: 'hidden',
+                          border: '2px solid #e2e8f0'
+                        }}>
+                          {cvData.data.personal.photo ? (
+                            <img src={cvData.data.personal.photo} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            <User size={40} color="#94a3b8" />
+                          )}
+                        </div>
+                        <div className="photo-actions">
                             <label className="upload-btn-ghost" style={{ cursor: 'pointer', display: 'inline-flex' }}>
                               <Camera size={16} />
                               <span style={{ marginLeft: '8px' }}>{cvData.data.personal.photo ? currentUI.changePhoto : currentUI.uploadPhoto}</span>
@@ -1164,18 +1182,9 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
                               </button>
                             )}
                             <p style={{ margin: '8px 0 0 0', fontSize: '0.75rem', color: '#64748b' }}>JPG or PNG. Max size 2MB.</p>
-                          </>
-                        ) : (
-                          <>
-                            <button className="upload-btn-ghost" disabled style={{ cursor: 'not-allowed', display: 'inline-flex', opacity: 0.5 }}>
-                              <Camera size={16} />
-                              <span style={{ marginLeft: '8px' }}>{currentUI.uploadPhoto}</span>
-                            </button>
-                            <p style={{ margin: '8px 0 0 0', fontSize: '0.75rem', color: '#64748b' }}>{currentUI.photoRestriction}</p>
-                          </>
-                        )}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     <div className="form-grid">
                       <div className="form-group">
@@ -2066,61 +2075,56 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
       />
 
       {/* Premium Renewal Modal */}
-      {renewalModalOpen && (
+      {renewalModalOpen && ReactDOM.createPortal(
         <div className="delete-modal-overlay">
-          <div className="delete-modal-card" style={{ maxWidth: '450px' }}>
-            <div className="delete-modal-header" style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
-              <div style={{ background: '#fef9c3', p: '10px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '16px', width: '48px', height: '48px' }}>
+          <div className="delete-modal-card">
+            <div className="delete-modal-header">
+              <div style={{ background: '#fef9c3', padding: '10px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '16px', width: '48px', height: '48px' }}>
                 <AlertTriangle size={24} color="#ca8a04" />
               </div>
               <div>
-                <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b', margin: 0 }}>Premium Expired</h3>
-                <p style={{ fontSize: '14px', color: '#64748b', marginTop: '4px' }}>Your PRO access for this resume has expired.</p>
-              </div>
-            </div>
-
-            <div className="delete-modal-body" style={{ py: '20px' }}>
-              <p style={{ fontSize: '14px', color: '#475569', lineHeight: 1.6 }}>
-                To continue editing or downloading this resume with the <strong>{cvData.templateKey}</strong> template, you'll need to renew your premium access. Alternatively, you can switch to a free template.
-              </p>
-              
-              <div style={{ marginTop: '20px', background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                <p style={{ fontSize: '12px', color: '#64748b', margin: 0 }}>
-                   <strong>Note:</strong> Free templates are always accessible and don't require an active subscription.
+                <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b', margin: 0 }}>
+                  {currentUI.premiumExpiredTitle}
+                </h3>
+                <p style={{ fontSize: '14px', color: '#64748b', marginTop: '4px' }}>
+                  {currentUI.premiumExpiredDesc}
                 </p>
               </div>
             </div>
 
-            <div className="delete-modal-footer" style={{ gap: '12px', flexWrap: 'wrap' }}>
+            <div className="delete-modal-body">
+              <p style={{ fontSize: '14px', color: '#475569', lineHeight: 1.6 }}>
+                {currentUI.premiumExpiredAction.replace('Pro template', `"${cvData.templateKey}"`)}
+              </p>
+              
+              <div style={{ marginTop: '20px', background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <p style={{ fontSize: '12px', color: '#64748b', margin: 0 }}>
+                   <strong>{currentUI.premiumExpiredNote.split(':')[0]}:</strong> {currentUI.premiumExpiredNote.split(':')[1]}
+                </p>
+              </div>
+            </div>
+
+            <div className="delete-modal-footer">
               <button 
-                className="btn-secondary" 
+                className="btn btn-outline" 
                 onClick={() => setRenewalModalOpen(false)}
-                style={{ flex: 1, minWidth: '100px' }}
               >
-                Cancel
+                {currentUI.remove?.includes('إزالة') ? 'إلغاء' : 'Cancel'}
               </button>
               <button 
-                className="btn-outline" 
-                onClick={handleSwitchToFree}
-                disabled={isSwitchingTemplate}
-                style={{ flex: 1, minWidth: '150px' }}
-              >
-                {isSwitchingTemplate ? 'Switching...' : 'Switch to Free'}
-              </button>
-              <button 
-                className="btn-primary" 
+                className="btn btn-primary" 
                 onClick={() => {
-                   // Reuse download flow which triggers payment
                    setRenewalModalOpen(false);
-                   handleDownload();
+                   handleRenewAccess();
                 }}
-                style={{ flex: 2, minWidth: '150px', background: '#eab308', borderColor: '#eab308' }}
+                style={{ background: '#eab308', borderColor: '#eab308', color: '#fff' }}
               >
-                Renew Access
+                {currentUI.renewAccess}
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
       
       {/* MOBILE DESIGN DRAWER */}

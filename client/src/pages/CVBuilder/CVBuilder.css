@@ -42,11 +42,13 @@
   50% { opacity: 1; }
 }
 
-/* Resume List Page */
+/* Resume List Page Main Container */
 .resume-list-container {
-  padding: 0 15px 40px 15px; /* Reduced side padding */
-  max-width: 1400px; 
-  margin: 0 auto !important; /* RESTORE AUTO MARGIN FOR CENTERING ON LARGE SCREENS */
+  max-width: 1280px; 
+  margin: 0 auto !important;
+  padding: 40px;
+  font-family: 'Inter', sans-serif;
+  color: #1e293b;
 }
 
 .resume-list-header {
@@ -73,14 +75,7 @@
   justify-content: flex-start;
 }
 
-.samples-grid, .my-resumes-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
-  width: 100%;
-  justify-content: flex-start !important; /* GLOBAL LEFT ALIGN */
-  margin-top: 20px;
-}
+/* Global grid rules separated above */
 
 .template-card {
   background: white;
@@ -119,7 +114,7 @@
 }
 
 .template-preview-wrapper {
-  transform: scale(0.38) !important;
+  transform: scale(0.28) !important;
   transform-origin: top center !important;
   width: 794px !important;
   min-width: 794px !important;
@@ -2692,6 +2687,56 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   to { opacity: 1; }
 }
 
+/* Modal Styles */
+.delete-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.delete-modal-card {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 450px;
+  padding: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.delete-modal-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.delete-modal-body {
+  margin-bottom: 24px;
+}
+
+.delete-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
 @keyframes cardSlideUp {
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
@@ -3039,13 +3084,7 @@ input[type="month"]::-webkit-calendar-picker-indicator {
    NEW RESUME DASHBOARD STYLES (2026 Refactor)
    ========================================= */
 
-.resume-list-container {
-  max-width: 1400px;
-  margin: 0 auto !important;
-  padding: 40px;
-  font-family: 'Inter', sans-serif;
-  color: #1e293b;
-}
+/* End of Resume List - (Duplicate block removed during cleanup) */
 
 /* 1. Dashboard Header */
 .dashboard-header-row {
@@ -3127,13 +3166,7 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   text-decoration: underline;
 }
 
-/* 3. Sample Resume Grid - Fixed Width Cards to prevent stretching */
-.samples-grid, .my-resumes-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 225px); /* Fixed width */
-  gap: 24px;
-  justify-content: center !important; /* CENTER THE CARDS GLOBALLY */
-}
+/* Consolidated grid rules below */
 
 /* Create Blank Card */
 .create-blank-card {
@@ -3202,7 +3235,7 @@ input[type="month"]::-webkit-calendar-picker-indicator {
 
 /* Scaling logic for Thumbnail */
 .sample-mini-scale {
-  transform: scale(0.28); /* Standard scale 222px */
+  transform: scale(0.28); /* Standard scale for 222px wide cards */
   transform-origin: top center;
   width: 794px;
   height: 1123px;
@@ -3334,9 +3367,19 @@ input[type="month"]::-webkit-calendar-picker-indicator {
 
 .my-resumes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
-  justify-content: flex-start !important; /* RE-ALIGN TO LEFT AS REQUESTED */
+  grid-template-columns: repeat(auto-fill, 222px); /* Responsive wrapping, fixed cell size */
+  gap: 20px;
+  width: 100%;
+  justify-content: flex-start !important;
+  margin-top: 20px;
+}
+
+.samples-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 222px); /* Responsive wrapping, fixed cell size */
+  gap: 20px;
+  justify-content: flex-start !important;
+  margin-top: 20px;
 }
 
 .my-resume-card {
@@ -3363,11 +3406,11 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 0;
+  padding: 0 !important;
 }
 
 .resume-mini-scale {
-  transform: scale(0.28); /* Standard scale 222px */
+  transform: scale(0.28); /* Reverted to stable scale */
   transform-origin: top center;
   width: 794px;
   height: 1123px;
@@ -3665,5 +3708,98 @@ body.dark-mode .section-header h2,
   .banner-auth-btn {
     flex: 1;
     justify-content: center;
+  }
+}
+
+/* Modal Implementation Updates */
+.delete-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start; /* key for scrolling */
+  justify-content: center;
+  z-index: 99999;
+  padding: 24px;
+  overflow-y: auto; /* enable scrolling */
+  animation: fadeIn 0.2s ease-out;
+}
+
+.delete-modal-card {
+  background: white !important;
+  border-radius: 16px !important;
+  width: 100% !important;
+  max-width: 450px !important;
+  padding: 24px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  animation: slideUp 0.3s ease-out;
+  margin: auto; /* centers vertically when space permits */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.delete-modal-header {
+  display: flex !important;
+  align-items: flex-start !important;
+  margin-bottom: 20px !important;
+}
+
+.delete-modal-body {
+  margin-bottom: 28px !important;
+}
+
+.delete-modal-footer {
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 12px !important;
+  flex-wrap: wrap !important;
+  margin-top: 8px !important;
+}
+
+.delete-modal-footer button {
+  white-space: nowrap !important;
+  flex: 1 !important; /* Grow to fill space */
+  min-width: 120px !important; /* Minimum comfortable width */
+}
+
+@media (max-width: 500px) {
+  .delete-modal-card {
+    padding: 20px !important;
+    max-width: 95% !important;
+  }
+  
+  .delete-modal-header {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+  
+  .delete-modal-header > div:first-child {
+    margin-right: 0 !important;
+    margin-bottom: 12px !important;
+  }
+
+  .delete-modal-footer {
+    flex-direction: column-reverse !important; /* Cancel at bottom */
+    gap: 12px !important;
+    margin-top: 16px !important;
+    padding-bottom: 4px; /* extra space */
+  }
+  
+  .delete-modal-footer button {
+    width: 100% !important;
+    min-width: 100% !important; /* Force full width */
+    margin-left: 0 !important;
+    height: 48px !important; 
+    flex: none !important; /* Disable flex scaling on mobile */
   }
 }

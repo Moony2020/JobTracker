@@ -252,22 +252,32 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
       link.setAttribute('download', `${cv.title || 'CV'}.pdf`);
       document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
       
-      // Cleanup
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      if (showNotify) showNotify('Download started!', 'success');
       
-      if (showNotify) showNotify('PDF downloaded successfully!', 'success');
     } catch (err) {
       console.error("Error downloading CV:", err);
+      
+      // Handle 403 Premium Expired specifically
+      if (err.status === 403 || err.response?.status === 403 || err.message?.includes('Premium')) {
+         if (showNotify) showNotify('Premium access expired. Redirecting to renewal...', 'warning');
+         // Trigger payment flow
+         try {
+             const res = await api.post('/payment/stripe/create-session', {
+                 cvId: cv._id,
+                 templateId: cv.templateId?._id
+             });
+             if (res.data.url) window.location.href = res.data.url;
+         } catch (payErr) {
+             console.error('[Payment] Error:', payErr);
+             if (showNotify) showNotify('Failed to init renewal.', 'error');
+         }
+         return;
+      }
+
       if (showNotify) {
-        if (err.response?.status === 403 && err.response?.data?.code === "PREMIUM_EXPIRED") {
-          showNotify("Premium access expired. Please renew.", "error");
-        } else if (err.response && err.response.status === 402) {
-          showNotify("Payment required for premium template", "error");
-        } else {
-          showNotify("Failed to download PDF", "error");
-        }
+        showNotify("Failed to download CV: " + (err.message || "Unknown error"), "error");
       }
     } finally {
       setDownloadingId(null);
@@ -356,7 +366,6 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
               </div>
               <span>{language === 'Arabic' ? 'إنشاء سيرة ذاتية فارغة' : 'Create Blank Resume'}</span>
            </div>
-
            {/* Templates List */}
            {templates.slice(0, showAllTemplates ? templates.length : 4).map(tpl => (
              <div key={tpl._id} className="sample-template-card" onClick={() => onCreate(tpl)}>
@@ -379,10 +388,17 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
                         }} 
                       />
                     </div>
-                    {/* Lock / Pro Icon Mockup */}
-                    {(tpl.category === 'Pro' || tpl.category === 'Premium') && (
-                       <div className="lock-icon-badge"><Crown size={12} /></div>
-                    )}
+                     {/* Free / Pro Badges */}
+                     {tpl.category === 'Free' ? (
+                       <div className="free-badge">
+                         {language === 'Arabic' ? 'مجاني' : 'FREE'}
+                       </div>
+                     ) : (
+                       <div className="premium-badge">
+                         <Crown size={10} style={{ marginRight: '4px' }} />
+                         {language === 'Arabic' ? 'احترافي' : 'PRO'}
+                       </div>
+                     )}
                 </div>
                 <div className="sample-info">
                    <h3>{getSimplifiedName(tpl.name)}</h3>
@@ -437,14 +453,17 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
                         {cv.isGuest && (
                           <span style={{ fontSize: '0.7rem', background: '#fef3c7', color: '#92400e', padding: '2px 6px', borderRadius: '4px' }}>Local Draft</span>
                         )}
-                        {(() => {
-                           const isPro = cv.templateId?.category === 'Pro';
-                           const isExpired = user?.isPremium && user.premiumUntil && new Date(user.premiumUntil) < new Date();
-                           if (isPro && (!user?.isPremium || isExpired) && !cv.isPaid) {
-                               return <span style={{ fontSize: '0.7rem', background: '#fee2e2', color: '#b91c1c', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px' }}>Renew Required</span>
-                           }
-                           return null;
-                        })()}
+                         {(() => {
+                            const isPro = cv.templateId?.category === 'Pro';
+                            const isUserExpired = user?.isPremium && user.premiumUntil && new Date(user.premiumUntil) < new Date();
+                            // Show renew required if: Pro template AND (User expired OR Not Premium) AND (CV has no active purchase)
+                            // We use cv.isExpired which now comes from backend for specific CV purchases
+                            // If cv.isPaid is true but cv.isExpired is true, it means individual purchase expired.
+                            if (isPro && (!user?.isPremium || isUserExpired) && (!cv.isPaid || cv.isExpired)) {
+                                return <span style={{ fontSize: '0.7rem', background: '#fee2e2', color: '#b91c1c', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px' }}>Renew Required</span>
+                            }
+                            return null;
+                         })()}
                      </div>
                      <p>{language === 'Arabic' ? 'آخر تحديث' : 'Last Updated'}: {timeAgo(cv.updatedAt)}</p>
                      
@@ -503,15 +522,11 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
                   <div className="resume-card-footer">
                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <h3>{cv.title || 'Untitled Resume'}</h3>
-                        <span style={{ fontSize: '0.7rem', background: '#d1fae5', color: '#059669', padding: '2px 6px', borderRadius: '4px' }}>Paid</span>
-                        {(() => {
-                           const isPro = cv.templateId?.category === 'Pro';
-                           const isExpired = user?.isPremium && user.premiumUntil && new Date(user.premiumUntil) < new Date();
-                           if (isPro && (!user?.isPremium || isExpired) && !cv.isPaid) {
-                               return <span style={{ fontSize: '0.7rem', background: '#fee2e2', color: '#b91c1c', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px' }}>Renew Required</span>
-                           }
-                           return null;
-                        })()}
+                        {cv.isPaid && !cv.isExpired ? (
+                           <span style={{ fontSize: '0.7rem', background: '#d1fae5', color: '#059669', padding: '2px 6px', borderRadius: '4px' }}>Paid</span>
+                        ) : (
+                           <span style={{ fontSize: '0.7rem', background: '#fee2e2', color: '#b91c1c', padding: '2px 6px', borderRadius: '4px' }}>Expired</span>
+                        )}
                      </div>
                      <p>{language === 'Arabic' ? 'آخر تحديث' : 'Last Updated'}: {timeAgo(cv.updatedAt)}</p>
                      
