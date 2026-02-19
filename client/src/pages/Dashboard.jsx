@@ -29,7 +29,6 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, on
     visible: { opacity: 1, y: 0 }
   };
   
-  // ... existing form state ...
   const [formData, setFormData] = useState({
     jobTitle: '',
     company: '',
@@ -37,6 +36,7 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, on
     date: new Date().toLocaleDateString('en-CA'),
     status: 'applied',
     notes: '',
+    jobDescription: '', 
     jobLink: '',
     expectedSalary: '',
     offeredSalary: '',
@@ -66,6 +66,7 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, on
         location: data.location || prev.location,
         status: data.status || prev.status,
         notes: data.notes || prev.notes,
+        jobDescription: data.jobDescription || prev.jobDescription, 
         jobLink: data.jobLink || prev.jobLink,
         expectedSalary: data.expectedSalary || prev.expectedSalary,
       }));
@@ -94,6 +95,7 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, on
       date: new Date().toLocaleDateString('en-CA'),
       status: 'applied',
       notes: '',
+      jobDescription: '',
       jobLink: '',
       expectedSalary: '',
       offeredSalary: '',
@@ -198,8 +200,9 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, on
             </div>
             <div className="form-group">
               <label htmlFor="application-date">{t.date} *</label>
-              <input type="date" id="application-date" className="form-control" value={formData.date} onChange={handleChange} required />
+              <input type="date" id="application-date" className="form-control" style={{ height: '42px' }} value={formData.date} onChange={handleChange} required />
             </div>
+            {/* Status (Left Top) */}
             <div className="form-group select-group">
               <label htmlFor="status">{t.status} *</label>
               <div className="select-wrapper">
@@ -211,35 +214,54 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, on
                   <option value="rejected">{t.rejected}</option>
                   <option value="canceled">{t.canceled}</option>
                 </select>
-                  <ChevronDown className="chevron" size={16} />
-                </div>
+                <ChevronDown className="chevron" size={16} />
+              </div>
             </div>
-            <div className="form-group full-width">
+
+            {/* Job Description (Right Top - Spanning 2 Rows) */}
+            <div className="form-group" style={{ gridRow: 'span 2' }}>
+              <label htmlFor="jobDescription">{t.job_description}</label>
+              <textarea 
+                id="jobDescription" 
+                className="form-control" 
+                rows="5" 
+                placeholder={t.paste_job_description_placeholder}
+                value={formData.jobDescription} 
+                onChange={handleChange}
+                style={{ height: '100%' }}
+              ></textarea>
+            </div>
+
+            {/* Notes (Left Bottom) */}
+            <div className="form-group">
               <label htmlFor="notes">{t.notes}</label>
               <textarea id="notes" className="form-control" rows="2" value={formData.notes} onChange={handleChange}></textarea>
             </div>
+
+            {/* Job Posting URL (Below everything or Right Bottom if room) */}
             <div className="form-group">
               <label htmlFor="jobLink">{t.job_posting_url}</label>
               <input type="url" id="jobLink" className="form-control" placeholder="https://..." value={formData.jobLink} onChange={handleChange} />
             </div>
+
             <div className="form-group">
               <label htmlFor="expectedSalary">{t.expected_salary}</label>
               <input type="text" id="expectedSalary" className="form-control" placeholder="e.g., 50k - 60k" value={formData.expectedSalary} onChange={handleChange} />
             </div>
-            <div className="form-group">
+            <div className="form-group" style={{ maxWidth: 'none', width: '100%' }}>
               <label htmlFor="offeredSalary">{t.offered_salary}</label>
-              <input type="text" id="offeredSalary" className="form-control" placeholder="e.g., 55k" value={formData.offeredSalary} onChange={handleChange} />
+              <input type="text" id="offeredSalary" className="form-control" style={{ width: '100%' }} placeholder="e.g., 55k" value={formData.offeredSalary} onChange={handleChange} />
             </div>
-            <div className="form-group">
+            <div className="form-group" style={{ maxWidth: 'none', width: '100%' }}>
               <label htmlFor="recruiterName">{t.recruiter_name}</label>
-              <input type="text" id="recruiterName" className="form-control" value={formData.recruiterName} onChange={handleChange} />
+              <input type="text" id="recruiterName" className="form-control" style={{ width: '100%' }} value={formData.recruiterName} onChange={handleChange} />
             </div>
             <div className="form-group">
               <label htmlFor="recruiterEmail">{t.recruiter_email}</label>
               <input type="email" id="recruiterEmail" className="form-control" placeholder="e.g., john@company.com" value={formData.recruiterEmail} onChange={handleChange} />
             </div>
           </div>
-          <button type="submit" className="btn-submit">{t.add_application}</button>
+          <button type="submit" className="btn-submit">{t.save_application}</button>
         </form>
       </motion.div>
 

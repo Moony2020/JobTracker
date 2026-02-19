@@ -50,6 +50,11 @@ const ApplicationSchema = new mongoose.Schema(
       trim: true,
       maxlength: [500, "Notes cannot be more than 500 characters"],
     },
+    jobDescription: {
+      type: String,
+      trim: true,
+      maxlength: [5000, "Job description cannot be more than 5000 characters"],
+    },
     jobLink: {
       type: String,
       trim: true,

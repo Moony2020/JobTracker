@@ -74,9 +74,10 @@ router.post('/parse', auth, async (req, res) => {
             - company: The company name (e.g., "Google")
             - location: The location if mentioned (e.g., "Stockholm, Sweden" or "Remote")
             - status: Default this to "applied"
-            - notes: A brief 1-2 sentence summary of requirements.
+            - notes: LEAVE THIS EMPTY STRING "".
             - jobLink: The URL to the job posting if found.
             - expectedSalary: Any salary range mentioned in the description.
+            - jobDescription: Return the FULL original job description text exactly as provided.
 
             Job Description:
             ${text}
