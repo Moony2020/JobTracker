@@ -4635,6 +4635,16 @@ footer {
     align-items: start;
 }
 
+/* Force all inputs in the grid to full width */
+.form-grid .form-group input,
+.form-grid .form-group select,
+.form-grid .form-group textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+}
+
 @media (max-width: 768px) {
     .form-grid {
         grid-template-columns: 1fr;

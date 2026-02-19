@@ -250,11 +250,11 @@ const Dashboard = ({ applications, stats, onAddApplication, onEdit, onDelete, on
             </div>
             <div className="form-group" style={{ maxWidth: 'none', width: '100%' }}>
               <label htmlFor="offeredSalary">{t.offered_salary}</label>
-              <input type="text" id="offeredSalary" className="form-control" style={{ width: '100%' }} placeholder="e.g., 55k" value={formData.offeredSalary} onChange={handleChange} />
+              <input type="text" id="offeredSalary" className="form-control" style={{ width: '100%', display: 'block' }} placeholder="e.g., 55k" value={formData.offeredSalary} onChange={handleChange} />
             </div>
             <div className="form-group" style={{ maxWidth: 'none', width: '100%' }}>
               <label htmlFor="recruiterName">{t.recruiter_name}</label>
-              <input type="text" id="recruiterName" className="form-control" style={{ width: '100%' }} value={formData.recruiterName} onChange={handleChange} />
+              <input type="text" id="recruiterName" className="form-control" style={{ width: '100%', display: 'block' }} value={formData.recruiterName} onChange={handleChange} />
             </div>
             <div className="form-group">
               <label htmlFor="recruiterEmail">{t.recruiter_email}</label>
