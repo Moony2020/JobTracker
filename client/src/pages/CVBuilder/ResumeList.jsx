@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import { Plus, Edit3, Trash2, FileText, Download, Crown, Loader2 } from 'lucide-react';
+import { Plus, Edit3, Trash2, Download, Copy, ExternalLink, Filter, ChevronDown, Check, X, Loader2, Crown, LayoutTemplate, MoreVertical, ChevronUp, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import TemplateRenderer from './Templates/TemplateRenderer';
 import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
@@ -349,9 +349,9 @@ const ResumeList = ({ onEdit, onCreate, language, showNotify }) => {
       <section className="dashboard-section" id="templates-section">
         <div className="section-header">
            <h2>{language === 'Arabic' ? 'نماذج السير الذاتية' : 'Sample Resume'}</h2>
-           <button className="btn-link" onClick={() => setShowAllTemplates(!showAllTemplates)}>
+           <button className="btn-link" onClick={() => setShowAllTemplates(!showAllTemplates)} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
              {language === 'Arabic' ? 'عرض الكل' : (showAllTemplates ? 'Show Less' : 'See All')} 
-             <span style={{ marginLeft: 5 }}>{showAllTemplates ? '↑' : '→'}</span>
+             {showAllTemplates ? <ChevronUp size={16} /> : <ArrowRight size={16} />}
            </button>
         </div>
         
