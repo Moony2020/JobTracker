@@ -62,3 +62,18 @@ npm run dev
 - `/client`: React + Vite frontend
 - `/server`: Node.js + Express backend
 - `/public`: Static assets
+
+## Key Features & Updates (Feb 2026)
+
+### 🔒 Pro Access Control
+
+- **Strict Expiry Enforcement**: Premium downloads are now strictly blocked after 7 days (or subscription end), requiring renewal.
+- **Backend Validation**: `isPaid` and `isExpired` flags are calculated server-side to prevent client-side bypasses.
+- **Manual Repair**: Added a "Repair Access" tool in the editor to resolve sync issues for valid purchases.
+
+### 🎨 UI & UX Polish
+
+- **Dark Mode Clarity**: The "Delete Confirmation" modal now features a solid, high-contrast background for better readability in dark mode.
+- **Mobile Responsiveness**: The "Renew Access" modal buttons are now fully visible and properly stacked on small screens.
+- **Modern Icons**: Replaced legacy text arrows with modern `Lucide` icons in the Resume List.
+- **Smart Photo Handling**: Profile photo upload UI is automatically hidden for text-only templates.
