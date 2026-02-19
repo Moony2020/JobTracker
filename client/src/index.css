@@ -4585,3 +4585,60 @@ footer {
         font-size: 1.2rem !important; /* Smaller logo for mobile */
     }
 }
+
+/* Refined Delete Modal Styles */
+.btn-close-modal {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    background: rgba(150, 150, 150, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-close-modal:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger-color);
+}
+
+.modal-text {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.delete-target-name {
+    font-weight: 600;
+    margin-top: 0.4rem;
+    color: var(--text-color);
+    font-size: 1rem;
+    margin: 0.2rem 0 0;
+}
+
+/* Dark Mode Modal Overrides for Clarity */
+.dark-mode .modal-content {
+    background: #1e293b !important; /* Solid dark background, no blur/transparency */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); /* Stronger shadow */
+}
+
+.dark-mode .btn-close-modal {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .btn-close-modal:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+/* Ensure header border is visible in dark mode */
+.dark-mode .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
