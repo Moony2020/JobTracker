@@ -7,7 +7,7 @@ import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
 import RichTextEditor from '../../components/RichTextEditor';
 import { 
   Bold, Italic, Underline, Link as LinkIcon, List, AlignLeft, AlignCenter, AlignRight,
-  CheckCircle, Trash2, Plus, Minus, ChevronUp, ChevronDown, Layout, X, ChevronLeft, Download,
+  CheckCircle, Trash2, Plus, Minus, ChevronUp, ChevronDown, Layout, X, ChevronLeft, ChevronRight, Download,
   User, Briefcase, GraduationCap, Globe, Code, Heart, Type, ArrowLeft, Palette, Save, Eye, FileText, HelpCircle, Check, Camera, Upload, Loader2, Calendar, Search as SearchIcon,
   AlertCircle, LogIn, AlertTriangle
 } from 'lucide-react';
@@ -16,6 +16,7 @@ import { SUMMARY_EXAMPLES } from './Examples';
 import './CVBuilder.css';
 import api from '../../services/api';
 
+/* cspell:disable */
 
 const DateInput = ({ value, onChange, disabled }) => {
   // Parse existing "YYYY-MM" value
@@ -142,6 +143,8 @@ const SAMPLE_DATA = {
   links: []
 };
 
+/* cspell: disable */
+/* cspell: disable */
 const LANGUAGES = [
   { code: 'Swedish', label: 'Svenska', iso: 'se' },
   { code: 'English', label: 'English', iso: 'us' },
@@ -163,6 +166,7 @@ const LANGUAGES = [
   { code: 'French', label: 'Français', iso: 'fr' },
   { code: 'Polish', label: 'Polski', iso: 'pl' }
 ];
+/* cspell:enable */
 
 const TEMPLATE_DEFAULTS = {
   modern: '#2563eb',      // Blue
@@ -251,11 +255,21 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
   const [isExporting, setIsExporting] = useState(false);
   const [availableTemplates, setAvailableTemplates] = useState([]);
   const canvasRef = React.useRef(null);
+  const previewPaneRef = React.useRef(null);
+
+  // A4 page constants (96dpi)
+  const PAGE_WIDTH = 794;
+  const PAGE_HEIGHT = 1050; // Slightly shorter as requested
+  const PREVIEW_MIN_SCALE = 0.45;
+  const PREVIEW_MAX_SCALE = 0.55;
+  const PREVIEW_MARGIN = 0; // Pushed upper
+  const PREVIEW_FOOTER_SPACE = 80; // Pushed down
   
   // Page Tracking State
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const previewScrollRef = React.useRef(null); // Ref for scroll container
+  const [previewScale, setPreviewScale] = useState(PREVIEW_MAX_SCALE);
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
     section: null,
@@ -266,7 +280,9 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
   const [dataLoaded, setDataLoaded] = useState(false); // Safety flag
   const isMigrating = useRef(false); // Guard against duplicate POSTs during login transition
   const [renewalModalOpen, setRenewalModalOpen] = useState(false);
-  const [isSwitchingTemplate, setIsSwitchingTemplate] = useState(false);
+  // const [isSwitchingTemplate, setIsSwitchingTemplate] = useState(false);
+  // DEBUG STATE
+  // const [debugInfo, setDebugInfo] = useState({ height: 0, pages: 1 });
 
   // UTILITIES
   const updateNestedState = (path, value) => {
@@ -307,6 +323,30 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
     });
   };
 
+  // Keep preview scaled to fit available space and stay centered
+  useEffect(() => {
+    const pane = previewPaneRef.current;
+    if (!pane) return;
+
+    const computeScale = () => {
+      const width = pane.clientWidth || 0;
+      const height = pane.clientHeight || 0;
+      if (!width || !height) return;
+
+      const availableWidth = Math.max(0, width - PREVIEW_MARGIN * 2);
+      const availableHeight = Math.max(0, height - PREVIEW_FOOTER_SPACE - PREVIEW_MARGIN * 2);
+      const scaleByWidth = availableWidth / PAGE_WIDTH;
+      const scaleByHeight = availableHeight / PAGE_HEIGHT;
+      const next = Math.min(PREVIEW_MAX_SCALE, scaleByWidth, scaleByHeight);
+      setPreviewScale(Math.max(PREVIEW_MIN_SCALE, next));
+    };
+
+    computeScale();
+    const resizeObserver = new ResizeObserver(computeScale);
+    resizeObserver.observe(pane);
+    return () => resizeObserver.disconnect();
+  }, [viewMode]);
+
   const handleApplyExample = (text) => {
     const currentSummary = cvData.data.personal.summary || '';
     const hasExistingContent = currentSummary.replace(/<[^>]*>/g, '').trim().length > 0;
@@ -326,6 +366,8 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
       lastDesktopModeRef.current = viewMode;
     }
   }, [viewMode]);
+
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -626,87 +668,45 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
     return activeCvId;
   }, [activeCvId, cvData.data, cvData.settings, cvData.title, cvData.templateKey, cvData.templateId, availableTemplates, dataLoaded, showNotify, user]);
 
+  /* Unused Premium Logic
   const handleSwitchToFree = async () => {
-    const freeTemplate = availableTemplates.find(t => t.category === 'Free') || availableTemplates[0];
-    if (!freeTemplate) return;
-
-    try {
-      setIsSwitchingTemplate(true);
-      // Update local state first for instant feedback
-      setCvData(prev => ({
-        ...prev,
-        templateKey: freeTemplate.key,
-        data: {
-          ...prev.data,
-          personal: {
-            ...prev.data.personal,
-            photo: null
-          }
-        },
-        settings: {
-          ...prev.settings,
-          themeColor: TEMPLATE_DEFAULTS[freeTemplate.key] || '#2563eb'
-        }
-      }));
-
-      // If already has an ID, update backend
-      if (activeCvId) {
-        await api.put(`/cv/${activeCvId}`, {
-          data: cvData.data,
-          settings: cvData.settings,
-          title: cvData.title,
-          templateId: freeTemplate._id
-        });
-      }
-      
-      setRenewalModalOpen(false);
-      if (showNotify) showNotify(`Switched to ${freeTemplate.name} (Free)`, 'success');
-    } catch (err) {
-      console.error("Error switching to free template:", err);
-      if (showNotify) showNotify("Failed to switch template", "error");
-    } finally {
-      setIsSwitchingTemplate(false);
-    }
+    // ...
   };
+  */
 
-  // Calculate Pages & Track Scroll
+  // Calculate pages for A4 layout
   useEffect(() => {
-    if (!canvasRef.current || !previewScrollRef.current) return;
+    if (!canvasRef.current) return;
 
     const calculatePages = () => {
-        if (!canvasRef.current) return;
-        const height = canvasRef.current.scrollHeight;
-        const pages = Math.ceil(height / 1123) || 1; // 1123px is A4 height
-        setTotalPages(pages);
+      const contentHeight = canvasRef.current.scrollHeight || 0;
+      const pages = Math.max(1, Math.ceil(contentHeight / PAGE_HEIGHT));
+      setTotalPages(pages);
+      setCurrentPage(prev => Math.min(prev, pages));
     };
 
-    // Initial calcs
     calculatePages();
-    const observer = new ResizeObserver(calculatePages);
-    if (canvasRef.current) observer.observe(canvasRef.current);
 
-    // Scroll Listener
-    const handleScroll = () => {
-        if (!previewScrollRef.current) return;
-        const scrollY = previewScrollRef.current.scrollTop;
-        const pageIndex = Math.floor((scrollY + 300) / 1123) + 1; // 1123 (A4 height, no gap)
-        setCurrentPage(Math.min(pageIndex, totalPages));
-    };
+    const observer = new MutationObserver(calculatePages);
+    observer.observe(canvasRef.current, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true
+    });
 
-    const scrollContainer = previewScrollRef.current;
-    if (scrollContainer) scrollContainer.addEventListener('scroll', handleScroll);
-    
+    const resizeObserver = new ResizeObserver(calculatePages);
+    resizeObserver.observe(canvasRef.current);
+
     return () => {
-        observer.disconnect();
-        if (scrollContainer) scrollContainer.removeEventListener('scroll', handleScroll);
+      observer.disconnect();
+      resizeObserver.disconnect();
     };
-  }, [totalPages]); 
+  }, [cvData, PAGE_HEIGHT]);
 
-  // Auto-scroll to page 2 if needed (optional helper)
   const scrollToPage = (page) => {
-      if (!previewScrollRef.current) return;
-      const targetY = (page - 1) * 1133;
-      previewScrollRef.current.scrollTo({ top: targetY, behavior: 'smooth' });
+    const safePage = Math.min(Math.max(page, 1), totalPages);
+    setCurrentPage(safePage);
   };
 
   useEffect(() => {
@@ -1203,7 +1203,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
                           onChange={(e) => updateNestedState('data.personal.lastName', e.target.value)}
                         />
                       </div>
-                      <div className="form-group">
+                      <div className="form-group full-width">
                         <label className="form-label">{currentUI.jobTitle}</label>
                         <input 
                           className="form-input" 
@@ -1211,7 +1211,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
                           onChange={(e) => updateNestedState('data.personal.jobTitle', e.target.value)}
                         />
                       </div>
-                      <div className="form-group">
+                      <div className="form-group full-width">
                         <label className="form-label">{currentUI.email}</label>
                         <input 
                           className="form-input" 
@@ -1492,7 +1492,8 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
 
                 {activeSection === 'summary' && (
                   <div className="section-content-inner" style={{ paddingTop: 0 }}>
-                    <div className="form-group full-width">
+                    <div className="form-group always-full-width" style={{ marginTop: '20px' }}>
+                      <label className="form-label" style={{ marginBottom: '8px' }}>{currentUI.professionalSummary}</label>
                       <RichTextEditor 
                         value={cvData.data.personal.summary} 
                         onChange={(val) => updateNestedState('data.personal.summary', val)}
@@ -1561,8 +1562,8 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
                             />
                           </div>
                         </div>
-                        <div className="form-group" style={{ marginTop: '12px' }}>
-                          <label className="form-label">Description</label>
+                        <div className="form-group always-full-width" style={{ marginTop: '20px' }}>
+                          <label className="form-label" style={{ marginBottom: '8px' }}>Description</label>
                           <RichTextEditor 
                             value={exp.description} 
                             onChange={(val) => updateItem('experience', idx, 'description', val)}
@@ -1636,8 +1637,8 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
                             />
                           </div>
                         </div>
-                        <div className="form-group" style={{ marginTop: '12px' }}>
-                          <label className="form-label">Description</label>
+                        <div className="form-group always-full-width" style={{ marginTop: '20px' }}>
+                          <label className="form-label" style={{ marginBottom: '8px' }}>Description</label>
                           <RichTextEditor 
                             value={edu.description} 
                             onChange={(val) => updateItem('education', idx, 'description', val)}
@@ -2016,51 +2017,109 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
           )}
         </aside>
 
-        <main className="editor-preview-pane">
+        {/* DEBUG OVERLAY REMOVED - Logic confirmed working */}
+
+        <main className="editor-preview-pane" ref={previewPaneRef}>
           <div className="preview-scroll-area" ref={previewScrollRef}>
-            <div className="preview-scaler">
-              <div className={`resume-paper-canvas ${!isPrintMode ? 'show-page-breaks' : ''}`} ref={canvasRef}>
-                <TemplateRenderer 
-                  templateKey={cvData.templateKey} 
-                  data={cvData.data} 
-                  settings={cvData.settings} 
-                />
+            {/* SCALER CONTAINER: Full Width + Flex Center */}
+            {/* SCALER CONTAINER: Full Width + Flex Center */}
+            {/* SCALER CONTAINER: Full Width + Flex Center */}
+            <div className="preview-shell" style={{ 
+                width: '100%', 
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+                padding: '0',
+                margin: '0',
+                boxSizing: 'border-box'
+            }}>
+              {/* LAYOUT WRAPPER: Exact size for Scale 0.75 (806 * 0.75 = 604.5) */}
+              <div
+                  className="preview-slot"
+                  style={{
+                    width: `${Math.round(PAGE_WIDTH * previewScale)}px`,
+                    height: `${Math.round(PAGE_HEIGHT * previewScale)}px`,
+                    position: 'relative',
+                    margin: '0 auto',
+                    boxSizing: 'border-box'
+                  }}
+              >
+                {/* VISUAL LAYER */}
+                <div
+                  className="preview-scaler-live"
+                  style={{
+                    width: `${PAGE_WIDTH}px`,
+                    height: `${PAGE_HEIGHT}px`,
+                    transform: `scale(${previewScale})`,
+                    transformOrigin: 'top left'
+                  }}
+                >
+                  <div
+                    className="preview-page-viewport-live"
+                    style={{
+                      width: `${PAGE_WIDTH}px`,
+                      height: `${PAGE_HEIGHT}px`,
+                      overflow: 'hidden',
+                      position: 'relative',
+                      background: 'transparent',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'flex-start'
+                    }}
+                  >
+                    {/* THE CANVAS */}
+                    <div
+                      className={`resume-paper-canvas ${!isPrintMode ? 'show-page-breaks' : ''}`}
+                      ref={canvasRef}
+                      style={{
+                        margin: '0 auto',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+                        transform: `translateY(-${(currentPage - 1) * PAGE_HEIGHT}px)`,
+                        transition: 'transform 0.3s ease-out',
+                        width: `${PAGE_WIDTH}px`
+                      }}
+                    >
+                      <TemplateRenderer
+                        templateKey={cvData.templateKey}
+                        data={cvData.data}
+                        settings={cvData.settings}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Premium Pill - Inside scroll area to stay under CV */}
+          <div className="preview-footer-minimal" style={{ marginBottom: '10px' }}>
+            {isSaved ? (
+              <div className="status-saved-text" style={{ display: 'flex', alignItems: 'center', color: '#10b981', gap: '8px' }}>
+                <CheckCircle size={14} strokeWidth={3} />
+                <span>Saved</span>
+              </div>
+            ) : (
+              <div className="status-saved-text" style={{ color: '#cbd5e1' }}>
+                <span>Saving...</span>
+              </div>
+            )}
 
-
-             <div className="preview-footer-minimal">
-                {isSaved ? (
-                  <div className="status-saved-text" style={{ display: 'flex', alignItems: 'center', color: '#10b981', gap: '8px' }}>
-                    <CheckCircle size={14} strokeWidth={3} />
-                    <span>Saved</span>
-                  </div>
-                ) : (
-                  <div className="status-saved-text" style={{ color: '#cbd5e1' }}>
-                    <span>Saving...</span>
-                  </div>
-                )}
-
-                <div className="pagination-text">
-                    <button 
-                        className="page-link-btn" 
-                        onClick={() => scrollToPage(currentPage > 1 ? currentPage - 1 : totalPages)}
-                        disabled={totalPages <= 1}
-                    >
-                        <ChevronUp size={14} />
-                    </button>
-                    <span>Page {currentPage} / {totalPages}</span>
-                    <button 
-                        className="page-link-btn" 
-                        onClick={() => scrollToPage(currentPage < totalPages ? currentPage + 1 : 1)}
-                        disabled={totalPages <= 1}
-                    >
-                        <ChevronDown size={14} />
-                    </button>
-                </div>
-             </div>
+            <div className="pagination-text">
+                <button 
+                    className="page-link-btn" 
+                    onClick={() => scrollToPage(currentPage - 1)}
+                    disabled={currentPage <= 1}
+                >
+                    <ChevronLeft size={16} />
+                </button>
+                <span>Page {currentPage} / {totalPages}</span>
+                <button 
+                    className="page-link-btn" 
+                    onClick={() => scrollToPage(currentPage + 1)}
+                    disabled={currentPage >= totalPages}
+                >
+                    <ChevronRight size={16} />
+                </button>
+            </div>
           </div>
         </main>
       </div>
@@ -2260,5 +2319,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
     </div>
   );
 };
+
+/* cspell: enable */
 
 export default Editor;
