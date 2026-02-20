@@ -957,7 +957,7 @@
   gap: 12px;
   align-items: center;
   justify-content: center;
-  padding: 7px 20px;
+  padding: 4px 16px;
   background: rgba(30, 41, 59, 0.95);
   backdrop-filter: blur(8px);
   border-radius: 30px;
@@ -1003,7 +1003,7 @@
 .pagination-text {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
   font-size: 0.9rem;
 }
 
@@ -2399,8 +2399,8 @@
 
   .editor-preview-pane {
     height: auto !important;
-    min-height: 700px;
-    /* INCREASED to accommodate scaled CV of 584px + padding */
+    min-height: 750px;
+    /* REDUCED significantly for tighter mobile layout */
     padding: 0 !important;
     background: #cbd5e1 !important;
     /* FORCED GREY BACK */
@@ -2415,7 +2415,8 @@
   .preview-scroll-area {
     width: 100% !important;
     height: auto !important;
-    padding: 30px 10px 60px 10px !important;
+    padding: 30px 10px 50px 10px !important;
+    /* REDUCED bottom padding */
     /* INCREASED TOP PADDING to 30px for proper CV spacing */
     display: flex !important;
     flex-direction: column !important;
@@ -2471,8 +2472,8 @@
   .preview-footer-minimal {
     position: static !important;
     transform: none !important;
-    margin: 15px auto 30px auto !important;
-    /* PUSHED DOWN TO CLEAR CV EDGE */
+    margin: 15px auto 50px auto !important;
+    /* REDUCED bottom margin */
 
     padding-top: 14px !important;
     /* MOBILE SPECIFIC PADDING */
@@ -4313,6 +4314,6 @@ body.dark-mode .section-header h2,
 /* Footer pill position: keep deterministic across resizes (no refresh) */
 @media (max-width: 786px) {
   .mode-content .preview-footer-minimal {
-    bottom: 170px !important;
+    bottom: 180px !important;
   }
 }

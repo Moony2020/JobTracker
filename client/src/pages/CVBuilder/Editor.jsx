@@ -7,7 +7,7 @@ import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
 import RichTextEditor from '../../components/RichTextEditor';
 import { 
   Bold, Italic, Underline, Link as LinkIcon, List, AlignLeft, AlignCenter, AlignRight,
-  CheckCircle, Trash2, Plus, Minus, ChevronUp, ChevronDown, Layout, X, ChevronLeft, ChevronRight, Download,
+  CheckCircle, Trash2, Plus, Minus, ChevronUp, ChevronDown, Layout, X, Download,
   User, Briefcase, GraduationCap, Globe, Code, Heart, Type, ArrowLeft, Palette, Save, Eye, FileText, HelpCircle, Check, Camera, Upload, Loader2, Calendar, Search as SearchIcon,
   AlertCircle, LogIn, AlertTriangle
 } from 'lucide-react';
@@ -261,7 +261,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
   const PAGE_WIDTH = 794;
   const PAGE_HEIGHT = 1050; // Slightly shorter as requested
   const PREVIEW_MIN_SCALE = 0.45;
-  const PREVIEW_MAX_SCALE = 0.55;
+  const PREVIEW_MAX_SCALE = 0.59;
   const PREVIEW_MARGIN = 0; // Pushed upper
   const PREVIEW_FOOTER_SPACE = 80; // Pushed down
   
@@ -2076,14 +2076,19 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
                         boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
                         transform: `translateY(-${(currentPage - 1) * PAGE_HEIGHT}px)`,
                         transition: 'transform 0.3s ease-out',
-                        width: `${PAGE_WIDTH}px`
+                        width: `${PAGE_WIDTH}px`,
+                        minHeight: `${totalPages * PAGE_HEIGHT}px`,
+                        display: 'flex',
+                        flexDirection: 'column'
                       }}
                     >
-                      <TemplateRenderer
-                        templateKey={cvData.templateKey}
-                        data={cvData.data}
-                        settings={cvData.settings}
-                      />
+                      <div className="template-content-wrapper" style={{ flex: 1, width: '100%', minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
+                        <TemplateRenderer
+                          templateKey={cvData.templateKey}
+                          data={cvData.data}
+                          settings={cvData.settings}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2109,7 +2114,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
                     onClick={() => scrollToPage(currentPage - 1)}
                     disabled={currentPage <= 1}
                 >
-                    <ChevronLeft size={16} />
+                    <ChevronUp size={16} />
                 </button>
                 <span>Page {currentPage} / {totalPages}</span>
                 <button 
@@ -2117,7 +2122,7 @@ const Editor = ({ cvId: propCvId, onBack, showNotify, isPrintMode, onLoginClick,
                     onClick={() => scrollToPage(currentPage + 1)}
                     disabled={currentPage >= totalPages}
                 >
-                    <ChevronRight size={16} />
+                    <ChevronDown size={16} />
                 </button>
             </div>
           </div>

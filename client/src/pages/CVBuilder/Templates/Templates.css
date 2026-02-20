@@ -8,8 +8,15 @@
     overflow-wrap: break-word;
     width: 100% !important;
     max-width: 100% !important;
-    /* Ensure content flows across pages instead of cutting off */
     overflow: visible !important;
+}
+
+.resume-template {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 100% !important;
+    width: 100% !important;
 }
 
 /* Page break rules for PDF Export */
@@ -21,6 +28,13 @@
 h2, .pro-content-title, .sidebar-title {
     page-break-after: avoid !important;
     break-after: avoid !important;
+}
+
+/* Orphaned Header Prevention */
+.pro-content-section, .modern-template section, .classic-template section, .timeline-template .main-section, .executive-template .content-section, .elegant-template .content-section {
+    page-break-inside: avoid !important;
+    break-inside: avoid-page !important;
+    break-inside: avoid !important;
 }
 
 /* Force Desktop Width in Thumbnail Mode */
@@ -213,22 +227,25 @@ h2, .pro-content-title, .sidebar-title {
 
 /* Professional Blue Template - Premium Sidebar Design */
 .professional-blue-template {
-    display: flex; /* Revert to flex */
-    width: 100%;
-    min-height: 1123px;
-    background-color: white !important; /* Force White */
-    position: relative;
+    display: grid !important;
+    grid-template-columns: 280px 1fr !important;
+    width: 100% !important;
+    flex: 1 !important; /* Force stretch in flex-stack */
+    min-height: 100% !important; /* Key: Fill the whole canvas height */
+    background-color: white !important;
+    position: relative !important;
     overflow: visible;
 }
 
 .pro-sidebar-bg {
-    position: fixed;
+    position: absolute !important;
     top: 0;
     left: 0;
     bottom: 0;
     width: 280px;
     background-color: var(--theme-color);
     z-index: 0;
+    height: 100% !important; /* Stretch to parent bottom */
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
 }
