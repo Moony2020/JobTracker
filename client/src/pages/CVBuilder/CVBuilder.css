@@ -412,9 +412,14 @@
 
 /* Ensure preview centering in content mode (override legacy tablet scaling) */
 .mode-content .preview-scroll-area {
-  padding: 0 !important;
-  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
   align-items: center !important;
+  justify-content: flex-start !important;
+  padding: 0 !important; /* CRITICAL: Must be 0 to remove top/bottom grey gaps */
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  background: #cbd5e1 !important;
 }
 
 .mode-content .preview-scaler {
@@ -902,7 +907,7 @@
   /* width: 419px !important;                 <-- HANDLED BY REACT */
   position: relative;
   overflow: visible !important;
-  margin-bottom: 60px !important;
+  margin-bottom: -60px !important;
 }
 
 .resume-paper-canvas {
@@ -950,7 +955,7 @@
 /* Medium-Small Floating Footer Pill */
 .preview-footer-minimal {
   position: fixed !important;
-  bottom: 0px !important;
+  bottom: 16px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
   display: flex;
@@ -970,6 +975,7 @@
   width: fit-content;
   flex-shrink: 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  visibility: visible !important;
 }
 
 .preview-footer-minimal .status-saved-text span,
@@ -1263,7 +1269,7 @@
 
 @media (min-width: 993px) {
   .design-sections-scrollable {
-    padding-top: 30px;
+    padding-top: 10px;
     /* Top padding ONLY for desktop as requested */
   }
 }
@@ -2126,7 +2132,7 @@
   .mode-design .preview-footer-minimal {
     display: none !important;
   }
-
+  }
   /* Large Screens (>1400px) */
   @media (min-width: 1400px) {
     .mode-design .preview-scaler {
@@ -2142,7 +2148,6 @@
     display: none !important;
   }
 
-}
 
 /* Specific Tablet Range (768px - 992px) */
 @media (min-width: 787px) and (max-width: 992px) {
@@ -2399,62 +2404,44 @@
 
   .editor-preview-pane {
     height: auto !important;
-    min-height: 750px;
-    /* REDUCED significantly for tighter mobile layout */
+    min-height: 550px !important; /* Aggressive increase per user request */
     padding: 0 !important;
     background: #cbd5e1 !important;
-    /* FORCED GREY BACK */
     display: flex !important;
     flex-direction: column !important;
-    align-items: center !important;
+    align-items: center !important; /* PERFECT CENTER */
+    justify-content: flex-start !important;
     overflow: visible !important;
-    /* LET PARENT HANDLE SCROLL */
     width: 100% !important;
   }
 
   .preview-scroll-area {
     width: 100% !important;
     height: auto !important;
-    padding: 30px 10px 50px 10px !important;
-    /* REDUCED bottom padding */
-    /* INCREASED TOP PADDING to 30px for proper CV spacing */
+    padding: 70px 0 150px 0 !important; /* Aggressive top and bottom clearance */
     display: flex !important;
     flex-direction: column !important;
-    align-items: center !important;
+    align-items: center !important; /* PERFECT CENTER */
     justify-content: flex-start !important;
-    /* CHANGED TO FLEX-START FOR STABLE TOP SPACING */
     overflow: visible !important;
     background: #cbd5e1 !important;
-    background-color: #cbd5e1 !important;
     box-sizing: border-box !important;
+    margin: 0 !important;
   }
 
   .preview-scaler {
-    margin: -16px auto 0 auto !important;
-    /* MATCH DESKTOP: Proper top adjustment for CV positioning */
+    margin: 0 auto !important; /* PERFECT CENTER */
     transform-origin: top center !important;
-    transform: scale(0.52) !important;
-    /* MATCH DESKTOP: Increased scale for proper CV size */
-    height: 584px !important;
-    /* 1123 * 0.52 = Matching desktop size */
-    width: 419px !important;
-    /* 806 * 0.52 = Matching desktop size */
+    transform: scale(0.44) !important; /* REDUCED SCALE to fit mobile width (375px) */
+    height: 494px !important; /* 1123 * 0.44 = 494.12 */
+    width: 355px !important; /* 806 * 0.44 = 354.64 */
     position: relative;
     display: block !important;
     flex-shrink: 0;
+    left: auto !important;
+    right: auto !important;
   }
 
-  /* Extra scaling for very narrow devices to prevent clipping */
-  @media (max-width: 420px) {
-    .preview-scaler {
-      transform: scale(0.40) !important;
-      /* Slightly smaller for safer fit */
-      height: 450px !important;
-      width: 322px !important;
-    }
-  }
-
-  /* Ensure the paper canvas centers within the mobile footprint */
   .preview-scaler .resume-paper-canvas {
     width: 806px !important;
     position: absolute;
@@ -2464,44 +2451,34 @@
 
   .template-grid-sidebar {
     grid-template-columns: 1fr !important;
-    /* SURGICAL FIX: 1 Column on Mobile */
     gap: 12px !important;
   }
 
-  /* Reposition floating pill UNDER the CV in the scroll flow - COMPACT VERSION */
   .preview-footer-minimal {
     position: static !important;
     transform: none !important;
-    margin: 15px auto 50px auto !important;
-    /* REDUCED bottom margin */
-
-    padding-top: 14px !important;
-    /* MOBILE SPECIFIC PADDING */
-    padding-bottom: 14px !important;
-
-    background: rgba(30, 41, 59, 0.95) !important;
-    backdrop-filter: blur(4px);
+    margin: 10px auto 20px auto !important; /* Tight to content but with bottom breathing room */
+    padding: 4px 12px !important; /* Tiny Pill */
+    background: rgba(30, 41, 59, 1) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     width: fit-content !important;
-    padding: 6px 16px !important;
     border-radius: 20px !important;
     pointer-events: auto !important;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2) !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
     z-index: 10 !important;
     display: flex !important;
     align-items: center !important;
     gap: 12px !important;
+    flex-shrink: 0 !important;
   }
 
   .preview-footer-minimal .status-saved-text span,
   .preview-footer-minimal .pagination-text span {
     font-size: 0.7rem !important;
-    /* TINY FONTS */
   }
 
   .preview-footer-minimal .status-saved-text svg {
     width: 12px !important;
-    /* TINY ICON */
     height: 12px !important;
   }
 }
@@ -3027,9 +3004,10 @@
 .pro-summary,
 .pro-exp-desc,
 .exp-description-text,
-.section-content-text {
-  word-break: break-word !important;
-  overflow-wrap: anywhere !important;
+.section-content-text,
+.resume-paper-canvas * {
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
   white-space: normal !important;
 }
 
@@ -4057,6 +4035,7 @@ body.dark-mode .section-header h2,
 }
 
 .mode-content .preview-slot {
+  margin: 0 !important;
   margin-left: auto !important;
   margin-right: auto !important;
 }
@@ -4194,98 +4173,53 @@ body.dark-mode .section-header h2,
   }
 }
 
+/* Standardize scroller spacing: ZERO borders */
 .mode-content .preview-scroll-area {
-  align-items: center !important;
-  justify-content: flex-start !important;
-  overflow-y: auto !important;
-  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important; 
+  justify-content: flex-start !important; 
+  padding: 0 !important; /* CRITICAL: Must be 0 to remove top/bottom grey gaps */
+  margin: 0 !important;
   background: #cbd5e1 !important;
   background-color: #cbd5e1 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important; 
 }
 
-
-.preview-shell {
-  width: 100%;
-  display: flex;
-  justify-content: center;
+.mode-content .preview-shell {
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
-.preview-slot {
-  display: block;
-}
-
-.preview-scaler-live {
-  display: block;
-}
-
-/* Remove top and bottom padding from CV content */
-.resume-paper-canvas>*:first-child {
+.mode-content .preview-slot {
   margin-top: 0 !important;
-  padding-top: 0 !important;
-}
-
-.resume-paper-canvas>*:last-child {
   margin-bottom: 0 !important;
-  padding-bottom: 0 !important;
 }
 
-/* Ensure the template content starts at the very top */
-.template-renderer-content {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
-
-/* Target the specific template container */
-.resume-template {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
-
-/* Remove any background color from top and bottom */
-.resume-paper-canvas::before,
-.resume-paper-canvas::after {
-  display: none !important;
-}
-
-/* Force the first element to have no top margin */
-.resume-paper-canvas h1:first-child,
-.resume-paper-canvas h2:first-child,
-.resume-paper-canvas h3:first-child,
-.resume-paper-canvas p:first-child,
-.resume-paper-canvas div:first-child {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
-
-/* Force the last element to have no bottom margin */
-.resume-paper-canvas h1:last-child,
-.resume-paper-canvas h2:last-child,
-.resume-paper-canvas h3:last-child,
-.resume-paper-canvas p:last-child,
-.resume-paper-canvas div:last-child {
-  margin-bottom: 0 !important;
-  padding-bottom: 0 !important;
-}
-
-/* Mobile: add a little top breathing room for the CV and pull the footer up */
 @media (max-width: 786px) {
+  .editor-preview-pane {
+    min-height: 500px !important; /* Reverted per user request */
+  }
+
   .mode-content .preview-scroll-area {
     flex: 0 0 auto !important;
     height: auto !important;
-    padding: 18px 10px 6px 10px !important;
+    padding: 25px 10px 60px 10px !important; /* Restoring breathing room */
     overflow: visible !important;
+    align-items: center !important;
   }
 
   .mode-content .preview-footer-minimal {
-    margin-top: 6px !important;
-    margin-bottom: 6px !important;
+    position: static !important; /* NO LONGER PINNED */
+    margin: 15px auto !important; /* Centered with small gap from CV */
   }
 }
 
 /* Base: footer pill spacing (desktop/tablet default) */
 .mode-content .preview-footer-minimal {
-  margin-top: 14px !important;
-  margin-bottom: 10px !important;
+  position: static !important; /* Follow content by default */
+  margin: 20px auto !important;
 }
 
 /* Desktop: avoid clipping the top edge; tighten spacing via footer instead */
@@ -4298,22 +4232,34 @@ body.dark-mode .section-header h2,
     margin-top: 0 !important;
   }
 
+  /* Reduce space below CV for tablets and smaller desktops */
   .mode-content .preview-footer-minimal {
-    margin-top: 12px !important;
+    margin-top: 15px !important; 
+    margin-bottom: 30px !important;
+  }
+ 
+  .mode-content .preview-scroll-area {
+    padding-bottom: 0 !important;
+  }
+
+  .mode-content .editor-preview-pane {
+    position: relative !important;
+  }
+
+  .mode-content .preview-footer-minimal {
+    position: absolute !important; /* Pin to viewport bottom */
+    bottom: 12px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
+    z-index: 100 !important;
+    background: rgba(30, 41, 59, 0.95) !important;
   }
 }
 
-/* Large desktop: push the footer pill slightly down */
-@media (min-width: 993px) {
-  .mode-content .preview-footer-minimal {
-    margin-top: 16px !important;
-    margin-bottom: 12px !important;
-  }
-}
-
-/* Footer pill position: keep deterministic across resizes (no refresh) */
+/* Footer pill position: mobile adjustments */
 @media (max-width: 786px) {
   .mode-content .preview-footer-minimal {
-    bottom: 180px !important;
+    position: static !important; 
   }
 }

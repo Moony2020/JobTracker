@@ -1,5 +1,30 @@
+/* Robust text wrapping for all sidebars and main content */
+.timeline-sidebar, .timeline-main,
+.pro-sidebar, .pro-main,
+.executive-sidebar, .executive-main,
+.elegant-sidebar, .elegant-main,
+.side-col, .main-col, .main-section,
+.sidebar-section, .sidebar-list-item,
+.section-content-text, .exp-description-text,
+.pro-exp-desc, .pro-summary,
+.pro-name, .pro-job-title, .pro-exp-title, .pro-value,
+.modern-header h1, .classic-header h1,
+.elegant-header .name, .elegant-header .title,
+.executive-header .name, .executive-header .title,
+.name-display, .job-title-display {
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  white-space: normal !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
 /* Shared Template Styles */
-.resume-paper, .modern-template, .classic-template, .professional-blue-template, .timeline-template {
+.resume-paper,
+.modern-template,
+.classic-template,
+.professional-blue-template,
+.timeline-template {
     background: white;
     box-sizing: border-box !important;
     color: #1e293b;
@@ -8,39 +33,31 @@
     overflow-wrap: break-word;
     width: 100% !important;
     max-width: 100% !important;
+    /* Ensure content flows across pages instead of cutting off */
     overflow: visible !important;
 }
 
-.resume-template {
-    display: flex !important;
-    flex-direction: column !important;
-    flex: 1 !important;
-    min-height: 100% !important;
-    width: 100% !important;
-}
-
 /* Page break rules for PDF Export */
-.exp-item, .classic-item, .pro-exp-item, .experience-item-box, .education-item-box {
+.exp-item,
+.classic-item,
+.pro-exp-item,
+.experience-item-box,
+.education-item-box {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
 }
 
-h2, .pro-content-title, .sidebar-title {
+h2,
+.pro-content-title,
+.sidebar-title {
     page-break-after: avoid !important;
     break-after: avoid !important;
 }
 
-/* Orphaned Header Prevention */
-.pro-content-section, .modern-template section, .classic-template section, .timeline-template .main-section, .executive-template .content-section, .elegant-template .content-section {
-    page-break-inside: avoid !important;
-    break-inside: avoid-page !important;
-    break-inside: avoid !important;
-}
-
 /* Force Desktop Width in Thumbnail Mode */
-.thumbnail-mode .modern-template, 
-.thumbnail-mode .classic-template, 
-.thumbnail-mode .professional-blue-template, 
+.thumbnail-mode .modern-template,
+.thumbnail-mode .classic-template,
+.thumbnail-mode .professional-blue-template,
 .thumbnail-mode .timeline-template,
 .thumbnail-mode .executive-template,
 .thumbnail-mode .elegant-template {
@@ -49,14 +66,20 @@ h2, .pro-content-title, .sidebar-title {
 }
 
 /* Print Alignment Fixes */
-.resume-paper, .modern-template, .classic-template, .professional-blue-template, .timeline-template {
-    min-height: 297mm; /* Full A4 minimum height */
+.resume-paper,
+.modern-template,
+.classic-template,
+.professional-blue-template,
+.timeline-template {
+    min-height: 297mm;
+    /* Full A4 minimum height */
     overflow: visible !important;
 }
 
 /* Modern Template */
 .modern-template {
-    width: 100%; /* Match parent 794px exactly */
+    width: 100%;
+    /* Match parent 794px exactly */
     flex: 1;
     min-height: 1123px;
     background: white;
@@ -82,6 +105,8 @@ h2, .pro-content-title, .sidebar-title {
     letter-spacing: 2px;
     line-height: 1.1;
     color: #1e293b;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .modern-header h1 span {
@@ -94,6 +119,8 @@ h2, .pro-content-title, .sidebar-title {
     line-height: 1.6;
     color: #64748b;
     max-width: 90%;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .modern-content {
@@ -110,6 +137,8 @@ h2, .pro-content-title, .sidebar-title {
     margin-bottom: 20px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .modern-template .exp-item {
@@ -120,6 +149,8 @@ h2, .pro-content-title, .sidebar-title {
     font-size: 1.15rem;
     margin: 0 0 5px 0;
     color: #1e293b;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .modern-template .meta {
@@ -127,12 +158,20 @@ h2, .pro-content-title, .sidebar-title {
     color: var(--theme-color);
     font-weight: 600;
     margin-bottom: 10px;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .modern-template .description {
     font-size: 0.95rem;
     line-height: 1.6;
     color: #475569;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.main-col, .side-col {
+    min-width: 0;
 }
 
 .side-col section {
@@ -143,6 +182,9 @@ h2, .pro-content-title, .sidebar-title {
     font-size: 0.9rem;
     margin-bottom: 8px;
     color: #475569;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .skill-tags {
@@ -157,6 +199,8 @@ h2, .pro-content-title, .sidebar-title {
     border-radius: 4px;
     font-size: 0.8rem;
     color: #475569;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 /* Classic Template */
@@ -180,11 +224,16 @@ h2, .pro-content-title, .sidebar-title {
     font-size: 2.5rem;
     margin: 0 0 10px 0;
     letter-spacing: 1px;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .classic-header .contact-info {
     font-size: 0.95rem;
     color: #64748b;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .classic-template h2 {
@@ -195,6 +244,8 @@ h2, .pro-content-title, .sidebar-title {
     margin: 30px 0 15px 0;
     letter-spacing: 1px;
     color: var(--theme-color);
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .classic-item {
@@ -210,6 +261,8 @@ h2, .pro-content-title, .sidebar-title {
 
 .classic-item .item-header strong {
     font-size: 1.1rem;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .classic-item .item-sub {
@@ -217,48 +270,53 @@ h2, .pro-content-title, .sidebar-title {
     font-size: 0.9rem;
     color: #64748b;
     margin-bottom: 8px;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .classic-item p {
     font-size: 0.95rem;
     line-height: 1.6;
     margin: 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 /* Professional Blue Template - Premium Sidebar Design */
 .professional-blue-template {
-    display: grid !important;
-    grid-template-columns: 280px 1fr !important;
-    width: 100% !important;
-    flex: 1 !important; /* Force stretch in flex-stack */
-    min-height: 100% !important; /* Key: Fill the whole canvas height */
+    display: flex;
+    /* Revert to flex */
+    width: 100%;
+    min-height: 1123px;
     background-color: white !important;
-    position: relative !important;
+    /* Force White */
+    position: relative;
     overflow: visible;
 }
 
 .pro-sidebar-bg {
-    position: absolute !important;
+    position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
     width: 280px;
     background-color: var(--theme-color);
     z-index: 0;
-    height: 100% !important; /* Stretch to parent bottom */
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
 }
 
 .pro-sidebar {
     width: 280px;
-    padding: 50px 35px;
+    padding: 20px 35px;
+    /* REDUCED top padding from 50px to 20px */
     color: white;
     /* Transparent background to show fixed bg */
-    background-color: transparent; 
+    background-color: transparent;
     box-sizing: border-box;
     position: relative;
-    z-index: 1; /* Content above background */
+    z-index: 1;
+    /* Content above background */
     flex-shrink: 0;
 }
 
@@ -289,6 +347,9 @@ h2, .pro-content-title, .sidebar-title {
     padding-bottom: 10px;
     border-bottom: 2px solid rgba(255, 255, 255, 0.3);
     color: white;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .pro-contact-list {
@@ -308,11 +369,17 @@ h2, .pro-content-title, .sidebar-title {
     opacity: 0.8;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .pro-value {
     font-size: 0.85rem;
     font-weight: 500;
+    max-width: 100%;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .pro-list {
@@ -327,6 +394,9 @@ h2, .pro-content-title, .sidebar-title {
     padding-left: 18px;
     position: relative;
     line-height: 1.4;
+    max-width: 100%;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .pro-list-item::before {
@@ -339,7 +409,10 @@ h2, .pro-content-title, .sidebar-title {
 
 /* RIGHT MAIN CONTENT */
 .pro-main {
-    padding: 20px 20px; /* Further reduced vertical padding per user feedback */
+    flex: 1;
+    min-width: 0;
+    padding: 20px 20px;
+    /* Further reduced vertical padding per user feedback */
     background: white !important;
     display: flex;
     flex-direction: column;
@@ -351,7 +424,8 @@ h2, .pro-content-title, .sidebar-title {
 }
 
 .pro-header {
-    margin-bottom: 25px; /* Standardize gap before summary */
+    margin-bottom: 25px;
+    /* Standardize gap before summary */
     margin-top: 0;
 }
 
@@ -364,6 +438,8 @@ h2, .pro-content-title, .sidebar-title {
     letter-spacing: 2px;
     line-height: 1.1;
     display: block;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .pro-job-title {
@@ -372,10 +448,13 @@ h2, .pro-content-title, .sidebar-title {
     margin: 0;
     font-weight: 400;
     letter-spacing: 0.5px;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .pro-content-section {
-    margin-bottom: 25px; /* Consistent gap between ALL sections */
+    margin-bottom: 25px;
+    /* Consistent gap between ALL sections */
     margin-top: 0;
 }
 
@@ -391,10 +470,13 @@ h2, .pro-content-title, .sidebar-title {
     font-size: 1rem;
     font-weight: 700;
     letter-spacing: 1.5px;
-    margin-bottom: 16px; /* Tighten gap to items */
+    margin-bottom: 16px;
+    /* Tighten gap to items */
     padding-bottom: 8px;
     border-bottom: 2px solid currentColor;
     text-transform: uppercase;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .pro-summary {
@@ -402,6 +484,8 @@ h2, .pro-content-title, .sidebar-title {
     line-height: 1.7;
     color: #475569;
     margin: 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .pro-exp-item {
@@ -426,6 +510,8 @@ h2, .pro-content-title, .sidebar-title {
     font-weight: 600;
     margin: 0;
     color: #1e293b;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .pro-exp-date {
@@ -440,6 +526,8 @@ h2, .pro-content-title, .sidebar-title {
     color: #64748b;
     margin: 0 0 8px 0;
     font-style: italic;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .pro-exp-desc {
@@ -447,6 +535,8 @@ h2, .pro-content-title, .sidebar-title {
     line-height: 1.6;
     color: #475569;
     margin: 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 /* Timeline Template - New Design */
@@ -462,12 +552,14 @@ h2, .pro-content-title, .sidebar-title {
     display: grid;
     grid-template-columns: 260px 40px 1fr;
     min-height: 1123px;
+    min-width: 0;
 }
 
 /* LEFT SIDEBAR */
 .timeline-sidebar {
     padding: 60px 30px;
     background: white;
+    min-width: 0;
 }
 
 .timeline-sidebar .sidebar-header {
@@ -480,6 +572,9 @@ h2, .pro-content-title, .sidebar-title {
     margin: 0;
     color: #1e293b;
     line-height: 1.1;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .timeline-sidebar .job-title-display {
@@ -488,6 +583,9 @@ h2, .pro-content-title, .sidebar-title {
     margin-top: 8px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .sidebar-section {
@@ -501,6 +599,9 @@ h2, .pro-content-title, .sidebar-title {
     color: var(--theme-color);
     border-bottom: 1px solid var(--theme-color);
     padding-bottom: 5px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .sidebar-contact {
@@ -515,6 +616,9 @@ h2, .pro-content-title, .sidebar-title {
     gap: 10px;
     font-size: 0.85rem;
     color: #475569;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .sidebar-list {
@@ -527,8 +631,12 @@ h2, .pro-content-title, .sidebar-title {
     font-size: 0.9rem;
     color: #334155;
     padding-bottom: 4px;
-    border-bottom: 2px solid var(--theme-color); /* Horizontal bars from reference */
+    border-bottom: 2px solid var(--theme-color);
+    /* Horizontal bars from reference */
     width: 100%;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 /* TIMELINE AXIS */
@@ -571,6 +679,7 @@ h2, .pro-content-title, .sidebar-title {
 /* MAIN CONTENT */
 .timeline-main {
     padding: 60px 40px 60px 20px;
+    min-width: 0;
 }
 
 .main-section {
@@ -583,32 +692,45 @@ h2, .pro-content-title, .sidebar-title {
     margin-bottom: 20px;
     color: var(--theme-color);
     text-transform: capitalize;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .section-content-text {
     font-size: 0.95rem;
     line-height: 1.7;
     color: #475569;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
-.experience-item-box, .education-item-box {
+.experience-item-box,
+.education-item-box {
     margin-bottom: 25px;
 }
 
-.exp-title-bold, .edu-degree-bold {
+.exp-title-bold,
+.edu-degree-bold {
     font-size: 1rem;
     font-weight: 700;
     color: #1e293b;
     margin: 0 0 5px 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
-.exp-meta-row, .edu-meta-row {
+.exp-meta-row,
+.edu-meta-row {
     font-size: 0.85rem;
     color: #64748b;
     margin-bottom: 10px;
 }
 
-.exp-dots, .edu-dots {
+.exp-dots,
+.edu-dots {
     margin: 0 8px;
 }
 
@@ -640,22 +762,31 @@ h2, .pro-content-title, .sidebar-title {
         size: A4;
         margin: 0;
     }
+
     body {
         background: white !important;
     }
+
     .cv-print-only {
         width: 210mm !important;
         background: white !important;
         margin: 0 !important;
         padding: 0 !important;
     }
-    .resume-template, .modern-template, .classic-template, .timeline-template, .executive-template, .elegant-template {
+
+    .resume-template,
+    .modern-template,
+    .classic-template,
+    .timeline-template,
+    .executive-template,
+    .elegant-template {
         overflow: visible !important;
         height: auto !important;
         min-height: 297mm;
         box-shadow: none !important;
         page-break-after: auto !important;
     }
+
     .professional-blue-template {
         display: flex !important;
         overflow: visible !important;
@@ -664,8 +795,10 @@ h2, .pro-content-title, .sidebar-title {
         page-break-after: auto !important;
         box-shadow: none !important;
         border: none !important;
-        background: white !important; /* Force Print White */
+        background: white !important;
+        /* Force Print White */
     }
+
     /* Ensure colors print */
     * {
         -webkit-print-color-adjust: exact !important;
@@ -743,6 +876,9 @@ h2, .pro-content-title, .sidebar-title {
     padding-bottom: 8px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     color: #fff;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .executive-sidebar .sidebar-contact {
@@ -759,6 +895,9 @@ h2, .pro-content-title, .sidebar-title {
     font-size: 0.85rem;
     color: #fff;
     opacity: 1;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .executive-sidebar .sidebar-edu-item {
@@ -769,12 +908,18 @@ h2, .pro-content-title, .sidebar-title {
     font-size: 0.85rem;
     font-weight: 600;
     margin: 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .executive-sidebar .edu-school {
     font-size: 0.75rem;
     opacity: 0.8;
     margin: 4px 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .executive-sidebar .edu-date {
@@ -820,22 +965,26 @@ h2, .pro-content-title, .sidebar-title {
 
 .executive-main {
     flex: 1;
-    min-width: 0; /* Important for text wrapping in flexbox */
+    min-width: 0;
+    /* Important for text wrapping in flexbox */
     display: flex;
     flex-direction: column;
     background: white;
-    padding-top: 140px; /* Reduced space */
+    padding-top: 140px;
+    /* Reduced space */
 }
 
 .executive-header {
     position: absolute;
     top: 60px;
-    left: 260px; 
-    width: 480px; 
-    min-height: 95px; /* Increased height as requested */
+    left: 260px;
+    width: 480px;
+    min-height: 95px;
+    /* Increased height as requested */
     background: var(--theme-color);
     padding: 0 45px;
-    border-radius: 0 100px 100px 0; /* Proper PILL rounding on right */
+    border-radius: 0 100px 100px 0;
+    /* Proper PILL rounding on right */
     z-index: 10;
     display: flex;
     flex-direction: column;
@@ -852,19 +1001,29 @@ h2, .pro-content-title, .sidebar-title {
     line-height: 1.1;
     letter-spacing: -0.5px;
     text-transform: uppercase;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
-.executive-header .title, .executive-header .location-header {
-    font-size: 0.95rem; /* Slightly smaller for cleaner look */
+.executive-header .title,
+.executive-header .location-header {
+    font-size: 0.95rem;
+    /* Slightly smaller for cleaner look */
     color: #1e293b;
-    margin-top: 2px; /* Even closer to name */
+    margin-top: 2px;
+    /* Even closer to name */
     text-transform: uppercase;
     opacity: 0.7;
     font-weight: 500;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .executive-content {
-    padding: 40px 30px; /* Reduced side padding to widen contents */
+    padding: 40px 30px;
+    /* Reduced side padding to widen contents */
 }
 
 .executive-template .content-section {
@@ -880,6 +1039,9 @@ h2, .pro-content-title, .sidebar-title {
     padding-bottom: 10px;
     border-bottom: 2px solid #f1f5f9;
     color: #1e293b;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .executive-template .exp-header {
@@ -894,6 +1056,9 @@ h2, .pro-content-title, .sidebar-title {
     font-weight: 700;
     margin: 0;
     text-transform: uppercase;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .executive-template .exp-date {
@@ -920,22 +1085,24 @@ h2, .pro-content-title, .sidebar-title {
 .elegant-template {
     width: 100%;
     min-height: 1123px;
-    background: linear-gradient(to right, #f8f6f2 280px, #ffffff 280px); /* Split background for sidebar and main */
+    background: linear-gradient(to right, #f8f6f2 280px, #ffffff 280px);
+    /* Split background for sidebar and main */
     display: flex;
     flex-direction: column;
     position: relative;
 }
 
 .elegant-header {
-    height: 160px; 
+    height: 160px;
     position: relative;
     width: 100%;
-    background: linear-gradient(to right, #f8f6f2 280px, #ffffff 280px); /* Match template background to remove gaps */
+    background: linear-gradient(to right, #f8f6f2 280px, #ffffff 280px);
+    /* Match template background to remove gaps */
 }
 
 .elegant-header .header-bg {
     position: absolute;
-    top: 0; 
+    top: 0;
     left: 0;
     width: 100%;
     height: 100%;
@@ -951,10 +1118,11 @@ h2, .pro-content-title, .sidebar-title {
     padding: 0 60px;
     height: 100%;
     display: flex;
-    justify-content: flex-start; 
-    gap: 40px; 
-    align-items: center; 
-    transform: translateY(-5px); /* Balance the V-shape depth */
+    justify-content: flex-start;
+    gap: 40px;
+    align-items: center;
+    transform: translateY(-5px);
+    /* Balance the V-shape depth */
 }
 
 .elegant-header .name-wrapper {
@@ -969,22 +1137,27 @@ h2, .pro-content-title, .sidebar-title {
     letter-spacing: 1px;
 }
 
-.elegant-header .title, .elegant-header .location-header {
+.elegant-header .title,
+.elegant-header .location-header {
     font-size: 1rem;
     opacity: 0.8;
     margin-top: 5px;
     text-transform: uppercase;
     letter-spacing: 2px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .elegant-header .photo-container {
-    width: 120px; 
+    width: 120px;
     height: 120px;
     background: transparent;
     border-radius: 50%;
     border: 3px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    transform: translateY(0); /* Center it */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(0);
+    /* Center it */
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -1011,13 +1184,15 @@ h2, .pro-content-title, .sidebar-title {
 .elegant-body {
     display: flex;
     flex: 1;
-    min-height: 903px; /* 1123 - 220 */
+    min-height: 903px;
+    /* 1123 - 220 */
 }
 
 .elegant-sidebar {
     width: 280px;
-    background: transparent; 
-    padding: 30px 40px; /* Even less top padding */
+    background: transparent;
+    padding: 30px 40px;
+    /* Even less top padding */
     flex-shrink: 0;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -1036,6 +1211,9 @@ h2, .pro-content-title, .sidebar-title {
     color: #333;
     border-bottom: 1.5px solid #d1cfc9;
     padding-bottom: 8px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .elegant-sidebar .sidebar-contact {
@@ -1050,6 +1228,9 @@ h2, .pro-content-title, .sidebar-title {
     gap: 12px;
     font-size: 0.85rem;
     color: #555;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .elegant-sidebar .sidebar-item {
@@ -1061,17 +1242,25 @@ h2, .pro-content-title, .sidebar-title {
     font-weight: 700;
     margin: 0;
     color: #333;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .elegant-sidebar .item-light {
     font-size: 0.85rem;
     color: #666;
     margin: 4px 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .elegant-sidebar .item-date {
     font-size: 0.75rem;
     color: #555;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .elegant-sidebar .skill-line {
@@ -1080,13 +1269,18 @@ h2, .pro-content-title, .sidebar-title {
     margin-bottom: 8px;
     padding-left: 10px;
     border-left: 2px solid #d1cfc9;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .elegant-main {
     flex: 1;
-    min-width: 0; /* Important for text wrapping in flexbox */
-    background: transparent; 
-    padding: 40px 30px; /* Reduced side padding to widen contents */
+    min-width: 0;
+    /* Important for text wrapping in flexbox */
+    background: transparent;
+    padding: 40px 30px;
+    /* Reduced side padding to widen contents */
 }
 
 .elegant-main .main-section {
@@ -1103,6 +1297,9 @@ h2, .pro-content-title, .sidebar-title {
     display: inline-block;
     border-bottom: 3px solid #333;
     padding-bottom: 5px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .elegant-main .exp-item {
@@ -1122,6 +1319,9 @@ h2, .pro-content-title, .sidebar-title {
     margin: 0;
     text-transform: uppercase;
     color: #333;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .elegant-main .exp-time {
@@ -1147,6 +1347,9 @@ h2, .pro-content-title, .sidebar-title {
 .elegant-main .ref-name {
     font-weight: 700;
     margin: 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .elegant-main .ref-detail {
@@ -1158,4 +1361,47 @@ h2, .pro-content-title, .sidebar-title {
 .elegant-main .ref-info {
     font-size: 0.8rem;
     color: #888;
+}
+
+/* Mobile Responsive - Reduce spacing in sidebar for small screens */
+@media (max-width: 786px) {
+    .pro-main {
+        padding: 8px 12px;
+        /* REDUCED from 20px 20px - Minimize white space */
+    }
+
+    .pro-header {
+        margin-bottom: 12px;
+        /* REDUCED from 25px */
+        margin-top: 0;
+    }
+
+    .pro-section {
+        margin-bottom: 18px;
+        /* REDUCED from 35px */
+    }
+
+    .pro-photo-container {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 15px;
+        /* REDUCED from 30px */
+    }
+
+    .pro-section-title {
+        margin-bottom: 10px;
+        /* REDUCED from 18px */
+        padding-bottom: 6px;
+        /* REDUCED from 10px */
+    }
+
+    .pro-contact-list {
+        gap: 8px;
+        /* REDUCED from 14px */
+    }
+
+    .pro-contact-item {
+        gap: 2px;
+        /* REDUCED from 4px */
+    }
 }

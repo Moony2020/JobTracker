@@ -33,18 +33,14 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
       style.id = styleId;
       style.innerHTML = `
         .rich-text-editor-container .ql-container {
-          padding-top: 0px !important;
-          margin-top: 0 !important;
+          padding-top: 16px !important;
         }
         .rich-text-editor-container .ql-editor {
-          padding: 8px 12px !important;
-          margin-top: 0 !important;
-          padding-top: 4px !important;
+          padding-top: 20px !important;
+          padding-bottom: 12px !important;
         }
         .rich-text-editor-container .ql-toolbar {
           margin-bottom: 0 !important;
-          border-bottom: none !important;
-          padding: 2px 8px !important;
         }
       `;
       document.head.appendChild(style);
@@ -52,7 +48,7 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
   }, []);
 
   return (
-    <div className="rich-text-editor-container" style={{ paddingTop: '0', marginTop: '-4px' }}>
+    <div className="rich-text-editor-container" style={{ paddingTop: '8px' }}>
       <ReactQuill 
         ref={quillRef}
         theme="snow"
