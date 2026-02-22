@@ -907,7 +907,7 @@
   /* width: 419px !important;                 <-- HANDLED BY REACT */
   position: relative;
   overflow: visible !important;
-  margin-bottom: -60px !important;
+  margin-bottom: 0px !important;
 }
 
 .resume-paper-canvas {
@@ -2804,6 +2804,51 @@
     margin: 0 !important;
   }
 
+  /* ABSOLUTE MOBILE ISOLATION (FIX MIXING) */
+  .preview-page-viewport-live {
+    width: 100% !important;
+    height: 1050px !important;
+    overflow: hidden !important;
+    margin: 0 auto !important;
+    position: relative !important;
+  }
+
+  /* Don't clip internal scaled contents */
+  .preview-scaler, .resume-paper-canvas, .preview-slot, .preview-scaler-live {
+    overflow: visible !important;
+  }
+
+  /* RESTORE MOBILE SCROLL & ALIGNMENT */
+  .preview-scroll-area {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding-bottom: 250px !important; /* Huge bottom space for pill + drawer */
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    width: 100% !important;
+  }
+
+  /* CENTER MOBILE PILL UNDER CV (NORMAL FLOW) */
+  .preview-footer-minimal {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+    display: flex !important;
+    justify-content: center !important;
+    width: fit-content !important;
+    min-width: 140px !important;
+    z-index: 100 !important;
+    background: #1e293b !important;
+    border-radius: 20px !important;
+    padding: 8px 16px !important;
+    margin: 20px auto !important; /* Centered in flow */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+    pointer-events: auto !important;
+  }
 }
 
 /* 3. DESKTOP FOOTER PILL (Outside the mobile query) */
@@ -2814,8 +2859,8 @@
   }
 
   .preview-footer-minimal {
-    position: absolute !important;
-    bottom: 20px !important;
+    position: fixed !important;
+    bottom: 8px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
     margin: 0 !important;
@@ -2849,9 +2894,10 @@
     padding-left: 8px !important;
   }
 
-  /* Ensure padding on desktop scroll area if needed */
   .preview-scroll-area {
-    padding-bottom: 60px !important;
+    padding-top: 40px !important;
+    padding-bottom: 0px !important;
+    overflow-y: hidden !important;/* No scroll per user */
   }
 }
 

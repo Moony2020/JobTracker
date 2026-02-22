@@ -347,11 +347,11 @@ const Editor = ({
 
   // A4 page constants (96dpi)
   const PAGE_WIDTH = 794;
-  const PAGE_HEIGHT = 1050; // Slightly shorter as requested
-  const PREVIEW_MIN_SCALE = 0.45;
-  const PREVIEW_MAX_SCALE = 0.55;
+  const PAGE_HEIGHT = 1050; // User preferred height
+  const PREVIEW_MIN_SCALE = 0.2; // Lowered to allow small phone fitting
+  const PREVIEW_MAX_SCALE = 0.52;
   const PREVIEW_MARGIN = 0; // Pushed upper
-  const PREVIEW_FOOTER_SPACE = 80; // Pushed down
+  const PREVIEW_FOOTER_SPACE = 40; // Reclaim gap to push pill down
 
   // Page Tracking State
   const [totalPages, setTotalPages] = useState(1);
@@ -421,19 +421,26 @@ const Editor = ({
       const height = pane.clientHeight || 0;
       if (!width || !height) return;
 
-      const availableWidth = Math.max(0, width - PREVIEW_MARGIN * 2);
-      const availableHeight = Math.max(
-        0,
-        height - PREVIEW_FOOTER_SPACE - PREVIEW_MARGIN * 2,
-      );
-      const scaleByWidth = availableWidth / PAGE_WIDTH;
-      const scaleByHeight = availableHeight / PAGE_HEIGHT;
+      const isMobileSize = window.innerWidth < 787;
 
-      // Allow slightly larger scale on tablets/smaller desktops (< 992px)
-      const dynamicMaxScale = window.innerWidth < 992 ? 0.6 : PREVIEW_MAX_SCALE;
-
-      const next = Math.min(dynamicMaxScale, scaleByWidth, scaleByHeight);
-      setPreviewScale(Math.max(PREVIEW_MIN_SCALE, next));
+      if (isMobileSize) {
+        // MOBILE PATH: Large Fit (12px margins each side)
+        const availableWidth = Math.max(0, width - 24); 
+        const nextScale = (availableWidth / PAGE_WIDTH);
+        setPreviewScale(Math.max(PREVIEW_MIN_SCALE, nextScale));
+      } else {
+        // DESKTOP PATH: EXACT same logic as restored v3/v17 state
+        const availableWidth = Math.max(0, width - PREVIEW_MARGIN * 2);
+        const availableHeight = Math.max(
+          0,
+          height - PREVIEW_FOOTER_SPACE - PREVIEW_MARGIN * 2,
+        );
+        const scaleByWidth = availableWidth / PAGE_WIDTH;
+        const scaleByHeight = availableHeight / PAGE_HEIGHT;
+        const dynamicMaxScale = window.innerWidth < 992 ? 0.6 : PREVIEW_MAX_SCALE;
+        const next = Math.min(dynamicMaxScale, scaleByWidth, scaleByHeight);
+        setPreviewScale(Math.max(PREVIEW_MIN_SCALE, next));
+      }
     };
 
     computeScale();
@@ -3012,8 +3019,6 @@ const Editor = ({
         <main className="editor-preview-pane" ref={previewPaneRef}>
           <div className="preview-scroll-area" ref={previewScrollRef}>
             {/* SCALER CONTAINER: Full Width + Flex Center */}
-            {/* SCALER CONTAINER: Full Width + Flex Center */}
-            {/* SCALER CONTAINER: Full Width + Flex Center */}
             <div
               className="preview-shell"
               style={{
@@ -3026,7 +3031,6 @@ const Editor = ({
                 boxSizing: "border-box",
               }}
             >
-              {/* LAYOUT WRAPPER: Exact size for Scale 0.75 (806 * 0.75 = 604.5) */}
               <div
                 className="preview-slot"
                 style={{

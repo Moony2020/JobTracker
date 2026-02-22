@@ -12,7 +12,6 @@
 .elegant-header .name, .elegant-header .title,
 .executive-header .name, .executive-header .title,
 .name-display, .job-title-display {
-  word-break: break-word !important;
   overflow-wrap: break-word !important;
   white-space: normal !important;
   max-width: 100% !important;
@@ -105,7 +104,6 @@ h2,
     letter-spacing: 2px;
     line-height: 1.1;
     color: #1e293b;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -119,7 +117,6 @@ h2,
     line-height: 1.6;
     color: #64748b;
     max-width: 90%;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -137,7 +134,6 @@ h2,
     margin-bottom: 20px;
     text-transform: uppercase;
     letter-spacing: 1px;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -149,7 +145,6 @@ h2,
     font-size: 1.15rem;
     margin: 0 0 5px 0;
     color: #1e293b;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -158,7 +153,6 @@ h2,
     color: var(--theme-color);
     font-weight: 600;
     margin-bottom: 10px;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -166,7 +160,6 @@ h2,
     font-size: 0.95rem;
     line-height: 1.6;
     color: #475569;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -182,7 +175,6 @@ h2,
     font-size: 0.9rem;
     margin-bottom: 8px;
     color: #475569;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -199,7 +191,6 @@ h2,
     border-radius: 4px;
     font-size: 0.8rem;
     color: #475569;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -224,14 +215,12 @@ h2,
     font-size: 2.5rem;
     margin: 0 0 10px 0;
     letter-spacing: 1px;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
 .classic-header .contact-info {
     font-size: 0.95rem;
     color: #64748b;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -244,7 +233,6 @@ h2,
     margin: 30px 0 15px 0;
     letter-spacing: 1px;
     color: var(--theme-color);
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -261,7 +249,6 @@ h2,
 
 .classic-item .item-header strong {
     font-size: 1.1rem;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -270,7 +257,6 @@ h2,
     font-size: 0.9rem;
     color: #64748b;
     margin-bottom: 8px;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -278,7 +264,6 @@ h2,
     font-size: 0.95rem;
     line-height: 1.6;
     margin: 0;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -288,6 +273,7 @@ h2,
     /* Revert to flex */
     width: 100%;
     min-height: 1123px;
+    height: 100%;
     background-color: white !important;
     /* Force White */
     position: relative;
@@ -295,7 +281,7 @@ h2,
 }
 
 .pro-sidebar-bg {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     bottom: 0;
@@ -347,7 +333,6 @@ h2,
     padding-bottom: 10px;
     border-bottom: 2px solid rgba(255, 255, 255, 0.3);
     color: white;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -369,7 +354,6 @@ h2,
     opacity: 0.8;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -378,7 +362,6 @@ h2,
     font-size: 0.85rem;
     font-weight: 500;
     max-width: 100%;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -395,7 +378,6 @@ h2,
     position: relative;
     line-height: 1.4;
     max-width: 100%;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -438,7 +420,6 @@ h2,
     letter-spacing: 2px;
     line-height: 1.1;
     display: block;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -448,7 +429,6 @@ h2,
     margin: 0;
     font-weight: 400;
     letter-spacing: 0.5px;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -475,7 +455,6 @@ h2,
     padding-bottom: 8px;
     border-bottom: 2px solid currentColor;
     text-transform: uppercase;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -484,7 +463,6 @@ h2,
     line-height: 1.7;
     color: #475569;
     margin: 0;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -510,7 +488,6 @@ h2,
     font-weight: 600;
     margin: 0;
     color: #1e293b;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -526,7 +503,6 @@ h2,
     color: #64748b;
     margin: 0 0 8px 0;
     font-style: italic;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -535,7 +511,6 @@ h2,
     line-height: 1.6;
     color: #475569;
     margin: 0;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -572,7 +547,6 @@ h2,
     margin: 0;
     color: #1e293b;
     line-height: 1.1;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -583,7 +557,6 @@ h2,
     margin-top: 8px;
     text-transform: uppercase;
     letter-spacing: 1px;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -599,7 +572,6 @@ h2,
     color: var(--theme-color);
     border-bottom: 1px solid var(--theme-color);
     padding-bottom: 5px;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -616,7 +588,6 @@ h2,
     gap: 10px;
     font-size: 0.85rem;
     color: #475569;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -634,7 +605,6 @@ h2,
     border-bottom: 2px solid var(--theme-color);
     /* Horizontal bars from reference */
     width: 100%;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -692,7 +662,6 @@ h2,
     margin-bottom: 20px;
     color: var(--theme-color);
     text-transform: capitalize;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -701,7 +670,6 @@ h2,
     font-size: 0.95rem;
     line-height: 1.7;
     color: #475569;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -717,7 +685,6 @@ h2,
     font-weight: 700;
     color: #1e293b;
     margin: 0 0 5px 0;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -876,7 +843,6 @@ h2,
     padding-bottom: 8px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     color: #fff;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -895,7 +861,6 @@ h2,
     font-size: 0.85rem;
     color: #fff;
     opacity: 1;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -908,7 +873,6 @@ h2,
     font-size: 0.85rem;
     font-weight: 600;
     margin: 0;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -917,7 +881,6 @@ h2,
     font-size: 0.75rem;
     opacity: 0.8;
     margin: 4px 0;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -1001,7 +964,6 @@ h2,
     line-height: 1.1;
     letter-spacing: -0.5px;
     text-transform: uppercase;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -1016,7 +978,6 @@ h2,
     text-transform: uppercase;
     opacity: 0.7;
     font-weight: 500;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -1039,7 +1000,6 @@ h2,
     padding-bottom: 10px;
     border-bottom: 2px solid #f1f5f9;
     color: #1e293b;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -1056,7 +1016,6 @@ h2,
     font-weight: 700;
     margin: 0;
     text-transform: uppercase;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -1144,7 +1103,6 @@ h2,
     margin-top: 5px;
     text-transform: uppercase;
     letter-spacing: 2px;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -1211,7 +1169,6 @@ h2,
     color: #333;
     border-bottom: 1.5px solid #d1cfc9;
     padding-bottom: 8px;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -1228,7 +1185,6 @@ h2,
     gap: 12px;
     font-size: 0.85rem;
     color: #555;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -1242,7 +1198,6 @@ h2,
     font-weight: 700;
     margin: 0;
     color: #333;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -1251,7 +1206,6 @@ h2,
     font-size: 0.85rem;
     color: #666;
     margin: 4px 0;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -1259,7 +1213,6 @@ h2,
 .elegant-sidebar .item-date {
     font-size: 0.75rem;
     color: #555;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -1269,7 +1222,6 @@ h2,
     margin-bottom: 8px;
     padding-left: 10px;
     border-left: 2px solid #d1cfc9;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -1297,7 +1249,6 @@ h2,
     display: inline-block;
     border-bottom: 3px solid #333;
     padding-bottom: 5px;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -1319,7 +1270,6 @@ h2,
     margin: 0;
     text-transform: uppercase;
     color: #333;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
@@ -1347,7 +1297,6 @@ h2,
 .elegant-main .ref-name {
     font-weight: 700;
     margin: 0;
-    word-break: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
 }
