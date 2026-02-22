@@ -675,6 +675,7 @@ const Editor = ({
       }
 
       const prevWidth = prevWidthRef.current;
+      // Only force switching modes when literally crossing the breakpoint
       const crossedToMobile = prevWidth > 786 && isMobile;
       const crossedToDesktop = prevWidth <= 786 && !isMobile;
 
@@ -689,12 +690,10 @@ const Editor = ({
     };
 
     window.addEventListener("resize", handleResize);
+
+    // Run once on mount to set initial overflow bounds without forcing viewMode unconditionally
     if (window.innerWidth <= 786) {
       document.body.style.overflow = "hidden";
-      if (viewMode !== "content") {
-        lastDesktopModeRef.current = viewMode;
-        setViewMode("content");
-      }
     }
 
     return () => {
