@@ -4463,3 +4463,12 @@ body.dark-mode .section-header h2,
     z-index: 1000 !important;
   }
 }
+
+
+/* USER REQUEST: Push page number down on desktop > 992px */
+@media (min-width: 992px) {
+  .preview-footer-minimal {
+    bottom: 8px !important;
+  }
+}
+

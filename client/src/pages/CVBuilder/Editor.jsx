@@ -20,6 +20,7 @@ import {
   Minus,
   ChevronUp,
   ChevronDown,
+  ChevronLeft,
   Layout,
   X,
   Download,
@@ -1037,7 +1038,27 @@ const Editor = ({
 
     const calculatePages = () => {
       const contentHeight = canvasRef.current.scrollHeight || 0;
-      const pages = Math.max(1, Math.ceil(contentHeight / PAGE_HEIGHT));
+      
+      // Look for any elements that actually protrude past PAGE_HEIGHT
+      let hasContentOnPage2 = false;
+      const sections = canvasRef.current.querySelectorAll('.resume-section, .pro-content-section, .cv-section, [data-section]');
+      sections.forEach(sec => {
+        if (!sec.textContent || sec.textContent.trim() === '') return;
+        const rect = sec.getBoundingClientRect();
+        const canvasRect = canvasRef.current.getBoundingClientRect();
+        const relativeBottom = (rect.bottom - canvasRect.top) / previewScale;
+        if (relativeBottom > PAGE_HEIGHT) {
+          hasContentOnPage2 = true;
+        }
+      });
+      
+      let pages = 1;
+      if (hasContentOnPage2) {
+        pages = Math.max(1, Math.ceil((contentHeight - 5) / PAGE_HEIGHT));
+      } else if (!isProfessionalTemplate && contentHeight > PAGE_HEIGHT + 20) {
+        pages = Math.max(1, Math.ceil((contentHeight - 20) / PAGE_HEIGHT));
+      }
+
       setTotalPages(pages);
       setCurrentPage((prev) => Math.min(prev, pages));
     };
@@ -3386,23 +3407,27 @@ const Editor = ({
               )}
 
               <div className="pagination-text">
-                <button
-                  className="page-link-btn"
-                  onClick={() => scrollToPage(currentPage - 1)}
-                  disabled={currentPage <= 1}
-                >
-                  <ChevronUp size={16} />
-                </button>
+                {totalPages > 1 && (
+                  <button
+                    className="page-link-btn"
+                    onClick={() => scrollToPage(currentPage - 1)}
+                    disabled={currentPage <= 1}
+                  >
+                    <ChevronUp size={16} />
+                  </button>
+                )}
                 <span>
-                  Page {currentPage} / {totalPages}
+                  {totalPages > 1 ? `Page ${currentPage} / ${totalPages}` : "Page 1 / 1"}
                 </span>
-                <button
-                  className="page-link-btn"
-                  onClick={() => scrollToPage(currentPage + 1)}
-                  disabled={currentPage >= totalPages}
-                >
-                  <ChevronDown size={16} />
-                </button>
+                {totalPages > 1 && (
+                  <button
+                    className="page-link-btn"
+                    onClick={() => scrollToPage(currentPage + 1)}
+                    disabled={currentPage >= totalPages}
+                  >
+                    <ChevronDown size={16} />
+                  </button>
+                )}
               </div>
             </div>
           </div>
