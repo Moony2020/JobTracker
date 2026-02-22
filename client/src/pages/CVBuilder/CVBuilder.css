@@ -4438,20 +4438,28 @@ body.dark-mode .section-header h2,
 /* Desktop/content mode (>=993): move page pill a bit lower */
 @media (min-width: 993px) {
   .mode-content .editor-main-split {
-    overflow-x: hidden !important;
-    overflow-y: visible !important;
+    overflow: hidden !important;
   }
 
   .mode-content .editor-preview-pane {
-    overflow: visible !important;
+    position: relative !important;
+    overflow: hidden !important;
   }
 
   .mode-content .preview-scroll-area-live {
-    overflow: visible !important;
+    position: relative !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
   }
 
   .mode-content .preview-footer-minimal {
-    bottom: -10px !important;
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    bottom: 6px !important;
+    margin: 0 !important;
     z-index: 1000 !important;
   }
 }

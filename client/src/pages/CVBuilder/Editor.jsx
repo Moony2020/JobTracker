@@ -352,7 +352,7 @@ const Editor = ({
   const PAGE_HEIGHT = 1050; // User preferred height
   const PREVIEW_MIN_SCALE = 0.2; // Lowered to allow small phone fitting
   const PREVIEW_MAX_SCALE = 0.54;
-  const PREVIEW_DESKTOP_MAX_SCALE = 0.58;
+  const PREVIEW_DESKTOP_MAX_SCALE = 0.62;
   const PREVIEW_MARGIN = 0; // Pushed upper
   const PREVIEW_FOOTER_SPACE = 40; // Reclaim gap to push pill down
 
