@@ -344,12 +344,15 @@ const Editor = ({
   const [availableTemplates, setAvailableTemplates] = useState([]);
   const canvasRef = React.useRef(null);
   const previewPaneRef = React.useRef(null);
+  const previewShellRef = React.useRef(null);
+  const previewScalerLiveRef = React.useRef(null);
 
   // A4 page constants (96dpi)
   const PAGE_WIDTH = 794;
   const PAGE_HEIGHT = 1050; // User preferred height
   const PREVIEW_MIN_SCALE = 0.2; // Lowered to allow small phone fitting
-  const PREVIEW_MAX_SCALE = 0.52;
+  const PREVIEW_MAX_SCALE = 0.54;
+  const PREVIEW_DESKTOP_MAX_SCALE = 0.58;
   const PREVIEW_MARGIN = 0; // Pushed upper
   const PREVIEW_FOOTER_SPACE = 40; // Reclaim gap to push pill down
 
@@ -357,7 +360,24 @@ const Editor = ({
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const previewScrollRef = React.useRef(null); // Ref for scroll container
-  const [previewScale, setPreviewScale] = useState(PREVIEW_MAX_SCALE);
+  const [previewScale, setPreviewScale] = useState(() => {
+    if (typeof window === "undefined") return PREVIEW_MAX_SCALE;
+    const viewportCandidates = [
+      window.innerWidth,
+      document.documentElement?.clientWidth,
+      window.visualViewport?.width,
+    ].filter((v) => typeof v === "number" && v > 0);
+    const viewportWidth = viewportCandidates.length
+      ? Math.min(...viewportCandidates)
+      : window.innerWidth;
+    if (viewportWidth < 787) {
+      const fallbackScrollbar = viewportWidth < 500 ? 16 : 12;
+      const safeWidth = Math.max(0, viewportWidth - 24 - fallbackScrollbar);
+      const mobileScale = safeWidth / PAGE_WIDTH;
+      return Math.max(PREVIEW_MIN_SCALE, Math.min(PREVIEW_MAX_SCALE, mobileScale));
+    }
+    return PREVIEW_DESKTOP_MAX_SCALE;
+  });
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
     section: null,
@@ -375,6 +395,10 @@ const Editor = ({
   const isProfessionalTemplate = ["professional", "professional-blue", "professional blue", "creative"].includes(
     (cvData.templateKey || "").toLowerCase(),
   );
+  const [slotSize, setSlotSize] = useState(() => ({
+    width: Math.ceil(PAGE_WIDTH * PREVIEW_MAX_SCALE),
+    height: Math.ceil(PAGE_HEIGHT * PREVIEW_MAX_SCALE),
+  }));
 
   // UTILITIES
   const updateNestedState = (path, value) => {
@@ -420,38 +444,204 @@ const Editor = ({
     const pane = previewPaneRef.current;
     if (!pane) return;
 
-    const computeScale = () => {
-      const width = pane.clientWidth || 0;
-      const height = pane.clientHeight || 0;
-      if (!width || !height) return;
+    let rafId = null;
+    let settleTimer = null;
+    let lateSettleTimer = null;
 
-      const isMobileSize = window.innerWidth < 787;
+    const applyScale = (nextScale) => {
+      const clamped = Math.max(PREVIEW_MIN_SCALE, nextScale);
+      setPreviewScale((prev) => (Math.abs(prev - clamped) < 0.001 ? prev : clamped));
+    };
+
+    const computeScale = () => {
+      const paneWidth = pane.clientWidth || 0;
+      if (!paneWidth) return;
+
+      const viewportCandidates = [
+        window.innerWidth,
+        document.documentElement?.clientWidth,
+        window.visualViewport?.width,
+      ].filter((v) => typeof v === "number" && v > 0);
+      const viewportWidth = viewportCandidates.length
+        ? Math.min(...viewportCandidates)
+        : window.innerWidth;
+      const isMobileSize = paneWidth < 787 || viewportWidth < 787;
 
       if (isMobileSize) {
-        // MOBILE PATH: Large Fit (12px margins each side)
-        const availableWidth = Math.max(0, width - 24); 
-        const nextScale = (availableWidth / PAGE_WIDTH);
-        setPreviewScale(Math.max(PREVIEW_MIN_SCALE, nextScale));
-      } else {
-        // DESKTOP PATH: EXACT same logic as restored v3/v17 state
-        const availableWidth = Math.max(0, width - PREVIEW_MARGIN * 2);
-        const availableHeight = Math.max(
-          0,
-          height - PREVIEW_FOOTER_SPACE - PREVIEW_MARGIN * 2,
+        // Mobile: fit by the smallest usable width so no side clipping after refresh.
+        const shellEl = previewShellRef.current;
+        const scrollEl = previewScrollRef.current;
+        const scrollAreaWidth = previewScrollRef.current?.clientWidth || paneWidth;
+        const liveScrollbar = scrollEl
+          ? Math.max(0, (scrollEl.offsetWidth || 0) - (scrollEl.clientWidth || 0))
+          : 0;
+        const fallbackScrollbar = viewportWidth < 500 ? 16 : 12;
+        const scrollbarReserve = Math.max(liveScrollbar, fallbackScrollbar);
+        const viewportSafeWidth = Math.max(0, viewportWidth - 24 - scrollbarReserve);
+        let baseWidth = Math.min(paneWidth, scrollAreaWidth, viewportSafeWidth);
+
+        if (shellEl) {
+          const shellStyle = window.getComputedStyle(shellEl);
+          const padL = parseFloat(shellStyle.paddingLeft || "0") || 0;
+          const padR = parseFloat(shellStyle.paddingRight || "0") || 0;
+          const shellRectWidth = shellEl.getBoundingClientRect().width || 0;
+          const shellInnerWidth = Math.max(
+            0,
+            (shellRectWidth || shellEl.clientWidth || 0) - padL - padR,
+          );
+          if (shellInnerWidth > 0) {
+            baseWidth = Math.min(baseWidth, shellInnerWidth);
+          }
+        }
+
+        // Fill available mobile width and hard-cap by viewport width to prevent side clipping.
+        const availableWidth = Math.max(0, baseWidth - 4);
+        const viewportCapScale = Math.max(
+          PREVIEW_MIN_SCALE,
+          viewportSafeWidth / PAGE_WIDTH,
         );
-        const scaleByWidth = availableWidth / PAGE_WIDTH;
-        const scaleByHeight = availableHeight / PAGE_HEIGHT;
-        const dynamicMaxScale = window.innerWidth < 992 ? 0.6 : PREVIEW_MAX_SCALE;
-        const next = Math.min(dynamicMaxScale, scaleByWidth, scaleByHeight);
-        setPreviewScale(Math.max(PREVIEW_MIN_SCALE, next));
+        const nextScale = Math.min(
+          PREVIEW_MAX_SCALE,
+          availableWidth / PAGE_WIDTH,
+          viewportCapScale,
+        );
+        applyScale(nextScale);
+        return;
+      }
+
+      const paneHeight = pane.clientHeight || 0;
+      if (!paneHeight) return;
+
+      // Desktop/tablet: preserve existing fit behavior.
+      const availableWidth = Math.max(0, paneWidth - PREVIEW_MARGIN * 2);
+      const availableHeight = Math.max(
+        0,
+        paneHeight - PREVIEW_FOOTER_SPACE - PREVIEW_MARGIN * 2,
+      );
+      const scaleByWidth = availableWidth / PAGE_WIDTH;
+      const scaleByHeight = availableHeight / PAGE_HEIGHT;
+      const dynamicMaxScale =
+        window.innerWidth < 992 ? 0.6 : PREVIEW_DESKTOP_MAX_SCALE;
+      const next = Math.min(dynamicMaxScale, scaleByWidth, scaleByHeight);
+      applyScale(next);
+    };
+
+    const scheduleCompute = () => {
+      computeScale();
+      if (rafId) cancelAnimationFrame(rafId);
+      if (settleTimer) window.clearTimeout(settleTimer);
+      if (lateSettleTimer) window.clearTimeout(lateSettleTimer);
+      rafId = requestAnimationFrame(computeScale);
+      settleTimer = window.setTimeout(computeScale, 120);
+      // Some mobile reloads apply layout/fonts late; run one extra pass.
+      lateSettleTimer = window.setTimeout(computeScale, 600);
+    };
+
+    scheduleCompute();
+
+    const resizeObserver = new ResizeObserver(scheduleCompute);
+    resizeObserver.observe(pane);
+    if (previewScrollRef.current) resizeObserver.observe(previewScrollRef.current);
+    if (previewShellRef.current) resizeObserver.observe(previewShellRef.current);
+
+    window.addEventListener("resize", scheduleCompute, { passive: true });
+    window.addEventListener("orientationchange", scheduleCompute, { passive: true });
+    window.addEventListener("load", scheduleCompute, { passive: true });
+    if (document?.fonts?.ready) {
+      document.fonts.ready.then(scheduleCompute).catch(() => {});
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", scheduleCompute);
+      window.removeEventListener("orientationchange", scheduleCompute);
+      window.removeEventListener("load", scheduleCompute);
+      if (rafId) cancelAnimationFrame(rafId);
+      if (settleTimer) window.clearTimeout(settleTimer);
+      if (lateSettleTimer) window.clearTimeout(lateSettleTimer);
+    };
+  }, [viewMode]);
+
+  // Measure the real transformed size to avoid right-edge clipping on mobile zoom/rounding.
+  useEffect(() => {
+    const scalerEl = previewScalerLiveRef.current;
+    if (!scalerEl) return;
+
+    let rafId = null;
+    const updateSlotSize = () => {
+      const rect = scalerEl.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const nextWidth = Math.ceil(rect.width) + 1;
+      const nextHeight = Math.ceil(rect.height) + 1;
+      setSlotSize((prev) => {
+        if (prev.width === nextWidth && prev.height === nextHeight) return prev;
+        return { width: nextWidth, height: nextHeight };
+      });
+    };
+
+    updateSlotSize();
+    rafId = requestAnimationFrame(updateSlotSize);
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [previewScale, viewMode, currentPage, totalPages]);
+
+  // Final safety guard: if measured CV width is still wider than shell, shrink scale a bit.
+  useEffect(() => {
+    const guardAgainstHorizontalCut = () => {
+      const shellEl = previewShellRef.current;
+      const scalerEl = previewScalerLiveRef.current;
+      if (!shellEl || !scalerEl) return;
+
+      const viewportCandidates = [
+        window.innerWidth,
+        document.documentElement?.clientWidth,
+        window.visualViewport?.width,
+      ].filter((v) => typeof v === "number" && v > 0);
+      const viewportWidth = viewportCandidates.length
+        ? Math.min(...viewportCandidates)
+        : window.innerWidth;
+      if (viewportWidth >= 787) return;
+
+      const shellStyle = window.getComputedStyle(shellEl);
+      const scrollEl = previewScrollRef.current;
+      const padL = parseFloat(shellStyle.paddingLeft || "0") || 0;
+      const padR = parseFloat(shellStyle.paddingRight || "0") || 0;
+      const shellInnerWidthRaw = Math.max(
+        0,
+        (shellEl.getBoundingClientRect().width || shellEl.clientWidth || 0) -
+          padL -
+          padR -
+          2,
+      );
+      const liveScrollbar = scrollEl
+        ? Math.max(0, (scrollEl.offsetWidth || 0) - (scrollEl.clientWidth || 0))
+        : 0;
+      const fallbackScrollbar = viewportWidth < 500 ? 16 : 12;
+      const scrollbarReserve = Math.max(liveScrollbar, fallbackScrollbar);
+      const viewportSafeWidth = Math.max(0, viewportWidth - 24 - scrollbarReserve);
+      const shellInnerWidth = Math.min(shellInnerWidthRaw, viewportSafeWidth);
+      const renderedWidth = scalerEl.getBoundingClientRect().width || 0;
+      if (!shellInnerWidth || !renderedWidth) return;
+
+      if (renderedWidth > shellInnerWidth + 0.5) {
+        const ratio = shellInnerWidth / renderedWidth;
+        setPreviewScale((prev) => {
+          const next = Math.max(PREVIEW_MIN_SCALE, prev * ratio * 0.995);
+          return Math.abs(next - prev) < 0.001 ? prev : next;
+        });
       }
     };
 
-    computeScale();
-    const resizeObserver = new ResizeObserver(computeScale);
-    resizeObserver.observe(pane);
-    return () => resizeObserver.disconnect();
-  }, [viewMode]);
+    const rafId = requestAnimationFrame(guardAgainstHorizontalCut);
+    const t1 = window.setTimeout(guardAgainstHorizontalCut, 120);
+    const t2 = window.setTimeout(guardAgainstHorizontalCut, 500);
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, [previewScale, viewMode, currentPage, totalPages]);
 
   const handleApplyExample = (text) => {
     const currentSummary = cvData.data.personal.summary || "";
@@ -500,6 +690,10 @@ const Editor = ({
     window.addEventListener("resize", handleResize);
     if (window.innerWidth <= 786) {
       document.body.style.overflow = "hidden";
+      if (viewMode !== "content") {
+        lastDesktopModeRef.current = viewMode;
+        setViewMode("content");
+      }
     }
 
     return () => {
@@ -3073,10 +3267,11 @@ const Editor = ({
         {/* DEBUG OVERLAY REMOVED - Logic confirmed working */}
 
         <main className="editor-preview-pane" ref={previewPaneRef}>
-          <div className="preview-scroll-area" ref={previewScrollRef}>
+          <div className="preview-scroll-area preview-scroll-area-live" ref={previewScrollRef}>
             {/* SCALER CONTAINER: Full Width + Flex Center */}
             <div
-              className="preview-shell"
+              className="preview-shell preview-shell-live"
+              ref={previewShellRef}
               style={{
                 width: "100%",
                 display: "flex",
@@ -3085,26 +3280,35 @@ const Editor = ({
                 padding: "0",
                 margin: "0",
                 boxSizing: "border-box",
+                maxWidth: "100%",
+                overflow: "hidden",
               }}
             >
               <div
-                className="preview-slot"
+                className="preview-slot preview-slot-live"
                 style={{
-                  width: `${Math.round(PAGE_WIDTH * previewScale)}px`,
-                  height: `${Math.round(PAGE_HEIGHT * previewScale)}px`,
+                  width: `${slotSize.width}px`,
+                  height: `${slotSize.height}px`,
                   position: "relative",
-                  margin: "0 auto",
+                  margin: "0",
                   boxSizing: "border-box",
+                  overflow: "hidden",
+                  maxWidth: "none",
+                  flex: "0 0 auto",
                 }}
               >
                 {/* VISUAL LAYER */}
                 <div
                   className="preview-scaler-live"
+                  ref={previewScalerLiveRef}
                   style={{
                     width: `${PAGE_WIDTH}px`,
                     height: `${PAGE_HEIGHT}px`,
                     transform: `scale(${previewScale})`,
-                    transformOrigin: "top center",
+                    transformOrigin: "top left",
+                    position: "absolute",
+                    top: "0",
+                    left: "0",
                   }}
                 >
                   <div
