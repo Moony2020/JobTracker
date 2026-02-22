@@ -238,7 +238,7 @@ const ProfessionalBlueTemplate = ({ data, settings, labels }) => {
 
         {/* Courses */}
         {data.courses && data.courses.length > 0 && (
-          <section className="pro-content-section">
+          <section className="pro-content-section pro-content-section-courses">
             <h2 className="pro-content-title" style={{ color: themeColor, textTransform: 'uppercase' }}>{labels?.courses || 'Courses'}</h2>
             {data.courses.map((item, i) => (
               <div key={i} className="pro-exp-item">

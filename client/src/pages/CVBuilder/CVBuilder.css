@@ -952,6 +952,10 @@
   font-weight: 700;
 }
 
+.resume-paper-canvas.no-page-break-overlay.show-page-breaks::after {
+  display: none !important;
+}
+
 /* Medium-Small Floating Footer Pill */
 .preview-footer-minimal {
   position: fixed !important;
@@ -2323,7 +2327,11 @@
   }
 }
 
-@media (max-width: 786px) {
+@media (max-width: 787px) {
+  .resume-paper-canvas.show-page-breaks::after {
+    display: none !important;
+  }
+
   .editor-main-split {
     flex-direction: column !important;
     /* FORCE VERTICAL STACKING */

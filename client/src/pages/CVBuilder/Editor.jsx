@@ -372,6 +372,10 @@ const Editor = ({
   // DEBUG STATE
   // const [debugInfo, setDebugInfo] = useState({ height: 0, pages: 1 });
 
+  const isProfessionalTemplate = ["professional", "professional-blue", "professional blue", "creative"].includes(
+    (cvData.templateKey || "").toLowerCase(),
+  );
+
   // UTILITIES
   const updateNestedState = (path, value) => {
     const keys = path.split(".");
@@ -876,6 +880,58 @@ const Editor = ({
       return () => clearTimeout(timer);
     }
   }, [handleSave, isSaved]);
+
+  // On small screens, add page-top breathing room for sections that start on page 2+
+  // so multi-page professional layout keeps the same top spacing feel as page 1.
+  useEffect(() => {
+    const root = canvasRef.current;
+    if (!root) return;
+
+    const clear = () => {
+      root
+        .querySelectorAll(".professional-blue-template .pro-main .pro-content-section.mobile-page-top-gap")
+        .forEach((el) => el.classList.remove("mobile-page-top-gap"));
+    };
+
+    const isMobile = typeof window !== "undefined" && window.innerWidth <= 787;
+    if (!isProfessionalTemplate || !isMobile) {
+      clear();
+      return;
+    }
+
+    const apply = () => {
+      clear();
+      const sections = Array.from(
+        root.querySelectorAll(".professional-blue-template .pro-main .pro-content-section"),
+      );
+      if (sections.length === 0) return;
+
+      // For each page after page 1, find the first section that appears on that page
+      // and give it the same breathing room as the top of page 1.
+      const firstSectionByPage = new Map();
+      sections.forEach((section) => {
+        const y = section.offsetTop;
+        const pageIndex = Math.floor(y / PAGE_HEIGHT);
+        if (pageIndex < 1) return;
+
+        const yInPage = y - pageIndex * PAGE_HEIGHT;
+        const existing = firstSectionByPage.get(pageIndex);
+        if (!existing || yInPage < existing.yInPage) {
+          firstSectionByPage.set(pageIndex, { section, yInPage });
+        }
+      });
+
+      firstSectionByPage.forEach(({ section }) => {
+        section.classList.add("mobile-page-top-gap");
+      });
+    };
+
+    const raf = requestAnimationFrame(apply);
+    return () => {
+      cancelAnimationFrame(raf);
+      clear();
+    };
+  }, [cvData, totalPages, isProfessionalTemplate, PAGE_HEIGHT]);
 
   // Migration Logic: Move guest draft to account after login
   useEffect(() => {
@@ -3066,7 +3122,7 @@ const Editor = ({
                   >
                     {/* THE CANVAS */}
                     <div
-                      className={`resume-paper-canvas ${!isPrintMode ? "show-page-breaks" : ""}`}
+                      className={`resume-paper-canvas ${!isPrintMode ? "show-page-breaks" : ""} ${isProfessionalTemplate ? "no-page-break-overlay" : ""}`}
                       ref={canvasRef}
                       style={{
                         margin: "0 auto",
@@ -3077,6 +3133,9 @@ const Editor = ({
                         minHeight: `${totalPages * PAGE_HEIGHT}px`,
                         display: "flex",
                         flexDirection: "column",
+                        background: isProfessionalTemplate
+                          ? `linear-gradient(to right, ${cvData.settings?.themeColor || "#2563eb"} 0 280px, #ffffff 280px 100%)`
+                          : "#ffffff",
                       }}
                     >
                       <div
@@ -3084,7 +3143,8 @@ const Editor = ({
                         style={{
                           flex: 1,
                           width: "100%",
-                          minHeight: "100%",
+                          height: `${totalPages * PAGE_HEIGHT}px`,
+                          minHeight: `${totalPages * PAGE_HEIGHT}px`,
                           display: "flex",
                           flexDirection: "column",
                         }}

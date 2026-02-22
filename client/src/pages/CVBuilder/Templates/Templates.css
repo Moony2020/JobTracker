@@ -280,6 +280,22 @@ h2,
     overflow: visible;
 }
 
+/* Ensure professional template fills the full generated multi-page canvas height */
+.template-content-wrapper > .resume-template {
+    height: 100%;
+    min-height: 100%;
+}
+
+.template-content-wrapper > .resume-template .professional-blue-template {
+    height: 100% !important;
+    min-height: 100% !important;
+    background: transparent !important;
+}
+
+.template-content-wrapper > .resume-template .professional-blue-template .pro-sidebar-bg {
+    display: none;
+}
+
 .pro-sidebar-bg {
     position: absolute;
     top: 0;
@@ -436,6 +452,8 @@ h2,
     margin-bottom: 25px;
     /* Consistent gap between ALL sections */
     margin-top: 0;
+    page-break-inside: avoid;
+    break-inside: avoid;
 }
 
 .pro-exp-item {
@@ -1313,10 +1331,21 @@ h2,
 }
 
 /* Mobile Responsive - Reduce spacing in sidebar for small screens */
-@media (max-width: 786px) {
+@media (max-width: 787px) {
     .pro-main {
-        padding: 8px 12px;
-        /* REDUCED from 20px 20px - Minimize white space */
+        padding: 20px 20px;
+        /* Restore top spacing on small screens while keeping tighter content width */
+    }
+
+    .pro-content-section-courses {
+        margin-top: 22px !important;
+        padding-top: 0;
+        /* Ensure visible top padding when Courses starts on page 2 */
+    }
+
+    .pro-content-section.mobile-page-top-gap {
+        margin-top: 22px !important;
+        /* Match page-1 breathing room when a section starts a new page */
     }
 
     .pro-header {
