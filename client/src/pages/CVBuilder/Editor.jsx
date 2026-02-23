@@ -1743,9 +1743,9 @@ const Editor = ({
                     <span>{currentUI.personalDetails}</span>
                   </div>
                   {activeSection === "personal" ? (
-                    <ChevronUp size={20} />
+                    <ChevronUp size={20} color="#1e293b" />
                   ) : (
-                    <ChevronDown size={20} />
+                    <ChevronDown size={20} color="#1e293b" />
                   )}
                 </button>
                 {activeSection === "personal" && (
@@ -2091,288 +2091,176 @@ const Editor = ({
               </div>
 
               {/* Professional Summary */}
-              <div className="form-section-card">
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "16px 24px",
-                    position: "relative",
-                  }}
-                >
-                  <button
-                    className="section-trigger"
-                    style={{
-                      padding: 0,
-                      flex: 1,
-                      border: "none",
-                      background: "transparent",
+                <div className="form-section-card">
+                  <div
+                    className="section-trigger-div summary-header-trigger"
+                    style={{ cursor: "pointer" }}
+                    onClick={(e) => {
+                      // Only toggle if we didn't click the right-side group
+                      if (!examplesRef.current || !examplesRef.current.contains(e.target)) {
+                        toggleSection("summary");
+                      }
                     }}
-                    onClick={() => toggleSection("summary")}
                   >
+                    {/* Left: Title */}
                     <div className="section-title-box">
-                      <FileText size={20} color="#6366f1" />
-                      <span>{currentLabels.summary}</span>
+                      <FileText
+                        size={20}
+                        color="#6366f1"
+                        style={{ flexShrink: 0 }}
+                      />
+                      <span className="summary-section-title">
+                        {currentLabels.summary}
+                      </span>
                     </div>
-                  </button>
 
-                  <div style={{ position: "relative" }} ref={examplesRef}>
-                    <button
-                      className="btn-examples-link"
-                      onClick={() => setIsExamplesOpen(!isExamplesOpen)}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        fontSize: "13px",
-                        fontWeight: "600",
-                        color: "#6366f1",
-                        background: "transparent",
-                        border: "none",
-                        cursor: "pointer",
-                      }}
+                    {/* Examples link group — CSS order puts it after chevron on mobile */}
+                    <div
+                      className="summary-right-group"
+                      ref={examplesRef}
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      <Palette size={16} />
-                      <span>{currentUI.preWrittenExamples}</span>
-                    </button>
-
-                    {isExamplesOpen && (
-                      <div
-                        className="examples-popover"
-                        style={{
-                          position: "absolute",
-                          top: "100%",
-                          right: 0,
-                          width: "450px" /* Slightly wider */,
-                          maxHeight: "550px" /* Increased height */,
-                          background: "white",
-                          boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
-                          borderRadius: "12px",
-                          zIndex: 100,
-                          marginTop: "10px",
-                          display: "flex",
-                          flexDirection: "column",
-                          overflow: "hidden",
-                          border: "1px solid #e2e8f0",
-                        }}
-                      >
-                        <div
-                          style={{
-                            padding: "16px",
-                            borderBottom: "1px solid #f1f5f9",
-                            background: "#f8fafc",
-                          }}
+                      <div className="summary-actions-responsive">
+                        <button
+                          className="btn-examples-link"
+                          onClick={() => setIsExamplesOpen(!isExamplesOpen)}
                         >
-                          <div style={{ position: "relative" }}>
-                            <SearchIcon
-                              size={16}
-                              style={{
-                                position: "absolute",
-                                left: "12px",
-                                top: "50%",
-                                transform: "translateY(-50%)",
-                                color: "#6366f1",
-                              }}
-                            />
+                          <Palette size={16} style={{ flexShrink: 0 }} />
+                          <span>{currentUI.preWrittenExamples}</span>
+                        </button>
+
+                        {isExamplesOpen && (
+                          <div className="examples-popover">
+                          <div className="examples-popover-header">
+                            <SearchIcon size={16} />
                             <input
                               placeholder={currentUI.searchExamples}
-                              style={{
-                                width: "100%",
-                                padding: "10px 12px 10px 36px",
-                                borderRadius: "8px",
-                                border: "1px solid #e2e8f0",
-                                fontSize: "13px",
-                                background: "white",
-                                outline: "none",
-                                transition: "all 0.2s",
-                              }}
-                              onFocus={(e) =>
-                                (e.target.style.borderColor = "#6366f1")
-                              }
-                              onBlur={(e) =>
-                                (e.target.style.borderColor = "#e2e8f0")
-                              }
                               value={examplesSearch}
                               onChange={(e) =>
                                 setExamplesSearch(e.target.value)
                               }
                             />
                           </div>
-                        </div>
-                        <div
-                          style={{
-                            flex: 1,
-                            overflowY: "auto",
-                            padding: "12px 12px 40px 12px",
-                            minHeight: 0,
-                          }}
-                        >
-                          {SUMMARY_EXAMPLES.filter(
-                            (cat) =>
-                              cat.title
-                                .toLowerCase()
-                                .includes(examplesSearch.toLowerCase()) ||
-                              cat.examples.some((ex) =>
-                                ex.text
-                                  .toLowerCase()
-                                  .includes(examplesSearch.toLowerCase()),
-                              ),
-                          ).length > 0 ? (
-                            SUMMARY_EXAMPLES.filter(
+                          <div className="examples-popover-content">
+                            {SUMMARY_EXAMPLES.filter(
                               (cat) =>
                                 cat.title
                                   .toLowerCase()
-                                  .includes(examplesSearch.toLowerCase()) ||
+                                  .includes(
+                                    examplesSearch.toLowerCase(),
+                                  ) ||
                                 cat.examples.some((ex) =>
                                   ex.text
                                     .toLowerCase()
-                                    .includes(examplesSearch.toLowerCase()),
+                                    .includes(
+                                      examplesSearch.toLowerCase(),
+                                    ),
                                 ),
-                            ).map((cat, idx) => (
-                              <div key={idx} style={{ marginBottom: "20px" }}>
-                                <h5
-                                  style={{
-                                    fontSize: "12px",
-                                    fontWeight: 700,
-                                    color: "#334155",
-                                    textTransform: "uppercase",
-                                    marginBottom: "10px",
-                                    paddingLeft: "4px",
-                                  }}
-                                >
-                                  {cat.title}
-                                </h5>
-                                {cat.examples.map((ex, eIdx) => {
-                                  // Find text for current language, fallback to English
-                                  const exText =
-                                    ex.lang ===
-                                    (cvData.settings.cvLanguage || "English")
-                                      ? ex.text
-                                      : ex.lang === "English"
+                            ).length > 0 ? (
+                              SUMMARY_EXAMPLES.filter(
+                                (cat) =>
+                                  cat.title
+                                    .toLowerCase()
+                                    .includes(
+                                      examplesSearch.toLowerCase(),
+                                    ) ||
+                                  cat.examples.some((ex) =>
+                                    ex.text
+                                      .toLowerCase()
+                                      .includes(
+                                        examplesSearch.toLowerCase(),
+                                      ),
+                                  ),
+                              ).map((cat, idx) => (
+                                <div key={idx} className="example-category">
+                                  <h5>{cat.title}</h5>
+                                  {cat.examples.map((ex, eIdx) => {
+                                    const exText =
+                                      ex.lang ===
+                                      (cvData.settings.cvLanguage ||
+                                        "English")
                                         ? ex.text
-                                        : null;
+                                        : ex.lang === "English"
+                                          ? ex.text
+                                          : null;
 
-                                  if (!exText) return null;
+                                    if (!exText) return null;
 
-                                  return (
-                                    <div
-                                      key={eIdx}
-                                      className="example-item"
-                                      onClick={() => {
-                                        handleApplyExample(exText);
-                                      }}
-                                      style={{
-                                        padding: "12px",
-                                        borderRadius: "8px",
-                                        background: "#f8fafc",
-                                        fontSize: "13px",
-                                        color: "#475569",
-                                        lineHeight: "1.5",
-                                        cursor: "pointer",
-                                        border: "1px solid transparent",
-                                        transition: "all 0.2s",
-                                        position: "relative",
-                                        display: "flex",
-                                        alignItems: "flex-start",
-                                        gap: "12px",
-                                        marginBottom: "8px",
-                                      }}
-                                      onMouseEnter={(e) => {
-                                        e.currentTarget.style.background =
-                                          "#f1f5f9";
-                                        e.currentTarget.style.borderColor =
-                                          "#6366f1";
-                                      }}
-                                      onMouseLeave={(e) => {
-                                        e.currentTarget.style.background =
-                                          "#f8fafc";
-                                        e.currentTarget.style.borderColor =
-                                          "transparent";
-                                      }}
-                                    >
+                                    return (
                                       <div
-                                        style={{
-                                          width: "24px",
-                                          height: "24px",
-                                          borderRadius: "50%",
-                                          background: "#6366f1",
-                                          border: "1px solid #6366f1",
-                                          display: "flex",
-                                          alignItems: "center",
-                                          justifyContent: "center",
-                                          flexShrink: 0,
-                                          marginTop: "2px",
-                                          color: "white",
+                                        key={eIdx}
+                                        className="example-item"
+                                        onClick={() => {
+                                          handleApplyExample(exText);
                                         }}
                                       >
-                                        <Plus size={14} />
+                                        <div className="example-item-icon">
+                                          <Plus size={14} />
+                                        </div>
+                                        <div className="example-item-text">
+                                          <span>{exText}</span>
+                                        </div>
                                       </div>
-                                      <div style={{ flex: 1, minWidth: 0 }}>
-                                        <span
-                                          style={{
-                                            display: "block",
-                                            wordBreak: "break-word",
-                                            whiteSpace: "pre-wrap",
-                                          }}
-                                        >
-                                          {exText}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
+                                    );
+                                  })}
+                                </div>
+                              ))
+                            ) : (
+                              <div className="no-examples">
+                                <SearchIcon size={32} />
+                                <p>
+                                  No examples found for "{examplesSearch}"
+                                </p>
                               </div>
-                            ))
-                          ) : (
-                            <div
-                              style={{
-                                textAlign: "center",
-                                padding: "40px 20px",
-                                color: "#94a3b8",
-                              }}
-                            >
-                              <SearchIcon
-                                size={32}
-                                style={{ marginBottom: "12px", opacity: 0.5 }}
-                              />
-                              <p style={{ fontSize: "14px" }}>
-                                No examples found for "{examplesSearch}"
-                              </p>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      )}
+                      </div>{/* end summary-actions-responsive */}
+                    </div>{/* end summary-right-group */}
+
+                    {/* Single chevron — sibling of right-group, follows it on desktop, is order:2 on mobile */}
+                    {activeSection === "summary" ? (
+                      <ChevronUp
+                        size={20}
+                        className="summary-chevron"
+                        style={{ flexShrink: 0, color: "#1e293b" }}
+                      />
+                    ) : (
+                      <ChevronDown
+                        size={20}
+                        className="summary-chevron"
+                        style={{ flexShrink: 0, color: "#1e293b" }}
+                      />
                     )}
                   </div>
-                </div>
 
-                {activeSection === "summary" && (
-                  <div
-                    className="section-content-inner"
-                    style={{ paddingTop: 0 }}
-                  >
+                  {activeSection === "summary" && (
                     <div
-                      className="form-group always-full-width"
-                      style={{ marginTop: "20px" }}
+                      className="section-content-inner"
+                      style={{ paddingTop: 0 }}
                     >
-                      <label
-                        className="form-label"
-                        style={{ marginBottom: "8px" }}
+                      <div
+                        className="form-group always-full-width"
+                        style={{ marginTop: "20px" }}
                       >
-                        {currentUI.professionalSummary}
-                      </label>
-                      <RichTextEditor
-                        value={cvData.data.personal.summary}
-                        onChange={(val) =>
-                          updateNestedState("data.personal.summary", val)
-                        }
-                        placeholder={currentUI.summaryPlaceholder}
-                      />
+                        <label
+                          className="form-label"
+                          style={{ marginBottom: "8px" }}
+                        >
+                          {currentUI.professionalSummary}
+                        </label>
+                        <RichTextEditor
+                          value={cvData.data.personal.summary}
+                          onChange={(val) =>
+                            updateNestedState("data.personal.summary", val)
+                          }
+                          placeholder={currentUI.summaryPlaceholder}
+                        />
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
 
               {/* Experience */}
               <div className="form-section-card">

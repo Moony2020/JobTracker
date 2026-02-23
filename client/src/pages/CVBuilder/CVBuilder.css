@@ -499,6 +499,204 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
+/* Summary card needs overflow:visible so the popover can escape overflow:hidden */
+.form-section-card:has(.summary-header-trigger) {
+  overflow: visible;
+}
+
+.summary-header-trigger {
+  padding: 20px 24px !important;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+  width: 100% !important;
+  position: relative !important; /* Popover anchor — full card width */
+}
+
+/* Right-side group: link + chevron always together */
+.summary-right-group {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;         /* tight gap between link and arrow */
+  margin-left: auto !important; /* push to far right */
+  flex-shrink: 0 !important;
+}
+
+.summary-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.summary-actions-responsive {
+  display: flex !important;
+  align-items: center !important;
+  /* position:relative is on .summary-header-trigger for card-wide anchor */
+}
+
+.summary-actions-responsive .btn-examples-link {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-size: 10.5px !important; /* REDUCED SIZE AS REQUESTED */
+  font-weight: 600 !important;
+  color: #6366f1 !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 4px !important; /* Tighter padding */
+  cursor: pointer !important;
+  white-space: nowrap !important;
+}
+
+.summary-header-trigger > svg[data-lucide^="chevron"] {
+  /* Chevron */
+  color: #1e293b !important; /* Force darker color like others */
+  flex-shrink: 0 !important;
+}
+
+/* Examples Popover - RESTORED PREMIUM STYLES */
+.examples-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(420px, calc(100% - 16px)); /* centered, tighter margins on mobile */
+  max-height: 480px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.04);
+  z-index: 1000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  text-align: left !important;
+}
+
+.examples-popover-header {
+  padding: 14px 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.examples-popover-header svg {
+  color: #6366f1; /* Purple magnifying glass */
+  flex-shrink: 0;
+}
+
+.examples-popover-header input {
+  flex: 1;
+  border: 1px solid #e2e8f0; /* Visible border like standard inputs */
+  background: #f8fafc;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  outline: none;
+  color: #1e293b;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.examples-popover-header input:focus {
+  border-color: #6366f1;
+}
+
+.examples-popover-content {
+  overflow-y: auto;
+  padding: 10px 0;
+  background: #ffffff;
+}
+
+.example-category {
+  padding: 12px 16px 8px 16px;
+}
+
+.example-category h5 {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 12px;
+  text-align: left !important;
+}
+
+.example-item {
+  padding: 14px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  gap: 16px;
+  margin: 0 12px 8px 12px; 
+  align-items: flex-start;
+  text-align: left !important;
+  background: #f8fafc;
+}
+
+.example-item:hover {
+  background: #f1f5f9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.example-item-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  background: #6366f1; /* PURPLE CIRCLE */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white; /* WHITE PLUS */
+  box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+}
+
+.example-item-text {
+  font-size: 0.95rem;
+  color: #334155;
+  line-height: 1.6;
+  text-align: left !important;
+}
+
+/* Reduce example text font on narrow viewports */
+@media (max-width: 575px) {
+  .example-item-text {
+    font-size: 0.8rem !important;
+    line-height: 1.5 !important;
+  }
+  .example-category h5 {
+    font-size: 0.7rem !important;
+  }
+  .example-item {
+    gap: 10px !important;
+    padding: 10px 12px !important;
+    margin: 0 4px 6px 4px !important; /* wider cards — less side margin */
+  }
+  .example-item-icon {
+    width: 22px !important;
+    height: 22px !important;
+  }
+}
+
+/* Standardized Trigger Icons */
+.section-trigger svg {
+  flex-shrink: 0;
+}
+
+.summary-header-trigger svg[data-lucide="file-text"] {
+  /* Perfect vertical centering */
+  margin-top: 1px;
+}
+
 .section-trigger {
   width: 100%;
   padding: 20px 24px;
@@ -2398,12 +2596,72 @@
   }
 
 
-  .editor-sidebar-forms .section-trigger {
+  .editor-sidebar-forms .section-trigger,
+  .editor-sidebar-forms .summary-header-wrapper {
     padding: 12px 16px !important;
   }
 
-  .editor-sidebar-forms .section-title-box {
-    font-size: 0.95rem !important;
+  /* Mobile layout: title+chevron on Row 1, examples on Row 2 */
+  @media (max-width: 575px) {
+    .editor-sidebar-forms .summary-header-trigger {
+      padding: 12px 16px 10px 16px !important;
+      display: flex !important;
+      flex-wrap: wrap !important;
+      align-items: center !important;
+      gap: 0 !important;
+    }
+
+    /* Title stays on Row 1, takes all space */
+    .editor-sidebar-forms .summary-header-trigger .section-title-box {
+      order: 1 !important;
+      flex: 1 !important;
+    }
+
+    /* Chevron stays on Row 1, after title, at the right edge */
+    .editor-sidebar-forms .summary-header-trigger .summary-chevron {
+      order: 2 !important;
+      margin-left: auto !important;
+      color: #1e293b !important;
+    }
+
+    /* Examples group wraps to Row 2 */
+    .editor-sidebar-forms .summary-header-trigger .summary-right-group {
+      order: 3 !important;
+      flex-basis: 100% !important;
+      width: 100% !important;
+      padding-left: 32px !important; /* align with title text start */
+      margin-top: 8px !important;
+      margin-bottom: 2px !important;
+      margin-left: 0 !important;
+    }
+
+    .editor-sidebar-forms .summary-actions-responsive .btn-examples-link {
+      font-size: 11px !important;
+    }
+  }
+
+  /* Desktop layout: all on one row */
+  @media (min-width: 576px) {
+    .editor-sidebar-forms .summary-header-trigger {
+       padding: 12px 16px !important;
+       flex-wrap: nowrap !important;
+    }
+
+    /* On desktop: examples group + chevron are pushed to far right together */
+    .editor-sidebar-forms .summary-header-trigger .summary-right-group {
+      margin-left: auto !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+    }
+
+    /* Chevron right after the examples group, no extra margin */
+    .editor-sidebar-forms .summary-header-trigger .summary-chevron {
+      margin-left: 0 !important;
+      color: #1e293b !important;
+    }
+
+
   }
 
   .editor-sidebar-forms .section-content-inner {
