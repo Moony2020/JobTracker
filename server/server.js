@@ -49,6 +49,9 @@ app.use("/api/contact", require("./routes/contact"));
 
 // Serve React app
 app.get("*", (req, res) => {
+  if (req.path.startsWith('/assets/')) {
+    return res.status(404).send('Asset not found');
+  }
   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
 
