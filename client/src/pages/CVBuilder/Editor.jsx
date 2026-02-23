@@ -1443,7 +1443,16 @@ const Editor = ({
     ...BASE_COLORS.filter((c) => c !== currentTemplateDefault),
   ];
 
-  if (loading) return <div className="cv-loading">Loading Editor...</div>;
+  if (loading) {
+    return (
+      <div className="cv-loading-container">
+        <div className="cv-loading-spinner"></div>
+        <p className="cv-loading-text">
+          {language === "Arabic" ? "جاري تحميل المحرر..." : "Loading Editor..."}
+        </p>
+      </div>
+    );
+  }
 
   if (!dataLoaded && (propCvId || activeCvId)) {
     return (

@@ -714,7 +714,7 @@
   background: #ef4444;
   color: white;
   border: none;
-  padding: 8px 24px;
+  padding: 8px 18px;
   border-radius: 6px;
   font-weight: 600;
   display: flex;
@@ -1271,6 +1271,7 @@
   /* Further reduced from 20px to 16px as requested */
 }
 
+
 @media (min-width: 993px) {
   .design-sections-scrollable {
     padding-top: 10px;
@@ -1796,7 +1797,7 @@
   background: transparent;
   border: 1px solid transparent;
   color: white;
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   font-weight: 700;
   padding: 4px 0;
   width: 100%;
@@ -1869,11 +1870,24 @@
 
 /* MOBILE FIX: STACK FORMS REGARDLESS OF NESTING */
 @media (max-width: 787px) {
-
   .cv-editor-design .form-grid,
   .form-grid {
     grid-template-columns: 1fr !important;
     gap: 16px !important;
+  }
+
+  /* Responsive Header Cleanup */
+  .title-edit-input {
+    font-size: 0.95rem;
+  }
+
+  .editor-global-header {
+    padding: 0 12px;
+  }
+
+  .download-btn-red {
+    padding: 8px 12px;
+    font-size: 0.85rem;
   }
 }
 
