@@ -52,6 +52,10 @@ app.get("*", (req, res) => {
   if (req.path.startsWith('/assets/')) {
     return res.status(404).send('Asset not found');
   }
+  // Prevent caching of index.html to ensure users always get the latest asset hashes
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
 

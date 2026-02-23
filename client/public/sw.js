@@ -1,4 +1,4 @@
-const CACHE_NAME = 'job-tracker-v30';
+const CACHE_NAME = 'job-tracker-v31';
 
 const ASSETS_TO_CACHE = [
   '/',
@@ -41,10 +41,18 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Network-First for HTML (prevents stale index.html pointing to old hashes)
+  if (event.request.headers.get('accept')?.includes('text/html')) {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Cache-First for assets and others
   event.respondWith(
     caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request);
+      return cached || fetch(event.request);
     })
   );
 });
