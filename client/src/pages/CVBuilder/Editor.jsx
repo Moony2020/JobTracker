@@ -352,8 +352,8 @@ const Editor = ({
   const PAGE_WIDTH = 794;
   const PAGE_HEIGHT = 1050; // User preferred height
   const PREVIEW_MIN_SCALE = 0.2; // Lowered to allow small phone fitting
-  const PREVIEW_MAX_SCALE = 0.54;
-  const PREVIEW_DESKTOP_MAX_SCALE = 0.62;
+  const PREVIEW_MAX_SCALE = 0.52;
+  const PREVIEW_DESKTOP_MAX_SCALE = 0.52;
   const PREVIEW_MARGIN = 0; // Pushed upper
   const PREVIEW_FOOTER_SPACE = 40; // Reclaim gap to push pill down
 
@@ -1079,7 +1079,7 @@ const Editor = ({
       observer.disconnect();
       resizeObserver.disconnect();
     };
-  }, [cvData, PAGE_HEIGHT]);
+  }, [cvData, PAGE_HEIGHT, isProfessionalTemplate, previewScale]);
 
   const scrollToPage = (page) => {
     const safePage = Math.min(Math.max(page, 1), totalPages);
