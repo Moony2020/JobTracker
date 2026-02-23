@@ -272,7 +272,7 @@
   }
 }
 
-@media (max-width: 786px) {
+@media (max-width: 787px) {
   .cv-editor-design {
     background: #cbd5e1 !important;
     /* FORCED GREY BACK TO MATCH PREVIEW */
@@ -396,7 +396,7 @@
 }
 
 /* Mobile Sidebar Padding Override */
-@media (max-width: 786px) {
+@media (max-width: 787px) {
   .editor-sidebar-forms {
     padding: 24px 12px 30px 12px !important;
   }
@@ -1868,7 +1868,7 @@
 }
 
 /* MOBILE FIX: STACK FORMS REGARDLESS OF NESTING */
-@media (max-width: 786px) {
+@media (max-width: 787px) {
 
   .cv-editor-design .form-grid,
   .form-grid {
@@ -2437,6 +2437,7 @@
     margin: 0 !important;
   }
 
+
   .preview-scaler {
     margin: 0 auto !important; /* PERFECT CENTER */
     transform-origin: top center !important;
@@ -2488,6 +2489,24 @@
   .preview-footer-minimal .status-saved-text svg {
     width: 12px !important;
     height: 12px !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .mode-content .preview-scroll-area {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .mode-content .preview-shell {
+    width: 100% !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  .mode-content .preview-slot {
+    max-width: none !important;
   }
 }
 
@@ -2756,7 +2775,7 @@
 }
 
 /* 2. MAIN MOBILE LAYOUT FIXES (Targeting max-width: 786px) */
-@media (max-width: 786px) {
+@media (max-width: 787px) {
   .hide-on-mobile {
     display: none !important;
   }
@@ -2814,16 +2833,21 @@
 
   /* ABSOLUTE MOBILE ISOLATION (FIX MIXING) */
   .preview-page-viewport-live {
-    width: 100% !important;
+    width: 794px !important;
+    max-width: 794px !important;
     height: 1050px !important;
     overflow: hidden !important;
     margin: 0 auto !important;
     position: relative !important;
   }
 
-  /* Don't clip internal scaled contents */
-  .preview-scaler, .resume-paper-canvas, .preview-slot, .preview-scaler-live {
+  /* Keep internals visible, but keep slot clipping deterministic */
+  .preview-scaler, .resume-paper-canvas, .preview-scaler-live {
     overflow: visible !important;
+  }
+
+  .preview-slot {
+    overflow: hidden !important;
   }
 
   /* RESTORE MOBILE SCROLL & ALIGNMENT */
@@ -4071,8 +4095,7 @@ body.dark-mode .section-header h2,
 }
 
 .preview-slot {
-  display: flex;
-  justify-content: center;
+  display: block;
 }
 
 .preview-scaler-live {
@@ -4090,8 +4113,8 @@ body.dark-mode .section-header h2,
 
 .mode-content .preview-slot {
   margin: 0 !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
 @media (max-width: 640px) {
@@ -4239,11 +4262,14 @@ body.dark-mode .section-header h2,
   background-color: #cbd5e1 !important;
   overflow-y: auto !important;
   overflow-x: hidden !important; 
+  scrollbar-gutter: stable both-edges;
 }
 
 .mode-content .preview-shell {
   padding: 0 !important;
   margin: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
 }
 
 .mode-content .preview-slot {
@@ -4251,7 +4277,7 @@ body.dark-mode .section-header h2,
   margin-bottom: 0 !important;
 }
 
-@media (max-width: 786px) {
+@media (max-width: 787px) {
   .editor-preview-pane {
     min-height: 500px !important; /* Reverted per user request */
   }
@@ -4259,15 +4285,23 @@ body.dark-mode .section-header h2,
   .mode-content .preview-scroll-area {
     flex: 0 0 auto !important;
     height: auto !important;
-    padding: 25px 10px 60px 10px !important; /* Restoring breathing room */
-    overflow: visible !important;
+    padding: 25px 0 60px 0 !important; /* Keep only vertical breathing room */
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
     align-items: center !important;
+  }
+
+  .mode-content .preview-shell {
+    width: 100% !important;
+    padding: 0 10px !important;
+    box-sizing: border-box !important;
   }
 
   .mode-content .preview-footer-minimal {
     position: static !important; /* NO LONGER PINNED */
     margin: 15px auto !important; /* Centered with small gap from CV */
   }
+
 }
 
 /* Base: footer pill spacing (desktop/tablet default) */
@@ -4312,8 +4346,128 @@ body.dark-mode .section-header h2,
 }
 
 /* Footer pill position: mobile adjustments */
-@media (max-width: 786px) {
+@media (max-width: 787px) {
   .mode-content .preview-footer-minimal {
     position: static !important; 
+  }
+}
+
+@media (max-width: 500px) {
+  .mode-content .preview-shell {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  /* Cancel older mobile cap that forced slot to 100% width and clipped the CV */
+  .mode-content .preview-slot {
+    max-width: none !important;
+  }
+}
+
+/* ---------------------------------------------------------- */
+/* Final isolated live-preview rules (content mode only)      */
+/* This block intentionally comes last to beat legacy rules.  */
+/* ---------------------------------------------------------- */
+.mode-content .preview-scroll-area-live {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #cbd5e1 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-gutter: stable both-edges;
+}
+
+.mode-content .preview-shell-live {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.mode-content .preview-slot-live {
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  max-width: none !important;
+  flex: 0 0 auto !important;
+}
+
+@media (max-width: 787px) {
+  .mode-content .preview-scroll-area-live {
+    padding: 25px 0 60px 0 !important;
+  }
+
+  .mode-content .preview-shell-live {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .mode-content .preview-shell-live {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+}
+
+/* Tablet/content mode only (787-992): keep page pill under the CV */
+@media (min-width: 787px) and (max-width: 992px) {
+  .mode-content .preview-scroll-area-live {
+    padding-bottom: 24px !important;
+  }
+
+  .mode-content .preview-footer-minimal {
+    position: static !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    margin: 16px auto 28px !important;
+    z-index: 100 !important;
+  }
+}
+
+/* Desktop/content mode (>=993): move page pill a bit lower */
+@media (min-width: 993px) {
+  .mode-content .editor-main-split {
+    overflow: hidden !important;
+  }
+
+  .mode-content .editor-preview-pane {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .mode-content .preview-scroll-area-live {
+    position: relative !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .mode-content .preview-footer-minimal {
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    bottom: 6px !important;
+    margin: 0 !important;
+    z-index: 1000 !important;
+  }
+}
+
+
+/* USER REQUEST: Push page number down on desktop > 992px */
+@media (min-width: 992px) {
+  .preview-footer-minimal {
+    bottom: 8px !important;
   }
 }
