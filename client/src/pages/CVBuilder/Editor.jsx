@@ -1778,6 +1778,7 @@ const Editor = ({
                             justifyContent: "center",
                             overflow: "hidden",
                             border: "2px solid #e2e8f0",
+                            flexShrink: 0,
                           }}
                         >
                           {cvData.data.personal.photo ? (
