@@ -1054,8 +1054,10 @@ const Editor = ({
       let pages = 1;
       if (hasContentOnPage2) {
         pages = Math.max(1, Math.ceil((contentHeight - 5) / PAGE_HEIGHT));
-      } else if (!isProfessionalTemplate && contentHeight > PAGE_HEIGHT + 20) {
-        pages = Math.max(1, Math.ceil((contentHeight - 20) / PAGE_HEIGHT));
+      } else if (!isProfessionalTemplate && contentHeight > PAGE_HEIGHT + 120) {
+        // Require 120px overflow before counting a second page
+        // — prevents the PAGE BREAK marker from falsely triggering page 2
+        pages = Math.max(1, Math.ceil((contentHeight - 120) / PAGE_HEIGHT));
       }
 
       setTotalPages(pages);
@@ -3248,7 +3250,7 @@ const Editor = ({
                       ref={canvasRef}
                       style={{
                         margin: "0 auto",
-                        boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
                         transform: `translateY(-${(currentPage - 1) * PAGE_HEIGHT}px)`,
                         transition: "transform 0.3s ease-out",
                         width: `${PAGE_WIDTH}px`,
@@ -3310,7 +3312,7 @@ const Editor = ({
                     onClick={() => scrollToPage(currentPage - 1)}
                     disabled={currentPage <= 1}
                   >
-                    <ChevronUp size={16} />
+                    <ChevronUp size={10} />
                   </button>
                 )}
                 <span>
@@ -3322,7 +3324,7 @@ const Editor = ({
                     onClick={() => scrollToPage(currentPage + 1)}
                     disabled={currentPage >= totalPages}
                   >
-                    <ChevronDown size={16} />
+                    <ChevronDown size={10} />
                   </button>
                 )}
               </div>
