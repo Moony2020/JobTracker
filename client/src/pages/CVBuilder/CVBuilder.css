@@ -4667,3 +4667,90 @@ body.dark-mode .section-header h2,
     bottom: 8px !important;
   }
 }
+
+/* ============================================================ */
+/* FLOATING PAGE NUMBER PILL — global base styles               */
+/* ============================================================ */
+.preview-footer-minimal {
+  position: fixed !important;
+  bottom: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 14px;
+  background: rgba(30, 41, 59, 0.80);
+  backdrop-filter: blur(8px);
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  color: #e2e8f0;
+  font-weight: 500;
+  z-index: 10000;
+  white-space: nowrap;
+  width: fit-content;
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  visibility: visible !important;
+}
+
+.preview-footer-minimal .status-saved-text span,
+.preview-footer-minimal .pagination-text span {
+  font-size: 0.72rem !important;
+  line-height: normal;
+}
+
+.preview-footer-minimal .status-saved-text svg {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+.preview-footer-minimal:hover {
+  background: rgba(15, 23, 42, 0.90);
+  transform: translateX(-50%) translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  color: white;
+}
+
+.status-saved-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #10b981;
+  font-size: 0.72rem;
+}
+
+.pagination-text {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  padding-left: 10px;
+  margin-left: 2px;
+  font-size: 0.72rem;
+}
+
+/* Navigation arrow buttons inside the pill */
+.page-link-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  padding: 0 2px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.page-link-btn:hover {
+  color: white;
+}
+
+.page-link-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
