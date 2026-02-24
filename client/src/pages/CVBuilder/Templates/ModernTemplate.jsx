@@ -126,8 +126,8 @@ const ModernTemplate = ({ data, settings, labels }) => {
         <div className="side-col">
           <section className="contact-info">
             <h2 style={{ color: themeColor }}>{labels?.contact || 'Contact'}</h2>
-            <p>{personal.email || 'email@example.com'}</p>
-            <p>{personal.phone || '(555) 123-4567'}</p>
+            <p>{personal.email}</p>
+            <p>{personal.phone}</p>
             {personal.address && <p>{personal.address}</p>}
             {(personal.city || personal.location) && <p>{personal.city || personal.location}</p>}
             {personal.country && <p>{personal.country}</p>}

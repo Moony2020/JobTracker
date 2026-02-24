@@ -24,14 +24,18 @@ const TimelineTemplate = ({ data, settings, labels }) => {
           <div className="sidebar-section">
             <h2 className="sidebar-title">{labels?.contact || 'Contact Details'}</h2>
             <div className="sidebar-contact">
-              <div className="contact-item">
-                <Mail size={14} />
-                <span>{personal.email || 'email@example.com'}</span>
-              </div>
-              <div className="contact-item">
-                <Phone size={14} />
-                <span>{personal.phone || '(555) 123-4567'}</span>
-              </div>
+              {personal.email && (
+                <div className="contact-item">
+                  <Mail size={14} />
+                  <span>{personal.email}</span>
+                </div>
+              )}
+              {personal.phone && (
+                <div className="contact-item">
+                  <Phone size={14} />
+                  <span>{personal.phone}</span>
+                </div>
+              )}
               {personal.location && (
                 <div className="contact-item">
                   <MapPin size={14} />

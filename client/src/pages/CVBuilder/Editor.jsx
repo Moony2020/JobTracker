@@ -46,6 +46,9 @@ import {
   AlertCircle,
   LogIn,
   AlertTriangle,
+  Sparkles,
+  Wand2,
+  Copy,
 } from "lucide-react";
 import { TRANSLATIONS } from "./Translations";
 import { SUMMARY_EXAMPLES } from "./Examples";
@@ -260,7 +263,7 @@ const Editor = ({
   onRegisterClick,
   language,
 }) => {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const location = useLocation();
 
   const [cvData, setCvData] = useState({
@@ -392,6 +395,14 @@ const Editor = ({
   // const [isSwitchingTemplate, setIsSwitchingTemplate] = useState(false);
   // DEBUG STATE
   // const [debugInfo, setDebugInfo] = useState({ height: 0, pages: 1 });
+
+  // ── AI Quick Build State ───────────────────────────────────────────────
+  const [aiModalOpen, setAiModalOpen] = useState(false);
+  const [aiInputText, setAiInputText] = useState("");
+  const [aiOutputLang, setAiOutputLang] = useState(cvData.settings.cvLanguage || "English");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiResult, setAiResult] = useState(null); // { data, usage, meta }
+  const [aiError, setAiError] = useState("");
 
   const isProfessionalTemplate = ["professional", "professional-blue", "professional blue", "creative"].includes(
     (cvData.templateKey || "").toLowerCase(),
@@ -1427,6 +1438,97 @@ const Editor = ({
     setActiveSection(activeSection === section ? null : section);
   };
 
+  // ── AI Quick Build Handler ─────────────────────────────────────────────
+  const handleAiGenerate = async () => {
+    if (!aiInputText.trim() || aiInputText.trim().length < 30) {
+      setAiError("Please write at least 30 characters about yourself.");
+      return;
+    }
+    setAiLoading(true);
+    setAiError("");
+    setAiResult(null);
+    try {
+      const resp = await api.post("/ai/generate-cv", {
+        text: aiInputText,
+        outputLanguage: aiOutputLang,
+      });
+      setAiResult(resp.data);
+      // Sync usage count locally
+      if (resp.data.usage && user) {
+        setUser({
+          ...user,
+          aiUsage: {
+            ...user.aiUsage,
+            count: resp.data.usage.used,
+            monthKey: new Date().toISOString().slice(0, 7) // Update month key just in case
+          }
+        });
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || "AI request failed.";
+      setAiError(msg);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleApplyAiResult = () => {
+    if (!aiResult?.data) return;
+    const ai = aiResult.data;
+
+    setCvData((prev) => {
+      const next = { ...prev, data: { ...prev.data } };
+
+      // Smart merge: only update fields/sections the AI actually found
+      if (ai.personal) {
+        const p = { ...next.data.personal };
+        // Fields that should be CLEARED if AI returns null (no placeholder data)
+        const clearableFields = ["email", "phone", "location"];
+        Object.keys(ai.personal).forEach((k) => {
+          if (ai.personal[k] && ai.personal[k] !== null) {
+            p[k] = ai.personal[k];
+          } else if (ai.personal[k] === null && clearableFields.includes(k)) {
+            // AI explicitly said this field is missing — clear it so template placeholder is removed
+            p[k] = "";
+          }
+        });
+        next.data.personal = p;
+      }
+      if (ai.experience?.length) next.data.experience = ai.experience;
+      if (ai.education?.length)  next.data.education = ai.education;
+      if (ai.skills?.length)     next.data.skills = ai.skills;
+      if (ai.languages?.length) {
+        // Filter out languages without a name (AI sometimes returns placeholder levels)
+        const validLangs = ai.languages.filter((l) => l.name && l.name.trim());
+        if (validLangs.length) next.data.languages = validLangs;
+      }
+      if (ai.certifications?.length)  next.data.certifications = ai.certifications;
+      
+      // Defensive Schema Normalization for nested arrays (Projects, Hobbies, Volunteering)
+      // This ensures that even if AI returns a string array, we convert it to an object array
+      const normalizeToObjectArray = (arr, keyName = "name") => {
+        if (!arr || !Array.isArray(arr)) return [];
+        return arr.map(item => {
+          if (typeof item === 'string') return { [keyName]: item };
+          return item;
+        });
+      };
+
+      if (ai.hobbies?.length)      next.data.hobbies = normalizeToObjectArray(ai.hobbies);
+      if (ai.projects?.length)     next.data.projects = normalizeToObjectArray(ai.projects);
+      if (ai.links?.length)        next.data.links = normalizeToObjectArray(ai.links, "url");
+      if (ai.volunteering?.length)  next.data.volunteering = normalizeToObjectArray(ai.volunteering, "role");
+
+      return next;
+    });
+
+    setIsSaved(false);
+    setAiModalOpen(false);
+    setAiResult(null);
+    setAiInputText("");
+    showNotify?.("CV generated successfully — you can edit everything.", "success");
+  };
+
   // Base colors
   // Base colors
   const BASE_COLORS = [
@@ -1733,6 +1835,221 @@ const Editor = ({
                   )}
                 </div>
               </div>
+
+              {/* AI Quick Build Button */}
+              {user && (
+                <div className="ai-quick-build-trigger" style={{
+                  padding: "0 24px 16px 24px",
+                }}>
+                  <button
+                    className="ai-quick-build-btn"
+                    onClick={() => { setAiModalOpen(true); setAiError(""); setAiResult(null); }}
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "10px",
+                      padding: "12px 20px",
+                      borderRadius: "12px",
+                      border: "none",
+                      background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)",
+                      color: "white",
+                      fontWeight: 600,
+                      fontSize: "14px",
+                      cursor: "pointer",
+                      boxShadow: "0 4px 14px rgba(99, 102, 241, 0.35)",
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                    }}
+                    onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(99, 102, 241, 0.5)"; }}
+                    onMouseOut={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(99, 102, 241, 0.35)"; }}
+                  >
+                    <Sparkles size={18} />
+                    AI Quick Build
+                  </button>
+                </div>
+              )}
+
+              {/* AI Quick Build Modal */}
+              {aiModalOpen && ReactDOM.createPortal(
+                <div className="delete-modal-overlay" style={{ zIndex: 99999 }}>
+                  <div className="ai-modal-card" style={{
+                    background: "var(--card-bg)",
+                    borderRadius: "20px",
+                    padding: "32px",
+                    maxWidth: "560px",
+                    width: "90%",
+                    maxHeight: "85vh",
+                    overflowY: "auto",
+                    boxShadow: "var(--shadow-lg)",
+                    position: "relative",
+                    border: "1px solid var(--light-border)",
+                    transition: "all 0.3s ease",
+                  }}>
+                    {/* Close button */}
+                    <button onClick={() => { setAiModalOpen(false); setAiResult(null); }} style={{
+                      position: "absolute", top: "16px", right: "16px",
+                      background: "none", border: "none", cursor: "pointer", color: "#94a3b8",
+                    }}><X size={20} /></button>
+
+                    {/* Header */}
+                    <div className="ai-modal-header" style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
+                      <div className="ai-modal-icon-box" style={{
+                        width: "42px", height: "42px", borderRadius: "12px",
+                        background: "linear-gradient(135deg, #6366f1, #a855f7)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        <Wand2 size={20} color="white" />
+                      </div>
+                      <div className="ai-modal-header-text">
+                        <h3 style={{ fontSize: "18px", fontWeight: 700, color: "var(--text-color)", margin: 0 }}>AI Quick Build</h3>
+                        <p style={{ fontSize: "13px", color: "var(--text-muted)", margin: "2px 0 0" }}>Describe yourself and let AI fill your CV</p>
+                      </div>
+                    </div>
+
+                    {/* Output Language */}
+                    <div className="ai-modal-lang-selector" style={{ marginBottom: "16px", maxWidth: "240px" }}>
+                      <label style={{ fontSize: "13px", fontWeight: 500, color: "var(--text-muted)", marginBottom: "6px", display: "block" }}>Output Language</label>
+                      <div className="select-wrapper">
+                        <select
+                          value={aiOutputLang}
+                          onChange={(e) => setAiOutputLang(e.target.value)}
+                          style={{
+                            width: "100%", padding: "10px 32px 10px 12px", borderRadius: "8px",
+                            border: "1px solid var(--light-border)", fontSize: "14px", color: "var(--text-color)",
+                            background: "var(--bg-color)",
+                            outline: "none",
+                            appearance: "none",
+                          }}
+                        >
+                          {LANGUAGES.map((lang) => (
+                            <option key={lang.code} value={lang.code}>{lang.label} ({lang.code})</option>
+                          ))}
+                        </select>
+                        <ChevronDown className="chevron" size={14} style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "var(--text-muted)" }} />
+                      </div>
+                    </div>
+
+                    {/* Textarea */}
+                    <div style={{ marginBottom: "12px" }}>
+                      <label style={{ fontSize: "13px", fontWeight: 500, color: "var(--text-muted)", marginBottom: "6px", display: "block" }}>Tell us about yourself</label>
+                      <textarea
+                        value={aiInputText}
+                        onChange={(e) => setAiInputText(e.target.value)}
+                        placeholder="Write a paragraph about yourself... your name, job title, experience, education, skills, and languages. You can write in any language!"
+                        maxLength={5000}
+                        style={{
+                          width: "100%", minHeight: "160px", padding: "14px", borderRadius: "12px",
+                          border: "1.5px solid var(--light-border)", fontSize: "14px", lineHeight: 1.6,
+                          resize: "vertical", fontFamily: "Inter, sans-serif",
+                          transition: "border-color 0.2s",
+                          background: "var(--bg-color)",
+                          color: "var(--text-color)",
+                          outline: "none",
+                        }}
+                        onFocus={(e) => e.target.style.borderColor = "var(--primary-color)"}
+                        onBlur={(e) => e.target.style.borderColor = "var(--light-border)"}
+                      />
+                      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "6px" }}>
+                        <button
+                          className="btn-example-paste"
+                          onClick={() => setAiInputText("My name is John Doe, I'm a Web Developer from Stockholm, Sweden. I have 3 years of experience at TechCorp where I built React web applications. I graduated with a Bachelor's degree in Computer Science from Stockholm University in 2020. I speak English (Native), Swedish (Proficient), and Arabic (Basic). My skills include JavaScript, React, Node.js, Python, and CSS.")}
+                          style={{
+                            background: "transparent", border: "1px solid var(--light-border)", borderRadius: "8px",
+                            padding: "6px 12px", fontSize: "12px", color: "var(--primary-color)", cursor: "pointer",
+                            display: "flex", alignItems: "center", gap: "4px",
+                            transition: "all 0.2s",
+                          }}
+                        >
+                          <Copy size={12} /> Paste Example
+                        </button>
+                        <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>{aiInputText.length}/5000</span>
+                      </div>
+                    </div>
+
+                    {/* Error */}
+                    {aiError && (
+                      <div className="ai-modal-error-box" style={{
+                        background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "10px",
+                        padding: "12px 16px", marginBottom: "16px", color: "#dc2626", fontSize: "13px",
+                        display: "flex", alignItems: "center", gap: "8px",
+                      }}>
+                        <AlertTriangle size={16} /> {aiError}
+                      </div>
+                    )}
+
+                    {/* AI Result Preview */}
+                    {aiResult?.data && (
+                      <div className="ai-modal-result-box" style={{
+                        background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "12px",
+                        padding: "16px", marginBottom: "16px",
+                      }}>
+                        <div className="ai-modal-result-status" style={{ fontSize: "14px", fontWeight: 600, color: "#166534", marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px" }}>
+                          <CheckCircle size={16} /> Data Extracted Successfully
+                        </div>
+                        {aiResult.data.meta?.confidence != null && aiResult.data.meta.confidence < 0.6 && (
+                          <div className="ai-modal-warning-box" style={{ background: "#fffbeb", border: "1px solid #fde68a", borderRadius: "8px", padding: "10px", marginBottom: "10px", fontSize: "12px", color: "#92400e" }}>
+                            ⚠️ Low confidence — please review the data carefully after applying.
+                          </div>
+                        )}
+                        <div style={{ fontSize: "13px", color: "var(--text-color)", lineHeight: 1.8 }}>
+                          {aiResult.data.personal?.firstName && <div>👤 <strong>{aiResult.data.personal.firstName} {aiResult.data.personal.lastName}</strong> — {aiResult.data.personal.jobTitle || "No title"}</div>}
+                          {aiResult.data.experience?.length > 0 && <div>💼 {aiResult.data.experience.length} experience(s)</div>}
+                          {aiResult.data.education?.length > 0 && <div>🎓 {aiResult.data.education.length} education(s)</div>}
+                          {aiResult.data.skills?.length > 0 && <div>🛠️ {aiResult.data.skills.length} skill(s)</div>}
+                          {aiResult.data.languages?.length > 0 && <div>🌍 {aiResult.data.languages.length} language(s)</div>}
+                        </div>
+                        {aiResult.data.meta?.followUpQuestions?.length > 0 && (
+                          <div style={{ marginTop: "12px", fontSize: "12px", color: "#64748b" }}>
+                            <strong>💡 Optional — you can add later:</strong>
+                            <ul style={{ margin: "4px 0 0 16px", padding: 0 }}>
+                              {aiResult.data.meta.followUpQuestions.map((q, i) => <li key={i} style={{ color: "var(--text-muted)" }}>{q}</li>)}
+                            </ul>
+                          </div>
+                        )}
+                        <button
+                          onClick={handleApplyAiResult}
+                          style={{
+                            marginTop: "14px", width: "100%", padding: "12px",
+                            borderRadius: "10px", border: "none", fontWeight: 600, fontSize: "14px",
+                            background: "linear-gradient(135deg, #10b981, #059669)", color: "white",
+                            cursor: "pointer", boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
+                          }}
+                        >Apply to CV</button>
+                      </div>
+                    )}
+
+                    {/* Usage counter - Show either from AI result OR from local user state if no result yet */}
+                    {(aiResult?.usage || user?.aiUsage) && (
+                      <div style={{ fontSize: "12px", color: "var(--text-muted)", textAlign: "center", marginBottom: "12px", background: "rgba(0,0,0,0.05)", padding: "8px", borderRadius: "8px" }}>
+                        AI uses remaining: {aiResult?.usage ? aiResult.usage.remaining : (20 - (user?.aiUsage?.count || 0))}/20 this month
+                      </div>
+                    )}
+
+                    {!aiResult?.data && (
+                      <button
+                        onClick={handleAiGenerate}
+                        disabled={aiLoading || aiInputText.trim().length < 30}
+                        style={{
+                          width: "100%", padding: "14px", borderRadius: "12px", border: "none",
+                          fontWeight: 700, fontSize: "15px", cursor: aiLoading ? "not-allowed" : "pointer",
+                          background: aiLoading ? "#94a3b8" : "linear-gradient(135deg, #6366f1, #8b5cf6)",
+                          color: "white", boxShadow: "0 4px 14px rgba(99,102,241,0.35)",
+                          display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                          transition: "all 0.3s",
+                        }}
+                      >
+                        {aiLoading ? (
+                          <><Loader2 className="spinner" size={18} /> Analyzing...</>
+                        ) : (
+                          <><Sparkles size={18} /> Generate CV</>
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </div>,
+                document.body
+              )}
 
               {/* Personal Details */}
               <div className="form-section-card">

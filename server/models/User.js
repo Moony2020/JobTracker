@@ -37,6 +37,11 @@ const UserSchema = new mongoose.Schema(
     },
     premiumUntil: {
       type: Date
+    },
+    aiUsage: {
+      monthKey: { type: String, default: "" },   // "YYYY-MM"
+      count:    { type: Number, default: 0 },
+      lastUsedAt: { type: Date }
     }
   },
   {

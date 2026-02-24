@@ -39,24 +39,29 @@ const ProfessionalBlueTemplate = ({ data, settings, labels }) => {
                </div>
             )}
         </div>
-
         {/* Contact Section */}
         <section className="pro-section">
           <h2 className="pro-section-title" style={{ borderBottom: '2px solid rgba(255, 255, 255, 0.3)', textTransform: 'uppercase' }}>{labels?.contact || 'Contact'}</h2>
           <div className="pro-contact-list">
-             <div className="pro-contact-item">
-                <span className="pro-label">Email</span>
-                <span className="pro-value" style={!personal.email ? { opacity: 0.7 } : {}}>{personal.email || 'email@example.com'}</span>
-              </div>
-              <div className="pro-contact-item">
-                <span className="pro-label">Phone</span>
-                <span className="pro-value" style={!personal.phone ? { opacity: 0.7 } : {}}>{personal.phone || '(555) 123-4567'}</span>
-              </div>
-              <div className="pro-contact-item">
-                <span className="pro-label">Location</span>
-                <span className="pro-value" style={!personal.location ? { opacity: 0.7 } : {}}>{personal.location || 'City, Country'}</span>
-              </div>
-              {personal.address && (
+             {personal.email && (
+               <div className="pro-contact-item">
+                 <span className="pro-label">Email</span>
+                 <span className="pro-value">{personal.email}</span>
+               </div>
+             )}
+             {personal.phone && (
+               <div className="pro-contact-item">
+                 <span className="pro-label">Phone</span>
+                 <span className="pro-value">{personal.phone}</span>
+               </div>
+             )}
+             {personal.location && (
+               <div className="pro-contact-item">
+                 <span className="pro-label">Location</span>
+                 <span className="pro-value">{personal.location}</span>
+               </div>
+             )}
+             {personal.address && (
                 <div className="pro-contact-item">
                   <span className="pro-label">Address</span>
                   <span className="pro-value">{personal.address}</span>

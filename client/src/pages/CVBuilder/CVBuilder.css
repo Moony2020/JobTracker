@@ -4099,8 +4099,8 @@ body.dark-mode .section-header h2,
   /* PIN TO LEFT */
   padding: 0 !important;
   /* Zero padding for density */
-  background: #cbd5e1 !important;
-  background-color: #cbd5e1 !important;
+  background: transparent !important;
+  background-color: transparent !important;
   border: none !important;
   border-radius: 0 !important;
   margin: 0 !important;
@@ -4753,4 +4753,109 @@ body.dark-mode .section-header h2,
 .page-link-btn:disabled {
   opacity: 0.3;
   cursor: default;
+}
+
+/* AI Quick Build modal — wider on small screens */
+@media (max-width: 575px) {
+  .ai-modal-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 14px !important;
+    border-radius: 10px !important;
+  }
+
+  .ai-modal-card .ai-modal-result-box,
+  .ai-modal-card textarea {
+    padding: 10px !important;
+  }
+
+  .ai-modal-lang-selector {
+    max-width: 100% !important;
+  }
+}
+
+.ai-modal-card {
+  backdrop-filter: blur(8px) !important;
+}
+
+/* AI Quick Build Modal Dark Mode & Premium Enhancements */
+.dark-mode .ai-modal-card,
+[data-theme='dark'] .ai-modal-card {
+  background: rgba(15, 23, 42, 0.94) !important;
+  backdrop-filter: blur(4px) !important;
+  border: 1px solid rgba(99, 102, 241, 0.35) !important;
+  box-shadow: 0 25px 80px -12px rgba(0, 0, 0, 0.7) !important;
+  background-image: radial-gradient(circle at top right, rgba(99, 102, 241, 0.12), transparent 45%),
+                    radial-gradient(circle at bottom left, rgba(168, 85, 247, 0.08), transparent 45%) !important;
+}
+
+.dark-mode .delete-modal-overlay {
+  background: rgba(0, 0, 0, 0.75) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.dark-mode .ai-modal-card textarea,
+.dark-mode .ai-modal-card select {
+  background: rgba(30, 41, 59, 0.5) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #f1f5f9 !important;
+}
+
+.dark-mode .ai-modal-card textarea:focus,
+.dark-mode .ai-modal-card select:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+}
+
+.dark-mode .btn-example-paste {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #a5b4fc !important;
+}
+
+.dark-mode .btn-example-paste:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--primary-color) !important;
+}
+
+/* Result preview dark mode */
+.dark-mode .ai-modal-result-box {
+  background: rgba(22, 101, 52, 0.15) !important;
+  border-color: rgba(34, 197, 94, 0.3) !important;
+}
+.dark-mode .ai-modal-result-box strong {
+  color: #4ade80 !important;
+}
+.dark-mode .ai-modal-result-status {
+  color: #86efac !important;
+}
+.dark-mode .ai-modal-result-status svg {
+  color: #86efac !important;
+}
+.dark-mode .ai-modal-result-box {
+  color: #e2e8f0 !important;
+}
+.dark-mode .ai-modal-result-box li {
+  color: #cbd5e1 !important;
+}
+
+/* Low confidence warning dark mode */
+.dark-mode .ai-modal-warning-box {
+  background: rgba(146, 64, 14, 0.2) !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+  color: #fcd34d !important;
+}
+
+/* Error message dark mode */
+.dark-mode .ai-modal-error-box {
+  background: rgba(153, 27, 27, 0.25) !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+  color: #fca5a5 !important;
+}
+
+/* Close button hover */
+.dark-mode .ai-modal-card button svg {
+  transition: color 0.2s;
+}
+.dark-mode .ai-modal-card button:hover svg {
+  color: #f1f5f9 !important;
 }
