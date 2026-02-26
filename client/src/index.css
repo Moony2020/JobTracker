@@ -72,7 +72,7 @@ body::before {
 
 /* Chrome / Edge / Safari  make the date picker text white */
 .dark-mode input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
+    filter: none;
     opacity: 0.9;
 }
 
