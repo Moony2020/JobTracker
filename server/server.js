@@ -49,14 +49,19 @@ app.use("/api/contact", require("./routes/contact"));
 
 // Serve React app
 app.get("*", (req, res) => {
+  if (req.path.startsWith('/api/')) return; // Don't serve HTML for API errors
+  
   if (req.path.startsWith('/assets/')) {
     return res.status(404).send('Asset not found');
   }
-  // Prevent caching of index.html to ensure users always get the latest asset hashes
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+
+  const indexPath = path.join(__dirname, "../client/dist/index.html");
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.error("❌ Error serving index.html:", err.message);
+      res.status(404).send(`Frontend not found. Make sure 'npm run build' was successful. (Path: ${indexPath})`);
+    }
+  });
 });
 
 const PORT = process.env.PORT || 3000;
