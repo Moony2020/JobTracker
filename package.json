@@ -8,6 +8,7 @@
     "client": "npm run dev --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "test": "jest --detectOpenHandles",
+    "start": "node server/server.js",
     "build": "npm install && npm install --prefix client && npm run build --prefix client"
   },
   "dependencies": {

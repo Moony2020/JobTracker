@@ -60,10 +60,11 @@ app.get("*", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
+const HOST = '0.0.0.0';
 
 if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  app.listen(PORT, HOST, () => {
+    console.log(`Server running on http://${HOST}:${PORT}`);
     console.log(`Frontend: https://jobtracker-ptwj.onrender.com`);
     console.log(`API: https://jobtracker-ptwj.onrender.com/api`);
   });
