@@ -31,8 +31,32 @@ const createTransporter = () => {
  * or falls back to SMTP (Local Dev).
  */
 const sendMail = async (options) => {
+    const brevoApiKey = process.env.BREVO_API_KEY;
     const resendApiKey = process.env.RESEND_API_KEY;
 
+    // 1. Try Brevo (Recommended for Domain-less Sending)
+    if (brevoApiKey) {
+        try {
+            const response = await axios.post('https://api.brevo.com/v3/smtp/email', {
+                sender: { email: process.env.BREVO_SENDER_EMAIL || process.env.EMAIL_USER },
+                to: [{ email: options.to }],
+                subject: options.subject,
+                htmlContent: options.html,
+                textContent: options.text
+            }, {
+                headers: {
+                    'api-key': brevoApiKey,
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log('✅ Brevo success:', response.data.messageId);
+            return { messageId: response.data.messageId };
+        } catch (error) {
+            console.error('❌ Brevo Error:', error.response?.data || error.message);
+        }
+    }
+
+    // 2. Try Resend (Requires Custom Domain)
     if (resendApiKey) {
         try {
             const response = await axios.post('https://api.resend.com/emails', {
@@ -51,10 +75,11 @@ const sendMail = async (options) => {
             return { messageId: response.data.id };
         } catch (error) {
             console.error('❌ Resend Error:', error.response?.data || error.message);
-            // Fallback to SMTP if Resend fails? 
-            // Better to throw or proceed to SMTP if it's potentially a domain issue
         }
     }
+
+    console.log('--- MAIL SYSTEM ---');
+    console.log('No HTTP API keys found. Falling back to SMTP (will timeout on Render Free).');
 
     // Fallback to SMTP
     const transporter = createTransporter();

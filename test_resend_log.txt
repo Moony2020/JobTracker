@@ -1,6 +1,0 @@
-Testing Resend HTTP API...
-API Key: Set
-DEBUG: RESEND_API_KEY is Present
---- RESEND SYSTEM ---
-Sending via Resend HTTP API...
-✅ Test complete. Result: {"accepted":["mymoon676@hotmail.com"],"rejected":[],"ehlo":["SIZE 35882577","8BITMIME","AUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH","ENHANCEDSTATUSCODES","PIPELINING","CHUNKING","SMTPUTF8"],"envelopeTime":1758,"messageTime":481,"messageSize":586,"response":"250 2.0.0 OK  1773922668 2adb3069b0e04-5a279c27439sm1151527e87.8 - gsmtp","envelope":{"from":"","to":["mymoon676@hotmail.com"]},"messageId":"<f46f2249-50eb-89e6-36dc-82eae54e49fc@localhost>"}
