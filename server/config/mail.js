@@ -5,18 +5,31 @@ const nodemailer = require('nodemailer');
  * Switches to Port 587 (STARTTLS) for better production compatibility
  */
 const createTransporter = () => {
-    return nodemailer.createTransport({
-        host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-        port: parseInt(process.env.EMAIL_PORT) || 587,
-        secure: process.env.EMAIL_SECURE === 'true' ? true : false, // 587 is STARTTLS (secure: false)
+    const mailConfig = {
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
         },
+        // Adding explicit timeouts
+        connectionTimeout: 10000, // 10s
+        greetingTimeout: 10000,   // 10s
+        socketTimeout: 30000,     // 30s
         tls: {
+            // Many cloud providers have intermediate cert issues with STARTTLS
             rejectUnauthorized: false
         }
-    });
+    };
+
+    // Use service: 'gmail' if it's Gmail - this is often more robust in cloud environments
+    if (!process.env.EMAIL_HOST || process.env.EMAIL_HOST.includes('gmail.com')) {
+        mailConfig.service = 'gmail';
+    } else {
+        mailConfig.host = process.env.EMAIL_HOST;
+        mailConfig.port = parseInt(process.env.EMAIL_PORT) || 587;
+        mailConfig.secure = process.env.EMAIL_SECURE === 'true';
+    }
+
+    return nodemailer.createTransport(mailConfig);
 };
 
 const sendMail = async (options) => {

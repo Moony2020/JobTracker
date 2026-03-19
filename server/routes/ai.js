@@ -247,7 +247,9 @@ router.post('/parse', auth, async (req, res) => {
             - notes: LEAVE THIS EMPTY STRING "".
             - jobLink: The URL to the job posting if found.
             - expectedSalary: Any salary range mentioned in the description.
-            - jobDescription: Return the FULL original job description text exactly as provided.
+            - jobDescription: Extract ONLY the actual job role, responsibilities, and requirements. 
+              Do NOT include the company name, job title, or location in this field if they are already extracted.
+              If the input ONLY contains the company name, title, and location, return an EMPTY STRING "" for this field.
 
             Job Description:
             ${text}
