@@ -108,65 +108,17 @@ const Login = ({ onClose }) => {
         </div>
         
         {error && (
-          <div className="notification error show" style={{ 
-            position: 'relative', 
-            top: 0, 
-            right: 0, 
-            marginBottom: '1rem', 
-            width: '100%', 
-            borderRadius: '8px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingRight: '10px'
-          }}>
+          <div className="notification error show modal-notification">
             <span>{error}</span>
-            <button 
-              type="button" 
-              onClick={() => setError('')}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'inherit',
-                cursor: 'pointer',
-                padding: '4px',
-                display: 'flex',
-                alignItems: 'center',
-                opacity: 0.7
-              }}
-            >
+            <button type="button" onClick={() => setError('')} className="close-notification">
               <X size={14} />
             </button>
           </div>
         )}
         {success && (
-          <div className="notification success show" style={{ 
-            position: 'relative', 
-            top: 0, 
-            right: 0, 
-            marginBottom: '1rem', 
-            width: '100%', 
-            borderRadius: '8px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingRight: '10px'
-          }}>
+          <div className="notification success show modal-notification">
             <span>{success}</span>
-            <button 
-              type="button" 
-              onClick={() => setSuccess('')}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'inherit',
-                cursor: 'pointer',
-                padding: '4px',
-                display: 'flex',
-                alignItems: 'center',
-                opacity: 0.7
-              }}
-            >
+            <button type="button" onClick={() => setSuccess('')} className="close-notification">
               <X size={14} />
             </button>
           </div>

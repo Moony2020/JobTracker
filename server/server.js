@@ -69,9 +69,10 @@ const HOST = '0.0.0.0';
 
 if (require.main === module) {
   app.listen(PORT, HOST, () => {
+    const baseUrl = process.env.CLIENT_URL || `http://localhost:${PORT}`;
     console.log(`Server running on http://${HOST}:${PORT}`);
-    console.log(`Frontend: https://jobtracker-ptwj.onrender.com`);
-    console.log(`API: https://jobtracker-ptwj.onrender.com/api`);
+    console.log(`Frontend: ${baseUrl}`);
+    console.log(`API: ${baseUrl}/api`);
   });
 }
 

@@ -98,7 +98,14 @@ const ChangePassword = ({ onClose }) => {
           </button>
         </div>
         
-        {error && <div className="notification error show" style={{ position: 'relative', top: 0, right: 0, marginBottom: '1rem', width: '100%' }}>{error}</div>}
+        {error && (
+          <div className="notification error show modal-notification">
+            <span>{error}</span>
+            <button type="button" onClick={() => setError('')} className="close-notification">
+              <X size={14} />
+            </button>
+          </div>
+        )}
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">

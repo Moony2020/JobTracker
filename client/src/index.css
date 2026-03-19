@@ -3019,6 +3019,63 @@ body:not(.dark-mode) .form-control::placeholder {
     /* Green text */
 }
 
+/* Modal specific notification overrides */
+.modal-notification {
+    position: relative !important;
+    top: 0 !important;
+    right: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    animation: none !important;
+    width: 85% !important; /* Narrower width */
+    max-width: 280px !important;
+    margin: 0 auto 1.25rem auto !important; /* Centered with bottom spacing */
+    box-shadow: none !important;
+    border-radius: 10px !important;
+    font-size: 0.82rem !important; /* Smaller text */
+    padding: 0.62rem 0.4rem 0.62rem 0.85rem !important; /* Pushed button further right */
+    gap: 0.4rem !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+.modal-notification::before {
+    display: none !important;
+}
+
+.close-notification {
+    background: rgba(150, 150, 150, 0.1);
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.modal-notification.error .close-notification {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.modal-notification.success .close-notification {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+.close-notification:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
 .notification.success::before {
     content: '\2713';
     background: rgba(16, 185, 129, 0.2);

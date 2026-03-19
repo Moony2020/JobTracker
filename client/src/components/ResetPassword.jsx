@@ -71,10 +71,20 @@ const ResetPassword = ({ token, onClose }) => {
           </button>
         </div>
 
-        {error && <div className="notification error show" style={{ position: 'relative', top: 0, right: 0, marginBottom: '1rem', width: '100%', borderRadius: '8px' }}>{error}</div>}
+        {error && (
+          <div className="notification error show modal-notification">
+            <span>{error}</span>
+            <button type="button" onClick={() => setError('')} className="close-notification">
+              <X size={14} />
+            </button>
+          </div>
+        )}
         {success && (
-          <div className="notification success show" style={{ position: 'relative', top: 0, right: 0, marginBottom: '1rem', width: '100%', borderRadius: '8px' }}>
-            {success}
+          <div className="notification success show modal-notification">
+            <span>{success}</span>
+            <button type="button" onClick={() => setSuccess('')} className="close-notification">
+              <X size={14} />
+            </button>
           </div>
         )}
 
