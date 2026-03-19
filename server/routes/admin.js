@@ -7,6 +7,8 @@ const Purchase = require("../models/Purchase");
 const Message = require("../models/Message");
 const auth = require("../middleware/auth");
 const nodemailer = require('nodemailer');
+const mailService = require('../config/mail');
+
 
 // @route   GET api/admin/stats
 // @desc    Get dashboard statistics (KPIs, Charts)
@@ -184,20 +186,6 @@ router.post("/messages/:id/reply", auth, auth.adminOnly, async (req, res) => {
       return res.status(404).json({ message: "Message not found" });
     }
 
-    // 1. Send Email
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        },
-        tls: {
-            rejectUnauthorized: false
-        }
-    });
-
     const mailOptions = {
         from: `"JobTracker Support" <${process.env.EMAIL_USER}>`,
         to: message.email,
@@ -258,7 +246,8 @@ router.post("/messages/:id/reply", auth, auth.adminOnly, async (req, res) => {
         `
     };
 
-    await transporter.sendMail(mailOptions);
+    // 1. Send Email using centralized mail service
+    await mailService.sendMail(mailOptions);
 
     // 2. Update Database
     message.status = 'replied';

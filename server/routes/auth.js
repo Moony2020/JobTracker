@@ -13,6 +13,8 @@ const {
 } = require('../validation/schemas');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const mailService = require('../config/mail');
+
 const multer = require('multer');
 const pdf = require('pdf-parse'); // standard import
 const fs = require('fs');
@@ -203,21 +205,8 @@ router.post('/forgot-password', validate(ForgotPasswordSchema), async (req, res)
         console.log(`Reset Link: ${resetUrl}`);
         console.log('------------------------------');
 
-        // Send real email using Nodemailer
+        // Send real email using centralized mail service
         try {
-            const transporter = nodemailer.createTransport({
-                host: 'smtp.gmail.com',
-                port: 465,
-                secure: true,
-                auth: {
-                    user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_PASS
-                },
-                tls: {
-                    rejectUnauthorized: false
-                }
-            });
-
             const mailOptions = {
                 from: `"JobTracker" <${process.env.EMAIL_USER}>`,
                 to: user.email,
@@ -240,7 +229,7 @@ router.post('/forgot-password', validate(ForgotPasswordSchema), async (req, res)
                 `
             };
 
-            await transporter.sendMail(mailOptions);
+            await mailService.sendMail(mailOptions);
             res.json({ message: 'Password reset instructions have been sent to your email.' });
         } catch (mailError) {
             console.error('Nodemailer Error:', mailError.message);

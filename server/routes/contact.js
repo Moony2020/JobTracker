@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
+const mailService = require('../config/mail');
+
 const path = require('path');
 const Message = require('../models/Message');
 
@@ -26,20 +28,6 @@ router.post('/', async (req, res) => {
             }
         });
         await newMessage.save();
-
-        const transporter = nodemailer.createTransport({
-             // Reuse existing config from auth.js
-            host: 'smtp.gmail.com',
-            port: 465,
-            secure: true,
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            },
-            tls: {
-                rejectUnauthorized: false
-            }
-        });
 
         const mailOptions = {
             from: `"Portfolio Contact" <${process.env.EMAIL_USER}>`,
@@ -113,7 +101,8 @@ router.post('/', async (req, res) => {
             `
         };
 
-        await transporter.sendMail(mailOptions);
+        // Send email using centralized mail service
+        await mailService.sendMail(mailOptions);
 
         // 2. Auto-Reply to Visitor
         const replyOptions = {
@@ -172,7 +161,7 @@ router.post('/', async (req, res) => {
                 </html>
             `
         };
-        await transporter.sendMail(replyOptions);
+        await mailService.sendMail(replyOptions);
         res.json({ message: 'Message sent successfully!' });
 
     } catch (error) {
